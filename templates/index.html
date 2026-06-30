@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>__TITRE__</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />__EXTRA_CSS__
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>__EXTRA_JS__
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        :root {
+            --bg-body: __BG_BODY__;
+            --bg-sidebar: __BG_SIDEBAR__;
+            --bg-panel: __BG_PANEL__;
+            --bg-select: __BG_SELECT__;
+            --text-main: __TEXT_MAIN__;
+            --text-muted: __TEXT_MUTED__;
+            --accent: __ACCENT__;
+            --border: __BORDER__;
+            --popup-bg: __POPUP_BG__;
+            --popup-text: __POPUP_TEXT__;
+            --header-color: __HEADER_COLOR__;
+        }
+    </style>
+</head>
+<body class="loading-active">
+    <div id="loader"></div>
+    <div id="container">
+        <div id="header">
+            <div class="header-left">
+                <button class="btn-sidebar-toggle" id="btn-sidebar-toggle" title="Afficher / masquer le panneau" aria-label="Afficher / masquer le panneau">☰</button>
+                __HTML_LOGO__
+                <h2 style="font-weight:500; font-size:20px;">__TITRE__</h2>
+            </div>
+            <div>
+                <select id="fondSelector" onchange="changerFond()"
+                    style="padding:6px 12px; border-radius:6px; background:var(--bg-select);
+                           color:var(--text-main); border:1px solid var(--border); cursor:pointer;">
+                    <option value="BASE">Base configurée</option>
+                    <option value="OSM">🌍 OpenStreetMap</option>
+                    <option value="SAT">🛰️ Google Satellite</option>
+                </select>
+            </div>
+        </div>
+        <div id="main-zone">
+            <div id="sidebar-overlay"></div>
+            <div id="sidebar">
+                <h3>Légende &amp; Couches</h3>
+                <div id="legende-toolbar">
+                    <button class="btn-legende-toolbar" onclick="toutDeplierLegende()">▾ Tout déplier</button>
+                    <button class="btn-legende-toolbar" onclick="toutReplierLegende()">▸ Tout replier</button>
+                </div>
+                <div id="legende-liste"></div>
+
+                <div id="filtre-panel">
+                    <h3>🔎 Filtre par attribut</h3>
+                    <div class="filtre-row">
+                        <label>Couche</label>
+                        <select id="filtre-couche" class="filtre-select" onchange="filtreChangerCouche()">
+                            <option value="">-- Choisir une couche --</option>
+                        </select>
+                    </div>
+                    <div class="filtre-row">
+                        <label>Champ</label>
+                        <select id="filtre-champ" class="filtre-select" onchange="filtreChangerChamp()">
+                            <option value="">-- Choisir un champ --</option>
+                        </select>
+                    </div>
+                    <div class="filtre-row">
+                        <label>Opérateur</label>
+                        <select id="filtre-operateur" class="filtre-select">
+                            <option value="eq">= (égal à)</option>
+                            <option value="neq">≠ (différent de)</option>
+                            <option value="contains">⊃ contient</option>
+                            <option value="starts">commence par</option>
+                            <option value="gt">&gt; (supérieur à)</option>
+                            <option value="lt">&lt; (inférieur à)</option>
+                            <option value="gte">≥ (supérieur ou égal)</option>
+                            <option value="lte">≤ (inférieur ou égal)</option>
+                        </select>
+                    </div>
+                    <div class="filtre-row">
+                        <label>Valeur</label>
+                        <input id="filtre-valeur" class="filtre-input" type="text"
+                               placeholder="Saisir ou cliquer une valeur..." oninput="filtreValeurInput()" />
+                        <div id="filtre-valeurs-liste" class="filtre-valeurs-liste" style="display:none;"></div>
+                    </div>
+                    <div class="filtre-btns">
+                        <button class="btn-filtre btn-appliquer" onclick="appliquerFiltre()">✔ Appliquer</button>
+                        <button class="btn-filtre btn-reset" onclick="reinitialiserFiltre()">✖ Réinitialiser</button>
+                    </div>
+                    <div id="filtre-resultat"></div>
+                </div>
+            </div>
+            <div id="map">
+                __MOUSEPOS_HTML__
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

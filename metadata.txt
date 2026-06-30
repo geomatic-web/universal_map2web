@@ -1,0 +1,26 @@
+[general]
+name=Universal Map2web
+qgisMinimumVersion=3.16
+qgisMaximumVersion=4.99
+description=Exporte des couches QGIS vers une carte web interactive (Leaflet), responsive desktop/mobile, avec légende, filtres par attribut, popups et thèmes personnalisables.
+version=1.0.0
+author=Jean-baptiste Bazikité KIBORA
+email=jeanbaptiste.kibora@tic.gov.bf
+
+about=Exporte les couches vectorielles QGIS en cartes web interactives avec Leaflet, en préservant la symbologie et les styles du projet QGIS. Support des rendus simples, catégorisés, gradués et par règles. Inclut les étiquettes QGIS, popups personnalisables, filtres avancés, clusters de points, outils de mesure, recherche, géolocalisation, et thèmes d'interface.
+
+tracker=https://github.com/geomatic-web/universal_map2web/issues
+repository=https://github.com/geomatic-web/universal_map2web
+license=GNU GPL v2
+
+hasProcessingProvider=no
+changelog=Version 1.0.0 : Première version stable. Export vers Leaflet avec préservation de la symbologie QGIS (couleurs, épaisseurs, opacités, styles de ligne). Support des renderers Simple, Catégorisé, Gradué et Règle. Étiquettes QGIS, popups personnalisables, filtres avancés, clusters de points, outils de mesure/recherche/géolocalisation, thèmes d'interface (Clair/Sombre/Professionnel/Coloré), logo personnalisable.
+
+tags=web, geoportail, map, export, leaflet, gis, cartographie, interactif, qgis, symbologie
+
+homepage=https://github.com/geomatic-web/universal_map2web
+category=Web
+icon=icon.png
+experimental=False
+deprecated=False
+server=False
