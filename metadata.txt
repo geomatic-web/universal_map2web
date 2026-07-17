@@ -1,0 +1,45 @@
+[general]
+name=Universal Map2web
+qgisMinimumVersion=3.16
+qgisMaximumVersion=4.99
+description=Export QGIS layers to interactive web maps with Leaflet
+version=1.1.0
+author=Jean-baptiste Bazikité KIBORA
+email=jeanbaptiste.kibora@tic.gov.bf
+
+about=Export vector layers from QGIS to interactive HTML maps with Leaflet, preserving QGIS symbology and styles. Multi-language support (English/French).
+
+tracker=https://github.com/geomatic-web/universal-map2web/issues
+repository=https://github.com/geomatic-web/universal-map2web
+license=GNU GPL v2
+
+hasProcessingProvider=no
+changelog=
+Version 1.1.0 :
+- Multi-language support (English/French)
+- Language selection in the interface
+- QGIS interface translation
+- Exported web page translation
+- Dark theme by default
+- Translated Wiki
+- Bug fixes
+
+Version 1.0.0 :
+- First stable release
+- Leaflet export
+- QGIS symbology preservation
+- Customizable popups
+- Advanced filter
+- Point clustering
+- Integrated tools
+- Interface themes
+- Customizable logo
+
+tags=web, map, export, leaflet, gis, cartography, interactive, qgis, symbology, multilingual
+
+homepage=https://github.com/geomatic-web/universal-map2web
+category=Web
+icon=icon.png
+experimental=False
+deprecated=False
+server=False

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 15px;
+            line-height: 1.5;
+            color: #333;
+            background: #fafafa;
+        }
+
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #4ecdc4;
+            padding-bottom: 8px;
+            font-size: 20px;
+        }
+
+        h2 {
+            color: #34495e;
+            margin-top: 18px;
+            border-left: 3px solid #4ecdc4;
+            padding-left: 12px;
+            font-size: 16px;
+        }
+
+        h3 {
+            color: #2c3e50;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        .badge {
+            background: #4ecdc4;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            display: inline-block;
+            margin: 1px;
+        }
+
+        .support-box {
+            background: #fff5f5;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid #e74c3c;
+            margin: 12px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 8px 0;
+            font-size: 13px;
+        }
+
+        th {
+            background: #4ecdc4;
+            color: white;
+            padding: 5px 8px;
+            text-align: left;
+        }
+
+        td {
+            border: 1px solid #ddd;
+            padding: 5px 8px;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f8f8;
+        }
+
+        .note {
+            background: #fff8e1;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border-left: 3px solid #ffc107;
+            margin: 8px 0;
+            font-size: 13px;
+        }
+
+        ul,
+        ol {
+            margin: 3px 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin: 2px 0;
+        }
+
+        .version {
+            color: #7f8c8d;
+            font-size: 13px;
+        }
+
+        hr {
+            margin: 15px 0;
+            border: none;
+            border-top: 1px solid #eee;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Universal Map2web</h1>
+    <p class="version"><strong>Version :</strong> 1.0.0 | <strong>QGIS :</strong> 3.16+</p>
+
+    <p>Extension QGIS pour exporter des couches vectorielles en <strong>cartes HTML interactives</strong> avec
+        préservation de la symbologie QGIS.</p>
+
+    <h2>Fonctionnalités</h2>
+    <ul>
+        <li>Export multi-couches avec styles QGIS (couleurs, épaisseurs, opacités)</li>
+        <li>Conservation des étiquettes (labeling) et légende automatique</li>
+        <li>Fonds de plan : OSM, Google Satellite, Hybrid ou personnalisé</li>
+        <li>Outils : géolocalisation, mesure, recherche, plein écran, minimap, impression</li>
+        <li>Filtrage avancé par attribut (8 opérateurs)</li>
+        <li>4 thèmes visuels : Clair, Sombre, Professionnel, Coloré</li>
+        <li>Regroupement des points (clustering)</li>
+        <li>Configuration des popups par couche</li>
+    </ul>
+
+    <h2>Manuel rapide</h2>
+
+    <h3>1. Lancement</h3>
+    <p>Cliquez sur l'icône <strong>Universal Map2web</strong> dans la barre d'outils QGIS.</p>
+
+    <h3>2. Export</h3>
+    <ol>
+        <li>Sélectionnez les <strong>couches</strong> à exporter (onglet Couches)</li>
+        <li>Configurez les <strong>popups</strong> (champs à afficher au clic)</li>
+        <li>Choisissez le <strong>fond de plan</strong> et le <strong>thème</strong></li>
+        <li>Personnalisez : <strong>titre</strong>, <strong>logo</strong>, <strong>couleur d'en-tête</strong></li>
+        <li>Activez les <strong>outils</strong> souhaités</li>
+        <li>Cliquez sur <strong>"OK"</strong> et choisissez le dossier de destination</li>
+        <li>La carte s'ouvre automatiquement dans le navigateur</li>
+    </ol>
+
+    <h3>3. Navigation web</h3>
+    <table>
+        <tr>
+            <th>Action</th>
+            <th>Commande</th>
+        </tr>
+        <tr>
+            <td>Zoom</td>
+            <td>Molette / + / -</td>
+        </tr>
+        <tr>
+            <td>Déplacer</td>
+            <td>Clic-glisser</td>
+        </tr>
+        <tr>
+            <td>Voir attributs</td>
+            <td>Clic sur l'élément</td>
+        </tr>
+        <tr>
+            <td>Réinitialiser vue</td>
+            <td>Double-clic sur la carte</td>
+        </tr>
+    </table>
+
+    <h3>4. Filtrage avancé</h3>
+    <p>Dans la barre latérale de la carte : sélectionnez <strong>couche</strong> → <strong>champ</strong> →
+        <strong>opérateur</strong> → saisissez la <strong>valeur</strong> → <strong>Appliquer</strong>.</p>
+    <p>Opérateurs disponibles : = ≠ contient commence par &gt; &lt; ≥ ≤</p>
+
+    <h3>5. Gestion des couches sur la carte</h3>
+    <ul>
+        <li><strong>Afficher/Masquer</strong> : cocher/décocher dans la légende</li>
+        <li><strong>Clustering</strong> : activer "Regrouper les points" (couches ponctuelles)</li>
+        <li><strong>Légende</strong> : affichage automatique des catégories et couleurs</li>
+    </ul>
+
+    <h2>Configuration requise</h2>
+    <table>
+        <tr>
+            <th>Composant</th>
+            <th>Configuration</th>
+        </tr>
+        <tr>
+            <td>QGIS</td>
+            <td>3.16 ou supérieure</td>
+        </tr>
+        <tr>
+            <td>Navigateur</td>
+            <td>Chrome 90+, Firefox 88+, Edge 90+</td>
+        </tr>
+        <tr>
+            <td>Mémoire</td>
+            <td>4 Go RAM minimum</td>
+        </tr>
+        <tr>
+            <td>Connexion</td>
+            <td>Internet (fonds de plan et librairies)</td>
+        </tr>
+    </table>
+
+    <h2>Bonnes pratiques</h2>
+    <div class="note">
+        <ul>
+            <li>Limitez à <strong>10 couches actives</strong> maximum pour des performances optimales</li>
+            <li>Fichiers recommandés <strong>&lt; 50 Mo</strong> par couche</li>
+            <li>Utilisez le système <strong>WGS84 (EPSG:4326)</strong> pour vos données</li>
+            <li>Testez l'affichage dans QGIS avant l'export</li>
+        </ul>
+    </div>
+
+    <h2>Support technique</h2>
+    <div class="support-box">
+        <p><strong>Jean-Baptiste KIBORA</strong></p>
+        <p>📧 <strong>Email</strong> : jeanbaptiste.kibora@tic.gov.bf</p>
+        <p>📱 <strong>Téléphone</strong> : +226 64 41 25 14</p>
+    </div>
+
+    <hr>
+    <p style="text-align: center; color: #7f8c8d; font-size: 11px;">
+        Universal Map2web v1.0.0 | © kibora B. Jean-Baptiste | Juillet 2026
+    </p>
+
+</body>
+
+</html>

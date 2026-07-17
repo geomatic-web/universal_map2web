@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>UniversalMap2webDialog</class>
+ <widget class="QDialog" name="UniversalMap2webDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>780</width>
+    <height>680</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Universal Map2web - Export de cartes HTML</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tabGeneral">
+      <attribute name="title">
+       <string>Général</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QGroupBox" name="groupLibrairie">
+         <property name="title">
+          <string>Librairie Web</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QRadioButton" name="radioLeaflet">
+              <property name="text">
+               <string>Leaflet</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupFondsPlan">
+         <property name="title">
+          <string>Fond de plan</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QComboBox" name="comboFondPlan"/>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item>
+             <widget class="QCheckBox" name="chkFondPlanPersonnalise">
+              <property name="text">
+               <string>URL personnalisée</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="txtFondPlanURL">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="placeholderText">
+               <string>https://... Ex: https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupOutils">
+         <property name="title">
+          <string>Outils à intégrer</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_outils">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="chkRecherche">
+            <property name="text">
+            <string>Recherche d\'adresse</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="chkGeoloc">
+            <property name="text">
+             <string>Localisation GPS</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="chkMesure">
+            <property name="text">
+             <string>Mesure (distance/surface)</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QCheckBox" name="chkImprimer">
+            <property name="text">
+             <string>Bouton d'impression</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QCheckBox" name="chkPleinEcran">
+            <property name="text">
+             <string>Mode Plein écran</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QCheckBox" name="chkMiniMap">
+            <property name="text">
+             <string>Vue d'ensemble (MiniMap)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QCheckBox" name="chkScale">
+            <property name="text">
+             <string>Échelle graphique</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QCheckBox" name="chkMousePosition">
+            <property name="text">
+             <string>Position du curseur</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QCheckBox" name="chkAttribution">
+            <property name="text">
+             <string>Mentions d'attribution</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QCheckBox" name="chkFiltreAvance">
+            <property name="text">
+             <string>Filtre avancé</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabPersonnalisation">
+      <attribute name="title">
+       <string>Personnalisation</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_perso">
+       <item>
+        <widget class="QGroupBox" name="groupTitre">
+         <property name="title">
+          <string>Titre de la carte</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_titre">
+          <item>
+           <widget class="QLineEdit" name="txtTitreCarte">
+            <property name="text">
+             <string>Universal Map2web - Carte interactive</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupLogo">
+         <property name="title">
+          <string>Logo</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_logo">
+          <item>
+           <widget class="QPushButton" name="btnChoisirLogo">
+            <property name="text">
+             <string>Choisir un logo</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="lblLogoPath">
+            <property name="text">
+             <string>Aucun logo</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="chkAfficherLogo">
+            <property name="text">
+             <string>Afficher le logo</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupCouleur">
+         <property name="title">
+          <string>Couleur de l'en-tête</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_couleur">
+          <item>
+           <widget class="QPushButton" name="btnChoisirCouleur">
+            <property name="text">
+             <string>Choisir une couleur</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="txtCouleurEntete">
+            <property name="text">
+             <string>#1a1a2e</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupThemeVisuel">
+         <property name="title">
+          <string>Thème de l'interface</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_theme">
+          <item>
+           <widget class="QComboBox" name="comboTheme">
+            <item>
+             <property name="text">
+              <string>Clair</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Sombre</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Professionnel</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Coloré</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabCouches">
+      <attribute name="title">
+       <string>Couches</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_couches_tab">
+       <item>
+        <widget class="QGroupBox" name="groupSelectionCouches">
+         <property name="title">
+          <string>Sélection des couches à exporter</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QListWidget" name="listCouches"/>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QPushButton" name="btnSelectAll">
+              <property name="text">
+               <string>Tout sélectionner</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnDeselectAll">
+              <property name="text">
+               <string>Tout désélectionner</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="btnInvertSelection">
+              <property name="text">
+               <string>Inverser</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupPopupsConfiguration">
+         <property name="title">
+          <string>Configuration des Popups par couche</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_popup_config">
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_list_couches">
+            <item>
+             <widget class="QLabel" name="lblCouchesPopup">
+              <property name="text">
+               <string>1. Sélectionner une couche :</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListWidget" name="listCouchesPopup"/>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_list_champs">
+            <item>
+             <widget class="QLabel" name="lblChampsPopup">
+              <property name="text">
+               <string>2. Cocher les champs à afficher :</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListWidget" name="listChampsPopup"/>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabAvance">
+      <attribute name="title">
+       <string>Avancé</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_9">
+       <item>
+        <widget class="QGroupBox" name="groupOptimisation">
+         <property name="title">
+          <string>Optimisation des données</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="chkSimplifier">
+            <property name="text">
+             <string>Simplifier les géométries</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QDoubleSpinBox" name="spinTolerance">
+            <property name="decimals">
+             <number>6</number>
+            </property>
+            <property name="maximum">
+             <double>1.000000000000000</double>
+            </property>
+            <property name="singleStep">
+             <double>0.000001000000000</double>
+            </property>
+            <property name="value">
+             <double>0.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="chkCompresser">
+            <property name="text">
+             <string>Compresser les données JSON</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="chkPrecision">
+            <property name="text">
+             <string>Arrondir les coordonnées</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSpinBox" name="spinPrecision">
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>12</number>
+            </property>
+            <property name="value">
+             <number>6</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="groupExport">
+         <property name="title">
+          <string>Options d'export</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_10">
+          <item>
+           <widget class="QCheckBox" name="chkZip">
+            <property name="text">
+             <string>Exporter en fichier ZIP</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="chkOuvrirNavigateur">
+            <property name="text">
+             <string>Ouvrir automatiquement dans le navigateur</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tabWiki">
+      <attribute name="title">
+       <string>Wiki</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_wiki">
+       <item>
+        <widget class="QTextEdit" name="wikiTextEdit">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+         <property name="html">
+          <string></string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>UniversalMap2webDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>UniversalMap2webDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

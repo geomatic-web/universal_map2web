@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="__LANG_ATTR__">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>__TITRE__</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />__EXTRA_CSS__
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>__EXTRA_JS__
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        :root {
+            --bg-body: __BG_BODY__;
+            --bg-sidebar: __BG_SIDEBAR__;
+            --bg-panel: __BG_PANEL__;
+            --bg-select: __BG_SELECT__;
+            --text-main: __TEXT_MAIN__;
+            --text-muted: __TEXT_MUTED__;
+            --accent: __ACCENT__;
+            --border: __BORDER__;
+            --popup-bg: __POPUP_BG__;
+            --popup-text: __POPUP_TEXT__;
+            --header-color: __HEADER_COLOR__;
+        }
+    </style>
+</head>
+<body class="loading-active">
+    <div id="loader"></div>
+    <div id="container">
+        <div id="header">
+            <div class="header-left">
+                <button class="btn-sidebar-toggle" id="btn-sidebar-toggle" title="__I18N_TOGGLE_SIDEBAR__" aria-label="__I18N_TOGGLE_SIDEBAR__">☰</button>
+                __HTML_LOGO__
+                <h2 style="font-weight:500; font-size:20px;">__TITRE__</h2>
+            </div>
+            <div>
+                <select id="fondSelector" onchange="changerFond()"
+                    style="padding:6px 12px; border-radius:6px; background:var(--bg-select);
+                           color:var(--text-main); border:1px solid var(--border); cursor:pointer;">
+                    <option value="BASE">__I18N_BASE_CONFIGURED__</option>
+                    <option value="OSM">🌍 OpenStreetMap</option>
+                    <option value="SAT">🛰️ Google Satellite</option>
+                </select>
+            </div>
+        </div>
+        <div id="main-zone">
+            <div id="sidebar-overlay"></div>
+            <div id="sidebar">
+                <h3>__I18N_LEGEND_TITLE__</h3>
+                <div id="legende-toolbar">
+                    <button class="btn-legende-toolbar" onclick="toutDeplierLegende()">__I18N_EXPAND_ALL__</button>
+                    <button class="btn-legende-toolbar" onclick="toutReplierLegende()">__I18N_COLLAPSE_ALL__</button>
+                </div>
+                <div id="legende-liste"></div>
+
+                <div id="filtre-panel">
+                    <h3>__I18N_FILTER_TITLE__</h3>
+                    <div class="filtre-row">
+                        <label>__I18N_FILTER_LAYER_LABEL__</label>
+                        <select id="filtre-couche" class="filtre-select" onchange="filtreChangerCouche()">
+                            <option value="">__I18N_FILTER_CHOOSE_LAYER__</option>
+                        </select>
+                    </div>
+                    <div class="filtre-row">
+                        <label>__I18N_FILTER_FIELD_LABEL__</label>
+                        <select id="filtre-champ" class="filtre-select" onchange="filtreChangerChamp()">
+                            <option value="">__I18N_FILTER_CHOOSE_FIELD__</option>
+                        </select>
+                    </div>
+                    <div class="filtre-row">
+                        <label>__I18N_FILTER_OPERATOR_LABEL__</label>
+                        <select id="filtre-operateur" class="filtre-select">
+                            <option value="eq">__I18N_OP_EQ__</option>
+                            <option value="neq">__I18N_OP_NEQ__</option>
+                            <option value="contains">__I18N_OP_CONTAINS__</option>
+                            <option value="starts">__I18N_OP_STARTS__</option>
+                            <option value="gt">__I18N_OP_GT__</option>
+                            <option value="lt">__I18N_OP_LT__</option>
+                            <option value="gte">__I18N_OP_GTE__</option>
+                            <option value="lte">__I18N_OP_LTE__</option>
+                        </select>
+                    </div>
+                    <div class="filtre-row">
+                        <label>__I18N_FILTER_VALUE_LABEL__</label>
+                        <input id="filtre-valeur" class="filtre-input" type="text"
+                               placeholder="__I18N_FILTER_VALUE_PLACEHOLDER__" oninput="filtreValeurInput()" />
+                        <div id="filtre-valeurs-liste" class="filtre-valeurs-liste" style="display:none;"></div>
+                    </div>
+                    <div class="filtre-btns">
+                        <button class="btn-filtre btn-appliquer" onclick="appliquerFiltre()">__I18N_APPLY__</button>
+                        <button class="btn-filtre btn-reset" onclick="reinitialiserFiltre()">__I18N_RESET__</button>
+                    </div>
+                    <div id="filtre-resultat"></div>
+                </div>
+            </div>
+            <div id="map">
+                __MOUSEPOS_HTML__
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
