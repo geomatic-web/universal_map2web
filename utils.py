@@ -48,6 +48,6 @@ def clean_filename(name):
 
 def get_geometry_type(layer):
     """Retourne le type de géométrie lisible d'une couche QGIS (ou 'Inconnu')."""
-    if layer.type() != QgsMapLayer.VectorLayer:
+    if layer.type() != QgsMapLayer.LayerType.VectorLayer:
         return "Inconnu"
     return QgsWkbTypes.geometryType(layer.wkbType())

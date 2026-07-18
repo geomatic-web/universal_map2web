@@ -4,6 +4,10 @@ labels.py — Extraction de la configuration d'étiquetage (labeling) QGIS d'une
 pour reproduire l'affichage des étiquettes côté Leaflet (tooltips permanents).
 """
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def extraire_etiquettes(layer):
     """
@@ -46,8 +50,8 @@ def extraire_etiquettes(layer):
             taille = text_format.size()
             if taille <= 0:
                 taille = 10
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("Impossible de lire le format du texte de l'étiquette : %s", exc)
 
         return {
             "champ": champ_label,

@@ -4,7 +4,11 @@ styles.py — Extraction des styles QGIS (couleur, épaisseur, opacité...) et
 conversion vers un format directement exploitable par Leaflet côté web.
 """
 
+import logging
+
 from qgis.core import QgsWkbTypes
+
+logger = logging.getLogger(__name__)
 
 MM_TO_PX = 3.78  # approximation mm -> px pour les épaisseurs/tailles QGIS
 
@@ -31,11 +35,11 @@ def extraire_style_symbole(symbol, geom_type):
     try:
         op = symbol.opacity()
         style["opacity"] = round(op, 2)
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.debug("Impossible de lire l'opacité du symbole : %s", exc)
 
     # ── POLYGONE ──
-    if geom_type == QgsWkbTypes.PolygonGeometry:
+    if geom_type == QgsWkbTypes.GeometryType.PolygonGeometry:
         if hasattr(sl, "fillColor") and sl.fillColor().isValid():
             c = sl.fillColor()
             style["fillColor"] = c.name()
@@ -50,26 +54,26 @@ def extraire_style_symbole(symbol, geom_type):
         if hasattr(sl, "strokeWidth"):
             try:
                 style["weight"] = max(sl.strokeWidth() * MM_TO_PX, 0.5)
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("Impossible de lire l'épaisseur du contour (polygone) : %s", exc)
 
     # ── LIGNE ──
-    elif geom_type == QgsWkbTypes.LineGeometry:
+    elif geom_type == QgsWkbTypes.GeometryType.LineGeometry:
         couleur_ligne = None
         if hasattr(sl, "color") and sl.color().isValid():
             couleur_ligne = sl.color()
         if not couleur_ligne or not couleur_ligne.isValid():
             try:
                 couleur_ligne = symbol.color()
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("Impossible de lire la couleur de secours de la ligne : %s", exc)
         if couleur_ligne and couleur_ligne.isValid():
             style["color"] = couleur_ligne.name()
         if hasattr(sl, "width"):
             try:
                 style["weight"] = max(sl.width() * MM_TO_PX, 1.0)
-            except Exception:
-                pass
+            except Exception as exc:
+                logger.debug("Impossible de lire la largeur de la ligne : %s", exc)
         style["fillOpacity"] = 0.0
 
     # ── POINT ──
@@ -82,8 +86,8 @@ def extraire_style_symbole(symbol, geom_type):
             style["color"] = sl.strokeColor().name()
         try:
             style["radius"] = max(sl.size() * MM_TO_PX / 2.0, 3)
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.debug("Impossible de lire la taille du point : %s", exc)
 
     return style
 
@@ -122,8 +126,8 @@ def construire_carte_styles_renderer(renderer, geom_type):
             if rules and rules[0].symbol():
                 style_defaut = extraire_style_symbole(rules[0].symbol(), geom_type)
 
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.debug("Impossible de construire la carte des styles depuis le renderer : %s", exc)
 
     if not style_defaut:
         style_defaut = dict(STYLE_PAR_DEFAUT)
@@ -159,6 +163,6 @@ def lookup_style(carte_styles, style_defaut, renderer, feature):
         elif "default" in carte_styles:
             return carte_styles["default"]
 
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.debug("Impossible de retrouver le style pour l'entité, style par défaut utilisé : %s", exc)
     return style_defaut

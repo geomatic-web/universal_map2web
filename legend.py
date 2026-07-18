@@ -27,7 +27,7 @@ def extraire_icones_symbologie(layer, nom_fichier_couche, styles_dir):
         styles_dir: dossier de sortie où écrire les images (créé si nécessaire).
     """
     icones_exportees = []
-    if layer.geometryType() == QgsWkbTypes.PolygonGeometry:
+    if layer.geometryType() == QgsWkbTypes.GeometryType.PolygonGeometry:
         return icones_exportees
 
     renderer = layer.renderer()

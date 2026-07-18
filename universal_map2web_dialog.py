@@ -240,7 +240,7 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
 
         layers = QgsProject.instance().mapLayers().values()
         for layer in layers:
-            if layer.type() == QgsMapLayer.VectorLayer:
+            if layer.type() == QgsMapLayer.LayerType.VectorLayer:
                 item_export = QListWidgetItem(layer.name())
                 item_export.setCheckState(Qt.CheckState.Checked)
                 item_export.setData(Qt.ItemDataRole.UserRole, layer.id())

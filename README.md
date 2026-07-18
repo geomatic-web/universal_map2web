@@ -6,7 +6,7 @@
 [![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/geomatic-web/universal_map2web)
 [![License](https://img.shields.io/badge/license-GPLv2-orange)](https://github.com/geomatic-web/universal_map2web)
 
-## English
+## En English
 
 ## About
 
@@ -41,7 +41,7 @@ https://youtu.be/V67q3jCYKow
 
 ## Exported Web Interface
 
-![alt text](webportail.png)
+![alt text](image-2.png)
 
 ## Installation
 
@@ -125,7 +125,7 @@ https://youtu.be/V67q3jCYKow
 
 ## Interface web exportée
 
-![alt text](webportail.png)
+![alt text](image-2.png)
 
 ## Installation
 

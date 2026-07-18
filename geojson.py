@@ -19,15 +19,17 @@ def layer_to_geojson(layer, popup_fields=None):
     """Convertit une couche vecteur QGIS en FeatureCollection GeoJSON (WGS84)."""
     features = []
     crs_dest = QgsCoordinateReferenceSystem("EPSG:4326")
-    transform = QgsCoordinateTransform(layer.crs(), crs_dest, QgsProject.instance())
+    transform = QgsCoordinateTransform(
+        layer.crs(), crs_dest, QgsProject.instance())
 
     renderer = layer.renderer()
     geom_type = layer.geometryType()
     attribut_classification = (
-        renderer.classAttribute() if hasattr(renderer, "classAttribute") else None
-    )
+        renderer.classAttribute() if hasattr(
+            renderer, "classAttribute") else None)
 
-    carte_styles, style_defaut = construire_carte_styles_renderer(renderer, geom_type)
+    carte_styles, style_defaut = construire_carte_styles_renderer(
+        renderer, geom_type)
 
     for feature in layer.getFeatures():
         geom = feature.geometry()
@@ -37,8 +39,8 @@ def layer_to_geojson(layer, popup_fields=None):
 
             props = {}
             champs_a_exporter = (
-                popup_fields if popup_fields else [f.name() for f in layer.fields()]
-            )
+                popup_fields if popup_fields else [
+                    f.name() for f in layer.fields()])
             for field_name in champs_a_exporter:
                 if layer.fields().indexOf(field_name) != -1:
                     val = feature[field_name]

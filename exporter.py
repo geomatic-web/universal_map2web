@@ -42,7 +42,7 @@ class Exporter:
             if item.checkState() == Qt.CheckState.Checked:
                 layer_id = item.data(Qt.ItemDataRole.UserRole)
                 layer = QgsProject.instance().mapLayer(layer_id)
-                if layer and layer.type() == QgsMapLayer.VectorLayer:
+                if layer and layer.type() == QgsMapLayer.LayerType.VectorLayer:
                     couches_a_exporter.append(layer)
 
         if not couches_a_exporter:
@@ -114,9 +114,9 @@ class Exporter:
                     "geom_type": get_geometry_type(layer),
                     "popup_fields": popup_fields,
                     "legend_style": legend_icons,
-                    "is_polygon": (layer.geometryType() == QgsWkbTypes.PolygonGeometry),
-                    "is_line": (layer.geometryType() == QgsWkbTypes.LineGeometry),
-                    "is_point": (layer.geometryType() == QgsWkbTypes.PointGeometry),
+                    "is_polygon": (layer.geometryType() == QgsWkbTypes.GeometryType.PolygonGeometry),
+                    "is_line": (layer.geometryType() == QgsWkbTypes.GeometryType.LineGeometry),
+                    "is_point": (layer.geometryType() == QgsWkbTypes.GeometryType.PointGeometry),
                     "etiquette": etiquette,
                     "attr_classif": attr_classif,
                 }
@@ -134,7 +134,7 @@ class Exporter:
             self.iface.messageBar().pushMessage(
                 self.tr("Success"),
                 message,
-                level=Qgis.Success,
+                level=Qgis.MessageLevel.Success,
                 duration=5,
             )
 
