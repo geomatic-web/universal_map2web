@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -53,7 +53,6 @@
       "license": "GPL v2"
     }
     </script>
-
     <style>
         * {
             margin: 0;
@@ -95,20 +94,6 @@
             border-radius: 20px;
             font-size: 0.9em;
             margin-top: 15px;
-        }
-        .youtube-btn {
-            display: inline-block;
-            background: #FF0000;
-            color: white;
-            padding: 12px 25px;
-            border-radius: 30px;
-            text-decoration: none;
-            font-weight: bold;
-            margin-top: 15px;
-            transition: background 0.3s;
-        }
-        .youtube-btn:hover {
-            background: #cc0000;
         }
         nav {
             background: white;
@@ -289,16 +274,12 @@
     <header>
         <div class="header-content">
             <div class="plugin-icon">
-                <img src="icon.png" alt="Icône Universal Map2web">
+                <img src="icon.png" alt="Universal Map2web">
             </div>
             <div class="header-text">
                 <h1>Universal Map2web</h1>
-                <p>Extension QGIS pour exporter des cartes web interactives avec Leaflet</p>
+                <p>QGIS plugin to export interactive Leaflet web maps</p>
                 <div class="badge">Version 1.0.0</div>
-                <br>
-                <a href="https://www.youtube.com/@cefogia" target="_blank" rel="noopener noreferrer" class="youtube-btn">
-                    🎥 Voir les tutoriels sur YouTube
-                </a>
             </div>
         </div>
     </header>
@@ -307,14 +288,13 @@
         <nav>
             <ul>
                 <li><a href="#installation">Installation</a></li>
-                <li><a href="#usage">Utilisation</a></li>
-                <li><a href="#tools">Outils &amp; Options</a></li>
-                <li><a href="#themes">Thèmes &amp; Personnalisation</a></li>
-                <li><a href="#filtering">Filtrage avancé</a></li>
-                <li><a href="#tips">Astuces</a></li>
-                <li><a href="#troubleshooting">Dépannage</a></li>
-                <li><a href="#requirements">Prérequis</a></li>
-                <li><a href="#auteur">Auteur</a></li>
+                <li><a href="#usage">Usage</a></li>
+                <li><a href="#tools">Tools &amp; Options</a></li>
+                <li><a href="#themes">Themes &amp; Customization</a></li>
+                <li><a href="#filtering">Advanced Filtering</a></li>
+                <li><a href="#tips">Tips</a></li>
+                <li><a href="#troubleshooting">Troubleshooting</a></li>
+                <li><a href="#requirements">Requirements</a></li>
                 <li><a href="#support">Support</a></li>
             </ul>
         </nav>
@@ -324,302 +304,284 @@
             <h2>Installation</h2>
             <div class="grid-2">
                 <div class="card">
-                    <h3>Depuis le dépôt QGIS</h3>
+                    <h3>From the QGIS plugin repository</h3>
                     <ol>
-                        <li>Ouvrez QGIS</li>
-                        <li>Menu <code>Extensions</code> → <code>Gérer et installer les extensions</code></li>
-                        <li>Recherchez <strong>"Universal Map2web"</strong></li>
-                        <li>Cliquez sur <strong>Installer</strong></li>
+                        <li>Open QGIS</li>
+                        <li>Menu <code>Plugins</code> → <code>Manage and Install Plugins</code></li>
+                        <li>Search for <strong>"Universal Map2web"</strong></li>
+                        <li>Click <strong>Install</strong></li>
                     </ol>
                 </div>
                 <div class="card">
-                    <h3>Depuis GitHub</h3>
+                    <h3>From GitHub</h3>
                     <ol>
-                        <li>Téléchargez le ZIP depuis
+                        <li>Download the ZIP from
                             <a href="https://github.com/geomatic-web/universal_map2web">GitHub</a>
                         </li>
-                        <li>QGIS → <code>Extensions</code> → <code>Installer à partir d'un ZIP</code></li>
-                        <li>Sélectionnez le fichier ZIP téléchargé</li>
-                        <li>Redémarrez QGIS si nécessaire</li>
+                        <li>QGIS → <code>Plugins</code> → <code>Install from ZIP</code></li>
+                        <li>Select the downloaded ZIP file</li>
+                        <li>Restart QGIS if prompted</li>
                     </ol>
                 </div>
             </div>
             <div class="note">
-                <strong>Nécessite QGIS 3.40 ou supérieur</strong> (compatible jusqu'à QGIS 4.x). L'interface du plugin
-                s'adapte automatiquement à la langue de votre QGIS (Français / Anglais).
+                <strong>Requires QGIS 3.40 or higher</strong> (compatible up to QGIS 4.x). The plugin interface
+                automatically follows the language of your QGIS installation (French / English).
             </div>
         </div>
 
-        <!-- ==================== UTILISATION ==================== -->
+        <!-- ==================== USAGE ==================== -->
         <div id="usage" class="section">
-            <h2>Utilisation</h2>
+            <h2>Usage</h2>
 
-            <h3>1. Lancer le plugin</h3>
-            <p>Cliquez sur l'icône <strong>Universal Map2web</strong> dans la barre d'outils de QGIS, ou ouvrez-le depuis le
-                menu <code>Web</code>.</p>
+            <h3>1. Launch the plugin</h3>
+            <p>Click on the <strong>Universal Map2web</strong> icon in the QGIS toolbar, or open it from the
+                <code>Web</code> menu.</p>
 
-            <h3>Onglet Général</h3>
+            <h3>General tab</h3>
             <ul>
-                <li>Choisissez la <strong>bibliothèque web</strong> utilisée pour afficher la carte (Leaflet)</li>
-                <li>Sélectionnez le <strong>fond de carte</strong> : OpenStreetMap, Google Satellite, ou une URL de tuile
-                    personnalisée (ex. <code>https://{s}.tile.example.com/{z}/{x}/{y}.png</code>)</li>
-                <li>Activez les <strong>outils</strong> que vous souhaitez intégrer dans la carte exportée (voir
-                    <a href="#tools">Outils &amp; Options</a>)</li>
+                <li>Choose the <strong>web library</strong> used to render the map (Leaflet)</li>
+                <li>Select the <strong>basemap</strong>: OpenStreetMap, Google Satellite, or a custom tile URL
+                    (e.g. <code>https://{s}.tile.example.com/{z}/{x}/{y}.png</code>)</li>
+                <li>Enable the <strong>tools</strong> you want embedded in the exported map (see
+                    <a href="#tools">Tools &amp; Options</a>)</li>
             </ul>
 
-            <h3>Onglet Personnalisation</h3>
+            <h3>Customization tab</h3>
             <ul>
-                <li>Définissez le <strong>titre de la carte</strong> affiché dans l'onglet du navigateur et l'en-tête</li>
-                <li>Ajoutez un <strong>logo</strong> facultatif affiché dans l'en-tête</li>
-                <li>Choisissez la <strong>couleur d'en-tête</strong></li>
-                <li>Sélectionnez l'un des quatre <strong>thèmes d'interface</strong> (voir
-                    <a href="#themes">Thèmes</a>)</li>
+                <li>Set the <strong>map title</strong> shown in the browser tab and header</li>
+                <li>Add an optional <strong>logo</strong> displayed in the header</li>
+                <li>Pick the <strong>header color</strong></li>
+                <li>Choose one of the four <strong>UI themes</strong> (see
+                    <a href="#themes">Themes</a>)</li>
             </ul>
 
-            <h3>Onglet Couches</h3>
+            <h3>Layers tab</h3>
             <ol>
-                <li>Cochez les <strong>couches</strong> à exporter (utilisez "Tout sélectionner" / "Tout désélectionner" / "Inverser"
-                    pour accélérer cette étape)</li>
-                <li>Pour chaque couche, configurez les <strong>champs attributaires</strong> qui apparaîtront dans la popup
-                    lorsqu'un objet est cliqué</li>
+                <li>Check the <strong>layers</strong> to export (use "Select all" / "Deselect all" / "Invert" to
+                    speed this up)</li>
+                <li>For each layer, configure which <strong>attribute fields</strong> appear in the popup when a
+                    feature is clicked</li>
             </ol>
 
-            <h3>Onglet Avancé</h3>
+            <h3>Advanced tab</h3>
             <ul>
-                <li><strong>Simplifier les géométries</strong> — réduit le nombre de sommets pour un chargement plus rapide</li>
-                <li><strong>Compresser les données JSON</strong> — fichiers GeoJSON de sortie plus petits</li>
-                <li><strong>Arrondir les coordonnées</strong> — réduit la précision décimale</li>
-                <li><strong>Exporter en ZIP</strong> — regroupe tout l'export dans une seule archive</li>
-                <li><strong>Ouvrir automatiquement dans le navigateur</strong> — démarre un serveur local et ouvre la carte
-                    une fois l'export terminé</li>
+                <li><strong>Simplify geometries</strong> — reduces vertex count for faster loading</li>
+                <li><strong>Compress JSON data</strong> — smaller GeoJSON output files</li>
+                <li><strong>Round coordinates</strong> — trims decimal precision</li>
+                <li><strong>Export as ZIP</strong> — packages the whole export in a single archive</li>
+                <li><strong>Open automatically in browser</strong> — starts a local server and opens the map
+                    once export finishes</li>
             </ul>
 
-            <h3>Onglet Wiki</h3>
-            <p>Documentation de référence intégrée, disponible en français ou en anglais selon la langue de votre QGIS.</p>
+            <h3>Wiki tab</h3>
+            <p>Built-in quick-reference documentation, available in French or English depending on your QGIS
+                language.</p>
 
-            <h3>Exportation</h3>
+            <h3>Exporting</h3>
             <ol>
-                <li>Une fois tout configuré, cliquez sur <strong>"OK"</strong></li>
-                <li>Choisissez le dossier de destination</li>
-                <li>La carte s'ouvre automatiquement dans votre navigateur par défaut (si activé)</li>
+                <li>Once everything is configured, click <strong>"OK"</strong></li>
+                <li>Choose the destination folder</li>
+                <li>The map opens automatically in your default browser (if enabled)</li>
             </ol>
         </div>
 
-        <!-- ==================== OUTILS & OPTIONS ==================== -->
+        <!-- ==================== TOOLS & OPTIONS ==================== -->
         <div id="tools" class="section">
-            <h2>Outils &amp; Options</h2>
-            <p>Chaque outil ci-dessous peut être activé ou désactivé indépendamment dans l'onglet <strong>Général</strong>
-                avant l'export.</p>
+            <h2>Tools &amp; Options</h2>
+            <p>Each tool below can be enabled or disabled independently in the <strong>General</strong> tab before
+                export.</p>
             <table>
-                <tr><th>Option</th><th>Effet sur la carte exportée</th></tr>
-                <tr><td>Recherche d'adresse</td><td>Ajoute une barre de recherche pour localiser une adresse sur la carte</td></tr>
-                <tr><td>Géolocalisation GPS</td><td>Ajoute un bouton pour centrer la carte sur la position actuelle du visiteur</td></tr>
-                <tr><td>Mesure (distance/surface)</td><td>Ajoute des outils interactifs de mesure de distance et de surface</td></tr>
-                <tr><td>Bouton d'impression</td><td>Ajoute un bouton qui déclenche la boîte de dialogue d'impression du navigateur pour la carte</td></tr>
-                <tr><td>Mode plein écran</td><td>Ajoute une commande pour agrandir la carte en plein écran</td></tr>
-                <tr><td>Vue d'ensemble (MiniMap)</td><td>Affiche une petite carte d'aperçu dans un coin de la carte principale</td></tr>
-                <tr><td>Barre d'échelle</td><td>Affiche une échelle graphique de distance (activée par défaut)</td></tr>
-                <tr><td>Position du curseur</td><td>Affiche la latitude/longitude en direct sous le pointeur de la souris</td></tr>
-                <tr><td>Attribution</td><td>Affiche les crédits de la carte/bibliothèque (activé par défaut)</td></tr>
-                <tr><td>Filtre avancé</td><td>Ajoute le panneau de filtrage attributaire — voir <a href="#filtering">Filtrage avancé</a></td></tr>
+                <tr><th>Option</th><th>Effect on the exported map</th></tr>
+                <tr><td>Address search</td><td>Adds a search bar to locate an address on the map</td></tr>
+                <tr><td>GPS geolocation</td><td>Adds a button to center the map on the visitor's current position</td></tr>
+                <tr><td>Measure (distance/area)</td><td>Adds interactive distance and area measurement tools</td></tr>
+                <tr><td>Print button</td><td>Adds a button that triggers the browser's print dialog for the map</td></tr>
+                <tr><td>Fullscreen mode</td><td>Adds a control to expand the map to fullscreen</td></tr>
+                <tr><td>Overview (MiniMap)</td><td>Displays a small overview map in a corner of the main map</td></tr>
+                <tr><td>Scale bar</td><td>Displays a graphic distance scale (enabled by default)</td></tr>
+                <tr><td>Cursor position</td><td>Displays live latitude/longitude under the mouse pointer</td></tr>
+                <tr><td>Attribution</td><td>Displays the map/library credits (enabled by default)</td></tr>
+                <tr><td>Advanced filter</td><td>Adds the attribute filtering panel — see <a href="#filtering">Advanced Filtering</a></td></tr>
             </table>
 
-            <h3>Gestion des couches sur la carte exportée</h3>
+            <h3>Layer management on the exported map</h3>
             <ul>
-                <li><strong>Afficher / masquer une couche</strong> : cochez ou décochez sa case dans le panneau de légende</li>
-                <li><strong>Regroupement des points</strong> : activez "Regrouper les points" par couche (couches de points uniquement)</li>
-                <li><strong>Légende</strong> : les couleurs et catégories sont générées automatiquement à partir de votre
-                    symbologie QGIS (les rendus Simple, Catégorisé, Gradué et Basé sur des règles sont tous pris en charge)</li>
-                <li><strong>Développer / Réduire tout</strong> : pliez ou dépliez rapidement chaque groupe de couches dans la légende</li>
+                <li><strong>Show / hide a layer</strong>: toggle its checkbox in the legend panel</li>
+                <li><strong>Point clustering</strong>: enable "Cluster points" per layer (point layers only)</li>
+                <li><strong>Legend</strong>: colors and categories are generated automatically from your QGIS
+                    symbology (Simple, Categorized, Graduated, and Rule-based renderers are all supported)</li>
+                <li><strong>Expand / Collapse all</strong>: quickly fold or unfold every layer group in the legend</li>
             </ul>
         </div>
 
-        <!-- ==================== THÈMES ==================== -->
+        <!-- ==================== THEMES ==================== -->
         <div id="themes" class="section">
-            <h2>Thèmes &amp; Personnalisation</h2>
+            <h2>Themes &amp; Customization</h2>
             <div class="grid-2">
                 <div class="card">
-                    <h3>Clair (Light)</h3>
-                    <p>Interface claire et épurée — idéale pour les captures d'écran et les présentations de jour.</p>
+                    <h3>Light</h3>
+                    <p>Clean, bright interface — best for printed screenshots and daytime presentations.</p>
                 </div>
                 <div class="card">
-                    <h3>Sombre (Dark)</h3>
-                    <p>Interface sombre à faible luminosité, bien adaptée aux fonds de carte satellite et aux longues sessions de visualisation.</p>
+                    <h3>Dark</h3>
+                    <p>Low-glare dark interface, well suited for satellite basemaps and long viewing sessions.</p>
                 </div>
                 <div class="card">
-                    <h3>Professionnel (Professional)</h3>
-                    <p>Style neutre et corporatif pour les rapports officiels et les cartes web institutionnelles.</p>
+                    <h3>Professional</h3>
+                    <p>Neutral, corporate look for official reports and institutional web maps.</p>
                 </div>
                 <div class="card">
-                    <h3>Coloré (Colorful)</h3>
-                    <p>Couleurs vives et accentuées, idéal pour les tableaux de bord cartographiques grand public ou promotionnels.</p>
+                    <h3>Colorful</h3>
+                    <p>Vibrant accent colors, ideal for public-facing or promotional map dashboards.</p>
                 </div>
             </div>
             <div class="tip">
-                <strong>Astuce :</strong> la couleur d'en-tête, le titre et le logo sont indépendants du thème, vous pouvez donc
-                mélanger l'identité de votre organisation avec l'un des quatre thèmes de base.
+                <strong>Tip:</strong> the header color, title, and logo are independent from the theme, so you can
+                mix your organization's branding with any of the four base themes.
             </div>
         </div>
 
-        <!-- ==================== FILTRAGE AVANCÉ ==================== -->
+        <!-- ==================== ADVANCED FILTERING ==================== -->
         <div id="filtering" class="section">
-            <h2>Filtrage avancé</h2>
-            <p>Lorsqu'il est activé, un panneau de filtrage apparaît dans la barre latérale de la carte exportée, permettant aux
-                visiteurs d'interroger les objets sans utiliser QGIS.</p>
-            <h3>Comment l'utiliser</h3>
+            <h2>Advanced Filtering</h2>
+            <p>When enabled, a filter panel appears in the exported map's sidebar, letting visitors query features
+                without touching QGIS.</p>
+            <h3>How to use it</h3>
             <ol>
-                <li>Sélectionnez une <strong>couche</strong></li>
-                <li>Sélectionnez un <strong>champ</strong></li>
-                <li>Sélectionnez un <strong>opérateur</strong></li>
-                <li>Saisissez ou cliquez sur une <strong>valeur</strong></li>
-                <li>Cliquez sur <strong>"Appliquer"</strong> — les objets correspondants sont mis en évidence sur la carte</li>
+                <li>Select a <strong>layer</strong></li>
+                <li>Select a <strong>field</strong></li>
+                <li>Select an <strong>operator</strong></li>
+                <li>Type or click a <strong>value</strong></li>
+                <li>Click <strong>"Apply"</strong> — matching features are highlighted on the map</li>
             </ol>
-            <h3>Opérateurs disponibles</h3>
+            <h3>Available operators</h3>
             <table>
-                <tr><th>Opérateur</th><th>Signification</th></tr>
-                <tr><td><code>=</code></td><td>égal à</td></tr>
-                <tr><td><code>≠</code></td><td>différent de</td></tr>
-                <tr><td><code>⊃</code></td><td>contient</td></tr>
-                <tr><td>commence par</td><td>le texte commence par la valeur donnée</td></tr>
-                <tr><td><code>&gt;</code></td><td>supérieur à</td></tr>
-                <tr><td><code>&lt;</code></td><td>inférieur à</td></tr>
-                <tr><td><code>≥</code></td><td>supérieur ou égal à</td></tr>
-                <tr><td><code>≤</code></td><td>inférieur ou égal à</td></tr>
+                <tr><th>Operator</th><th>Meaning</th></tr>
+                <tr><td><code>=</code></td><td>equal to</td></tr>
+                <tr><td><code>≠</code></td><td>different from</td></tr>
+                <tr><td><code>⊃</code></td><td>contains</td></tr>
+                <tr><td>starts with</td><td>text starts with the given value</td></tr>
+                <tr><td><code>&gt;</code></td><td>greater than</td></tr>
+                <tr><td><code>&lt;</code></td><td>less than</td></tr>
+                <tr><td><code>≥</code></td><td>greater than or equal to</td></tr>
+                <tr><td><code>≤</code></td><td>less than or equal to</td></tr>
             </table>
             <div class="success">
-                <strong>Réinitialiser :</strong> cliquez sur <strong>"Réinitialiser"</strong> à tout moment pour effacer le filtre et afficher à nouveau
-                tous les objets.
+                <strong>Reset:</strong> click <strong>"Reset"</strong> at any time to clear the filter and show all
+                features again.
             </div>
         </div>
 
-        <!-- ==================== ASTUCES ==================== -->
+        <!-- ==================== TIPS ==================== -->
         <div id="tips" class="section">
-            <h2>Astuces et bonnes pratiques</h2>
+            <h2>Tips and Best Practices</h2>
             <div class="grid-2">
                 <div class="card">
-                    <h3>Gardez-le léger</h3>
-                    <p>Limitez les exports à environ <strong>10 couches actives</strong> pour de meilleures performances
-                        dans le navigateur.</p>
+                    <h3>Keep it light</h3>
+                    <p>Limit exports to around <strong>10 active layers</strong> for the best browser
+                        performance.</p>
                 </div>
                 <div class="card">
-                    <h3>Taille des fichiers</h3>
-                    <p>Gardez chaque couche sous environ <strong>50 Mo</strong> ; activez "Simplifier les géométries" et
-                        "Compresser les données JSON" pour les grands jeux de données.</p>
+                    <h3>File size</h3>
+                    <p>Keep individual layers under roughly <strong>50 MB</strong>; enable "Simplify geometries" and
+                        "Compress JSON data" for large datasets.</p>
                 </div>
                 <div class="card">
-                    <h3>Système de coordonnées</h3>
-                    <p>Utilisez <strong>WGS84 (EPSG:4326)</strong> pour votre projet — les fonds de carte Leaflet attendent
-                        des coordonnées géographiques.</p>
+                    <h3>Coordinate system</h3>
+                    <p>Use <strong>WGS84 (EPSG:4326)</strong> for your project — Leaflet basemaps expect
+                        geographic coordinates.</p>
                 </div>
                 <div class="card">
-                    <h3>Prévisualiser d'abord</h3>
-                    <p>Vérifiez la symbologie et les étiquettes dans QGIS avant d'exporter — la carte web reflète le
-                        style actuel de votre projet.</p>
+                    <h3>Preview first</h3>
+                    <p>Check symbology and labels in QGIS before exporting — the web map mirrors your current
+                        project styling.</p>
                 </div>
                 <div class="card">
                     <h3>Popups</h3>
-                    <p>Sélectionnez uniquement les champs dont les visiteurs ont réellement besoin dans la configuration des popups — moins de champs
-                        signifie une popup plus légère et plus propre.</p>
+                    <p>Only select the fields visitors actually need in the popup configuration — fewer fields
+                        means a lighter, cleaner popup.</p>
                 </div>
                 <div class="card">
-                    <h3>Partager l'export</h3>
-                    <p>Utilisez "Exporter en ZIP" pour obtenir une archive unique que vous pouvez télécharger sur un serveur web
-                        ou envoyer à un collègue.</p>
+                    <h3>Sharing the export</h3>
+                    <p>Use "Export as ZIP" to get a single archive you can upload to a web server or send to a
+                        colleague.</p>
                 </div>
             </div>
         </div>
 
-        <!-- ==================== DÉPANNAGE ==================== -->
+        <!-- ==================== TROUBLESHOOTING ==================== -->
         <div id="troubleshooting" class="section">
-            <h2>Dépannage</h2>
+            <h2>Troubleshooting</h2>
 
-            <h3>La carte ne s'ouvre pas automatiquement après l'export</h3>
+            <h3>The map doesn't open automatically after export</h3>
             <div class="warning">
-                <strong>Symptôme :</strong> l'export se termine sans erreur, mais aucune fenêtre de navigateur n'apparaît.
+                <strong>Symptom:</strong> export finishes without error, but no browser window appears.
             </div>
             <div class="success">
-                <strong>Solutions :</strong>
+                <strong>Solutions:</strong>
                 <ul>
-                    <li>Assurez-vous que <strong>"Ouvrir automatiquement dans le navigateur"</strong> est coché dans l'onglet Avancé</li>
-                    <li>Vérifiez que votre pare-feu ou antivirus ne bloque pas le port local utilisé pour prévisualiser la
-                        carte</li>
-                    <li>Ouvrez <code>index.html</code> manuellement depuis le dossier d'export dans votre navigateur</li>
+                    <li>Make sure <strong>"Open automatically in browser"</strong> is checked in the Advanced tab</li>
+                    <li>Check that your firewall or antivirus isn't blocking the local port used to preview the
+                        map</li>
+                    <li>Open <code>index.html</code> manually from the export folder in your browser</li>
                 </ul>
             </div>
 
-            <h3>La légende ou certaines étiquettes restent dans la mauvaise langue</h3>
+            <h3>The legend or some labels stay in the wrong language</h3>
             <div class="success">
-                <strong>Solutions :</strong>
+                <strong>Solutions:</strong>
                 <ul>
-                    <li>Assurez-vous que la langue de l'interface de QGIS est définie comme vous le souhaitez dans
-                        <code>Paramètres</code> → <code>Options</code> → <code>Général</code></li>
-                    <li>Redémarrez QGIS après avoir changé la langue pour que le plugin recharge ses traductions</li>
+                    <li>Make sure QGIS's interface language is set the way you want under
+                        <code>Settings</code> → <code>Options</code> → <code>General</code></li>
+                    <li>Restart QGIS after changing the language so the plugin reloads its translations</li>
                 </ul>
             </div>
 
-            <h3>Une couche n'apparaît pas dans la carte exportée</h3>
+            <h3>A layer doesn't appear in the exported map</h3>
             <div class="success">
-                <strong>Solutions :</strong>
+                <strong>Solutions:</strong>
                 <ul>
-                    <li>Confirmez que la couche est cochée dans l'onglet <strong>Couches</strong> de la boîte de dialogue d'export</li>
-                    <li>Assurez-vous que la visibilité de la couche est activée dans le panneau Couches de QGIS</li>
-                    <li>Uniquement les couches vectorielles — les couches raster ne sont pas exportées vers Leaflet par ce plugin</li>
+                    <li>Confirm the layer is checked in the <strong>Layers</strong> tab of the export dialog</li>
+                    <li>Make sure the layer's visibility is turned on in the QGIS Layers panel</li>
+                    <li>Vector layers only — raster layers are not exported to Leaflet by this plugin</li>
                 </ul>
             </div>
 
-            <h3>Les couleurs ou catégories sur la carte web ne correspondent pas à QGIS</h3>
+            <h3>Colors or categories in the web map don't match QGIS</h3>
             <div class="success">
-                <strong>Solutions :</strong>
+                <strong>Solutions:</strong>
                 <ul>
-                    <li>Vérifiez que votre type de rendu (Simple, Catégorisé, Gradué, Basé sur des règles) est entièrement appliqué
-                        dans QGIS avant l'export</li>
-                    <li>Actualisez le panneau de symbologie de la couche dans QGIS, puis réexportez</li>
+                    <li>Re-check your renderer type (Simple, Categorized, Graduated, Rule-based) is fully applied
+                        in QGIS before exporting</li>
+                    <li>Refresh the layer's symbology panel in QGIS, then re-export</li>
                 </ul>
             </div>
 
             <div class="note">
-                <strong>Bon à savoir :</strong> la plupart des problèmes proviennent des autorisations du navigateur/pare-feu pour
-                le serveur de prévisualisation local, ou de l'état de visibilité/sélection d'une couche dans QGIS au moment de l'export.
+                <strong>Good to know:</strong> most issues come down to browser/firewall permissions for the local
+                preview server, or a layer's visibility/selection state in QGIS at export time.
             </div>
         </div>
 
-        <!-- ==================== PRÉREQUIS ==================== -->
+        <!-- ==================== REQUIREMENTS ==================== -->
         <div id="requirements" class="section">
-            <h2>Prérequis</h2>
+            <h2>Requirements</h2>
             <table>
-                <tr><th>Composant</th><th>Prérequis</th></tr>
-                <tr><td>QGIS</td><td>3.40 ou supérieur (jusqu'à 4.x)</td></tr>
-                <tr><td>Navigateur</td><td>Chrome 90+, Firefox 88+, Edge 90+</td></tr>
-                <tr><td>Mémoire</td><td>4 Go RAM minimum</td></tr>
-                <tr><td>Internet</td><td>Requis pour les fonds de carte et les bibliothèques web (Leaflet, plugins)</td></tr>
+                <tr><th>Component</th><th>Requirement</th></tr>
+                <tr><td>QGIS</td><td>3.40 or higher (up to 4.x)</td></tr>
+                <tr><td>Browser</td><td>Chrome 90+, Firefox 88+, Edge 90+</td></tr>
+                <tr><td>Memory</td><td>4 GB RAM minimum</td></tr>
+                <tr><td>Internet</td><td>Required for basemaps and web libraries (Leaflet, plugins)</td></tr>
             </table>
-        </div>
-
-        <!-- ==================== AUTEUR ==================== -->
-        <div id="auteur" class="section">
-            <h2>👨‍💻 À propos de l'auteur</h2>
-            <div class="card">
-                <h3>Jean-Baptiste KIBORA</h3>
-                <p><strong>Géomaticien</strong> - Expert en systèmes d'information géographique</p>
-                <p>Développeur de l'extension <strong>Universal Map2web</strong> pour QGIS.</p>
-                <p>
-                    📧 <a href="mailto:jeanbaptiste.kibora@tic.gov.bf">jeanbaptiste.kibora@tic.gov.bf</a><br>
-                    📱 +226 64 41 25 14 / +226 68 69 04 11
-                </p>
-                <p>
-                    🔗 <a href="https://geomatic-web.github.io/seformerengeomatique" target="_blank" rel="noopener noreferrer">Site web - se former en géomatique</a><br>
-                    🎥 <a href="https://www.youtube.com/@cefogia" target="_blank" rel="noopener noreferrer">Chaîne YouTube CEFOGIA</a><br>
-                    🐙 <a href="https://github.com/geomatic-web" target="_blank" rel="noopener noreferrer">GitHub - geomatic-web</a>
-                </p>
-            </div>
         </div>
 
         <!-- ==================== SUPPORT ==================== -->
         <div id="support" class="section">
-            <h2>Support et contact</h2>
+            <h2>Support and Contact</h2>
             <div class="grid-2">
                 <div class="card">
-                    <h3>📧 Email</h3>
+                    <h3>Email</h3>
                     <p><a href="mailto:jeanbaptiste.kibora@tic.gov.bf">jeanbaptiste.kibora@tic.gov.bf</a></p>
                 </div>
                 <div class="card">
@@ -627,31 +589,19 @@
                     <p><a href="https://github.com/geomatic-web/universal_map2web">github.com/geomatic-web/universal_map2web</a></p>
                 </div>
                 <div class="card">
-                    <h3>Signaler un bug</h3>
-                    <p><a href="https://github.com/geomatic-web/universal_map2web/issues">Ouvrir une issue</a></p>
+                    <h3>Report a bug</h3>
+                    <p><a href="https://github.com/geomatic-web/universal_map2web/issues">Open an issue</a></p>
                 </div>
                 <div class="card">
-                    <h3>YouTube</h3>
-                    <p><a href="https://www.youtube.com/@cefogia" target="_blank" rel="noopener noreferrer">Chaîne CEFOGIA</a></p>
-                </div>
-                <div class="card">
-                    <h3>Téléphone</h3>
+                    <h3>Phone</h3>
                     <p>+226 64 41 25 14</p>
                 </div>
             </div>
         </div>
 
         <footer>
-            <p>
-                © 2026 <strong>Jean-Baptiste KIBORA</strong> | 
-                <a href="https://github.com/geomatic-web/universal_map2web">Universal Map2web</a> - 
-                Sous licence GPL v2
-            </p>
-            <p>
-                Version 1.0.0 | 
-                <a href="https://www.youtube.com/@cefogia" target="_blank" rel="noopener noreferrer">▶️ Tutoriels YouTube</a> |
-                <a href="https://geomatic-web.github.io/seformerengeomatique" target="_blank" rel="noopener noreferrer">🌐 Se former en géomatique</a>
-            </p>
+            <p>© 2026 Jean-Baptiste KIBORA | Universal Map2web - Licensed under GPL v2</p>
+            <p>Version 1.1.0</p>
         </footer>
     </div>
 </body>
