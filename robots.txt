@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://geomatic-web.github.io/universal_map2web/sitemap.xml
