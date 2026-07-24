@@ -3,7 +3,7 @@
 **Export your QGIS layers to interactive web maps with Leaflet!**
 
 [![QGIS Plugin](https://img.shields.io/badge/QGIS-Plugin-brightgreen)](https://github.com/geomatic-web/universal-map2web)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/geomatic-web/universal_map2web)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue)](https://github.com/geomatic-web/universal_map2web)
 [![License](https://img.shields.io/badge/license-GPLv2-orange)](https://github.com/geomatic-web/universal_map2web)
 
 ## En English
