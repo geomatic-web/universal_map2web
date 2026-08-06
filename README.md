@@ -16,6 +16,11 @@ Universal Map2web is a QGIS plugin that exports your vector layers to interactiv
 
 https://youtu.be/V67q3jCYKow
 
+## Documentation
+
+Le manuel d'utilisation complet est disponible ici :
+[Télécharger le manuel Universal Map2web (PDF)](docs/Universal%20map2web%20User%20Manuel.pdf)
+
 ## Features
 
 - 1 **QGIS symbology preservation** (colors, widths, opacities, line styles)
