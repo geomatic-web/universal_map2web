@@ -3,7 +3,7 @@
 **Export your QGIS layers to interactive web maps with Leaflet!**
 
 [![QGIS Plugin](https://img.shields.io/badge/QGIS-Plugin-brightgreen)](https://github.com/geomatic-web/universal-map2web)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/geomatic-web/universal_map2web)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue)](https://github.com/geomatic-web/universal_map2web)
 [![License](https://img.shields.io/badge/license-GPLv2-orange)](https://github.com/geomatic-web/universal_map2web)
 
 ## En English
@@ -30,6 +30,20 @@ https://youtu.be/V67q3jCYKow
 - 10 **Built-in local server** (avoids CORS issues)
 - 11 **Export to PNG, PDF and CSV**
 - 12 **Multi-language support** (English/French)
+- 13 **Dynamic PostgreSQL/PostGIS mode**: layers already connected to a PostGIS database in QGIS can stay live on the exported web map instead of being frozen into a static GeoJSON file
+
+## Dynamic PostgreSQL mode
+
+For layers already connected to PostgreSQL/PostGIS in QGIS, you can enable **"Load PostGIS layers dynamically from PostgreSQL (instead of a static export)"** in the export dialog. When enabled:
+
+- The plugin reuses the connection already configured in QGIS (no credentials re-entered in the plugin)
+- A single `get_data.php` endpoint plus a protected `db_config.php` are generated in the export folder
+- A random API key is generated for each export to restrict access to the endpoint
+- `.htaccess` blocks direct access to `db_config.php`
+- The web map queries the database live (with optional bounding-box filtering), so it always reflects the current data instead of a snapshot taken at export time
+- Layers not connected to PostgreSQL, or when this option is left unchecked, are still exported as static GeoJSON as before
+
+**Requirement**: a PHP-capable web server with the `pdo_pgsql` extension is needed to host the exported site in this mode (a plain static file host is not enough).
 
 ## Interface
 
@@ -114,6 +128,21 @@ https://youtu.be/V67q3jCYKow
 - 9 **Logo et couleur d'en-tête personnalisables**
 - 10 **Serveur local intégré** (évite les problèmes CORS)
 - 11 **Export PNG, PDF et CSV**
+- 12 **Support multilingue** (Anglais/Français)
+- 13 **Mode PostgreSQL/PostGIS dynamique** : les couches déjà connectées à une base PostGIS dans QGIS peuvent rester en direct sur la carte web exportée, au lieu d'être figées dans un fichier GeoJSON statique
+
+## Mode PostgreSQL dynamique
+
+Pour les couches déjà connectées à PostgreSQL/PostGIS dans QGIS, vous pouvez activer **« Charger dynamiquement les couches PostGIS depuis PostgreSQL (au lieu d'un export figé) »** dans la boîte de dialogue d'export. Lorsque cette option est activée :
+
+- L'extension réutilise la connexion déjà configurée dans QGIS (aucun identifiant à ressaisir dans le plugin)
+- Un unique point d'accès `get_data.php` ainsi qu'un fichier `db_config.php` protégé sont générés dans le dossier d'export
+- Une clé API aléatoire est générée à chaque export pour restreindre l'accès à ce point d'accès
+- Le fichier `.htaccess` bloque l'accès direct à `db_config.php`
+- La carte web interroge la base de données en direct (avec un filtrage optionnel par emprise géographique), ce qui garantit des données toujours à jour plutôt qu'un instantané figé au moment de l'export
+- Les couches non connectées à PostgreSQL, ou lorsque cette option reste décochée, continuent d'être exportées en GeoJSON statique comme auparavant
+
+**Prérequis** : un serveur web compatible PHP avec l'extension `pdo_pgsql` est nécessaire pour héberger le site exporté dans ce mode (un simple hébergement de fichiers statiques ne suffit pas).
 
 ## Interface
 

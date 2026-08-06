@@ -7,6 +7,13 @@
             animation: spin 1s linear infinite; position: fixed;
             top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10000;
         }
+        .qgis-label {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            font-weight: bold;
+            padding: 0 !important;
+        }
         @keyframes spin {
             0%   { transform: translate(-50%, -50%) rotate(0deg); }
             100% { transform: translate(-50%, -50%) rotate(360deg); }
@@ -173,4 +180,17 @@
             #main-zone { display:block !important; width:100% !important; height:100% !important; }
             #map { position:absolute !important; top:0 !important; left:0 !important;
                 width:100vw !important; height:100vh !important; visibility:visible !important; }
+        }
+        .leaflet-tooltip.qgis-label {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            font-size: 11px !important;
+            /* Taille d'étiquette idéale sur le Web */
+            font-weight: 600;
+            line-height: 1.1;
+            padding: 0 !important;
+            white-space: nowrap;
+            pointer-events: none;
+            /* Empêche l'étiquette d'interférer avec les clics */
         }

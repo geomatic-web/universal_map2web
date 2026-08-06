@@ -69,11 +69,17 @@ class UniversalMap2web:
     def initGui(self):
         icon_path = os.path.join(self.plugin_dir, "icon.png")
         self.action = QAction(
-            (QtGui.QIcon(icon_path) if os.path.exists(icon_path) else QtGui.QIcon()),
+            (
+                QtGui.QIcon(icon_path)
+                if os.path.exists(icon_path)
+                else QtGui.QIcon()
+            ),
             self.tr("Create web map"),
             self.iface.mainWindow(),
         )
-        self.action.setWhatsThis(self.tr("Export the layers in interactive HTML map"))
+        self.action.setWhatsThis(
+            self.tr("Export the layers in interactive HTML map")
+        )
         self.action.triggered.connect(self.run)
         self.iface.addToolBarIcon(self.action)
         self.iface.addPluginToMenu(self.tr("&Universal Map2web"), self.action)
@@ -81,7 +87,9 @@ class UniversalMap2web:
     def unload(self):
         if self.action:
             self.iface.removeToolBarIcon(self.action)
-            self.iface.removePluginMenu(self.tr("&Universal Map2web"), self.action)
+            self.iface.removePluginMenu(
+                self.tr("&Universal Map2web"), self.action
+            )
 
     def run(self):
         self.dialog = UniversalMap2webDialog(self.iface.mainWindow())
@@ -122,4 +130,6 @@ class UniversalMap2web:
         self.dialog.txtFondPlanURL.setEnabled(checked)
 
     def exporter_courant(self):
+        if hasattr(self.dialog, "sauvegarder_champs_couche_actuelle"):
+            self.dialog.sauvegarder_champs_couche_actuelle()
         self.exporter.exporter(self.dialog)

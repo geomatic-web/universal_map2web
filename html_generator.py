@@ -15,9 +15,9 @@ from .web_i18n import get_strings
 TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), "templates")
 
 FOND_URLS = {
-    "🌍 OpenStreetMap": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    "🛰️ Google Satellite": "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
-    "🌐 Google Hybrid": "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}",
+    "OpenStreetMap": "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    "Google Satellite": "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+    "Google Hybrid": "https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}",
 }
 
 THEMES = {
@@ -92,22 +92,29 @@ def _lire_options(dialog):
 
 
 def _lire_logo_base64(dialog):
-    afficher_logo = dialog.chkAfficherLogo.isChecked()
-    logo_path = (
-        dialog.lblLogoPath.toolTip()
-        if (afficher_logo and dialog.lblLogoPath.toolTip() != "Aucun logo")
-        else None
-    )
-    if not logo_path or not os.path.exists(logo_path):
+    w_logo = getattr(dialog, "chkAfficherLogo", None)
+    w_path = getattr(dialog, "lblLogoPath", None)
+
+    if not w_logo or not w_logo.isChecked() or not w_path:
         return None
+
+    logo_path = w_path.toolTip()
+    if (
+        not logo_path
+        or logo_path in ("Aucun logo", "")
+        or not os.path.exists(logo_path)
+    ):
+        return None
+
     try:
         with open(logo_path, "rb") as f:
             ext = os.path.splitext(logo_path)[1][1:].lower()
             if ext in ("jpg", "jpeg"):
                 ext = "jpeg"
-            return f"data:image/{ext};base64,{
-                base64.b64encode(
-                    f.read()).decode('utf-8')}"
+            elif ext == "svg":
+                ext = "svg+xml"
+            encoded = base64.b64encode(f.read()).decode("utf-8")
+            return f"data:image/{ext};base64,{encoded}"
     except Exception:
         return None
 
@@ -115,12 +122,19 @@ def _lire_logo_base64(dialog):
 def generer_export(dialog, export_data, output_dir, locale=None):
     """Génère index.html, style.css et app.js dans output_dir à partir des templates
     statiques et des réglages du dialogue. `export_data` est le dict couche -> métadonnées
-    produit par l'export (fichier geojson, styles de légende, champs popup...).
-    `locale` ('fr' ou 'en') fixe la langue de la page HTML exportée ; si None (par
-    défaut), elle est automatiquement déduite de la langue actuelle de QGIS, exactement
-    comme pour l'interface du plugin lui-même."""
-    titre = dialog.txtTitreCarte.text()
-    couleur_entete = dialog.txtCouleurEntete.text() or "#1a1a2e"
+    produit par l'export (fichier geojson, styles de légende, champs popup, étiquettes...).
+    """
+
+    titre = (
+        dialog.txtTitreCarte.text()
+        if hasattr(dialog, "txtTitreCarte")
+        else "Ma Carte Web"
+    )
+    couleur_entete = (
+        dialog.txtCouleurEntete.text()
+        if hasattr(dialog, "txtCouleurEntete")
+        else None
+    ) or "#1a1a2e"
 
     s = get_strings(locale)
 
@@ -131,13 +145,21 @@ def generer_export(dialog, export_data, output_dir, locale=None):
         else ""
     )
 
-    fond_plan = dialog.comboFondPlan.currentText()
-    url_fond = FOND_URLS.get(fond_plan, FOND_URLS["🌍 OpenStreetMap"])
+    fond_plan = (
+        dialog.comboFondPlan.currentText()
+        if hasattr(dialog, "comboFondPlan")
+        else ""
+    )
+    # Nettoyage pour correspondance exacte (supprime les émojis s'ils existent dans la combo)
+    fond_cle = next((k for k in FOND_URLS if k in fond_plan), "OpenStreetMap")
+    url_fond = FOND_URLS.get(fond_cle, FOND_URLS["OpenStreetMap"])
 
+    theme_nom = "Sombre"
     if hasattr(dialog, "comboTheme"):
-        theme_nom = dialog.comboTheme.currentData() or dialog.comboTheme.currentText()
-    else:
-        theme_nom = "Sombre"
+        txt = dialog.comboTheme.currentText()
+        if txt in THEMES:
+            theme_nom = txt
+
     th = THEMES.get(theme_nom, THEMES["Sombre"])
 
     options = _lire_options(dialog)
@@ -152,7 +174,9 @@ def generer_export(dialog, export_data, output_dir, locale=None):
     )
 
     # ── index.html ──────────────────────────────────────────────
-    with open(os.path.join(TEMPLATES_DIR, "index.html"), "r", encoding="utf-8") as f:
+    with open(
+        os.path.join(TEMPLATES_DIR, "index.html"), "r", encoding="utf-8"
+    ) as f:
         index_html = f.read()
 
     remplacements = {
@@ -201,16 +225,18 @@ def generer_export(dialog, export_data, output_dir, locale=None):
     for marqueur, valeur in remplacements.items():
         index_html = index_html.replace(marqueur, valeur)
 
-    with open(os.path.join(output_dir, "index.html"), "w", encoding="utf-8") as f:
+    with open(
+        os.path.join(output_dir, "index.html"), "w", encoding="utf-8"
+    ) as f:
         f.write(index_html)
 
-    # ── style.css (statique, le thème passe par les variables CSS de index.html) ──
+    # ── style.css ──────────────────────────────────────────────
     shutil.copyfile(
         os.path.join(TEMPLATES_DIR, "style.css"),
         os.path.join(output_dir, "style.css"),
     )
 
-    # ── app.js (métadonnées des couches + outils optionnels + langue injectés) ──
+    # ── app.js ─────────────────────────────────────────────────
     render_app_js(
         export_data,
         url_fond,

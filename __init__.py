@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 __init__.py — Point de chargement standard d'un plugin QGIS.
-QGIS appelle classFactory(iface) pour instancier le plugin.
 """
 
 

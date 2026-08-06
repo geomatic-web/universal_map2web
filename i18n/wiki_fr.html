@@ -108,7 +108,7 @@
 <body>
 
     <h1>Universal Map2web</h1>
-    <p class="version"><strong>Version :</strong> 1.0.0 | <strong>QGIS :</strong> 3.16+</p>
+    <p class="version"><strong>Version :</strong> 1.2.0 | <strong>QGIS :</strong> 3.16+</p>
 
     <p>Extension QGIS pour exporter des couches vectorielles en <strong>cartes HTML interactives</strong> avec
         préservation de la symbologie QGIS.</p>
@@ -123,6 +123,7 @@
         <li>4 thèmes visuels : Clair, Sombre, Professionnel, Coloré</li>
         <li>Regroupement des points (clustering)</li>
         <li>Configuration des popups par couche</li>
+        <li>Mode PostgreSQL/PostGIS dynamique (données en direct au lieu d'un export figé)</li>
     </ul>
 
     <h2>Manuel rapide</h2>
@@ -134,6 +135,8 @@
     <ol>
         <li>Sélectionnez les <strong>couches</strong> à exporter (onglet Couches)</li>
         <li>Configurez les <strong>popups</strong> (champs à afficher au clic)</li>
+        <li>Activez éventuellement le <strong>mode PostgreSQL/PostGIS dynamique</strong> pour les couches connectées
+            à une base</li>
         <li>Choisissez le <strong>fond de plan</strong> et le <strong>thème</strong></li>
         <li>Personnalisez : <strong>titre</strong>, <strong>logo</strong>, <strong>couleur d'en-tête</strong></li>
         <li>Activez les <strong>outils</strong> souhaités</li>
@@ -167,7 +170,8 @@
 
     <h3>4. Filtrage avancé</h3>
     <p>Dans la barre latérale de la carte : sélectionnez <strong>couche</strong> → <strong>champ</strong> →
-        <strong>opérateur</strong> → saisissez la <strong>valeur</strong> → <strong>Appliquer</strong>.</p>
+        <strong>opérateur</strong> → saisissez la <strong>valeur</strong> → <strong>Appliquer</strong>.
+    </p>
     <p>Opérateurs disponibles : = ≠ contient commence par &gt; &lt; ≥ ≤</p>
 
     <h3>5. Gestion des couches sur la carte</h3>
@@ -176,6 +180,24 @@
         <li><strong>Clustering</strong> : activer "Regrouper les points" (couches ponctuelles)</li>
         <li><strong>Légende</strong> : affichage automatique des catégories et couleurs</li>
     </ul>
+
+    <h3>6. Mode PostgreSQL dynamique</h3>
+    <p>Pour les couches déjà connectées à PostgreSQL/PostGIS dans QGIS, activez <strong>« Charger dynamiquement les
+            couches PostGIS depuis PostgreSQL (au lieu d'un export figé) »</strong> dans la boîte de dialogue.</p>
+    <ul>
+        <li>La connexion QGIS existante est réutilisée : aucun identifiant à ressaisir dans le plugin</li>
+        <li>Un point d'accès protégé <strong>get_data.php</strong> et un fichier <strong>db_config.php</strong>
+            sont générés dans le dossier d'export, sécurisés par une <strong>clé API</strong> aléatoire et une
+            règle <strong>.htaccess</strong></li>
+        <li>La carte web interroge la base en direct (avec filtrage par emprise géographique) au lieu d'utiliser un
+            instantané GeoJSON figé</li>
+        <li>Les couches non cochées, ou non connectées à PostgreSQL, sont exportées en GeoJSON statique comme
+            d'habitude</li>
+    </ul>
+    <div class="note">
+        Nécessite un serveur web compatible PHP avec l'extension <strong>pdo_pgsql</strong> pour héberger le site
+        exporté — un simple hébergement de fichiers statiques ne suffit pas pour ce mode.
+    </div>
 
     <h2>Configuration requise</h2>
     <table>
@@ -220,7 +242,7 @@
 
     <hr>
     <p style="text-align: center; color: #7f8c8d; font-size: 11px;">
-        Universal Map2web v1.0.0 | © kibora B. Jean-Baptiste | Juillet 2026
+        Universal Map2web v1.2.0 | © kibora B. Jean-Baptiste | Juillet 2026
     </p>
 
 </body>

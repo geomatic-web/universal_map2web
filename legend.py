@@ -15,6 +15,10 @@ import os
 from qgis.core import QgsSymbolLayerUtils, QgsWkbTypes
 from qgis.PyQt.QtCore import QSize
 
+from .qt_compat import qenum
+
+from .styles import normaliser_valeur_classification
+
 
 def extraire_icones_symbologie(layer, nom_fichier_couche, styles_dir):
     """Génère des miniatures PNG pour la légende des points et lignes.
@@ -27,7 +31,9 @@ def extraire_icones_symbologie(layer, nom_fichier_couche, styles_dir):
         styles_dir: dossier de sortie où écrire les images (créé si nécessaire).
     """
     icones_exportees = []
-    if layer.geometryType() == QgsWkbTypes.GeometryType.PolygonGeometry:
+    if layer.geometryType() == qenum(
+        QgsWkbTypes, "GeometryType", "PolygonGeometry"
+    ):
         return icones_exportees
 
     renderer = layer.renderer()
@@ -50,7 +56,12 @@ def extraire_icones_symbologie(layer, nom_fichier_couche, styles_dir):
             if symbol:
                 icones_exportees.append(
                     {
-                        "valeur": str(cat.value()),
+                        # Normalisé de la même façon que dans styles.py, pour que la
+                        # correspondance valeur -> icône reste valide en mode PostgreSQL
+                        # (où la valeur revient typée nativement par PostgreSQL/JSON).
+                        "valeur": normaliser_valeur_classification(
+                            cat.value()
+                        ),
                         "label": label,
                         "img_path": _exporter_icone(symbol, str(idx)),
                     }
@@ -58,9 +69,13 @@ def extraire_icones_symbologie(layer, nom_fichier_couche, styles_dir):
 
     elif hasattr(renderer, "ranges") and len(renderer.ranges()) > 0:
         for idx, rang in enumerate(renderer.ranges()):
-            label = rang.label() if rang.label() else f"{
-                rang.lowerValue():.2f} – {
-                rang.upperValue():.2f}"
+            label = (
+                rang.label()
+                if rang.label()
+                else "{:.2f} \u2013 {:.2f}".format(
+                    rang.lowerValue(), rang.upperValue()
+                )
+            )
             symbol = rang.symbol()
             if symbol:
                 icones_exportees.append(

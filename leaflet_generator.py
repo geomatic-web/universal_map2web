@@ -48,7 +48,8 @@ _CLUSTER_JS = '\n    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/
 
 def build_extra_libs(options):
     """Construit les balises <link>/<script> CDN à insérer dans <head>, selon les
-    outils optionnels activés dans le dialogue (options est un dict de booléens)."""
+    outils optionnels activés dans le dialogue (options est un dict de booléens).
+    """
     extra_css = _CLUSTER_CSS
     extra_js = _CLUSTER_JS
     for cle, libs in _LIBS_CDN.items():
@@ -67,9 +68,7 @@ def build_outils_js(options, locale=None):
     outils_js = ""
 
     if options.get("attribution", True):
-        outils_js += (
-            "\n        map.attributionControl.setPrefix('Leaflet | Universal Map2web');"
-        )
+        outils_js += "\n        map.attributionControl.setPrefix('Leaflet | Universal Map2web');"
     else:
         outils_js += "\n        map.removeControl(map.attributionControl);"
 
@@ -141,11 +140,15 @@ def render_app_js(export_data, url_fond, options, output_path, locale=None):
     et écrit le résultat dans output_path. `locale` ('fr'/'en') détermine la langue
     de l'interface de la carte exportée ; si None, elle est déduite de la langue
     actuelle de QGIS."""
-    with open(os.path.join(TEMPLATES_DIR, "app.js"), "r", encoding="utf-8") as f:
+    with open(
+        os.path.join(TEMPLATES_DIR, "app.js"), "r", encoding="utf-8"
+    ) as f:
         contenu = f.read()
 
     meta_couches_json = json.dumps(export_data, ensure_ascii=False)
-    meta_couches_escaped = meta_couches_json.replace("\\", "\\\\").replace("'", "\\'")
+    meta_couches_escaped = meta_couches_json.replace("\\", "\\\\").replace(
+        "'", "\\'"
+    )
 
     s = get_strings(locale)
     i18n_json = json.dumps(s, ensure_ascii=False)

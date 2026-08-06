@@ -4,6 +4,7 @@ utils.py — Petits utilitaires génériques sans dépendance à l'interface QGI
 """
 
 from qgis.core import QgsMapLayer, QgsWkbTypes
+from .qt_compat import qenum
 
 # Caractères remplacés par "_" lors de la génération d'un nom de fichier sûr
 _CARACTERES_SPECIAUX = [
@@ -48,6 +49,6 @@ def clean_filename(name):
 
 def get_geometry_type(layer):
     """Retourne le type de géométrie lisible d'une couche QGIS (ou 'Inconnu')."""
-    if layer.type() != QgsMapLayer.LayerType.VectorLayer:
+    if layer.type() != qenum(QgsMapLayer, "LayerType", "VectorLayer"):
         return "Inconnu"
     return QgsWkbTypes.geometryType(layer.wkbType())

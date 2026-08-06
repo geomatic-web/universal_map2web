@@ -133,6 +133,14 @@
         <translation>Mouse position</translation>
     </message>
     <message>
+        <source>Move Up</source>
+        <translation>Move Up</translation>
+    </message>
+    <message>
+        <source>Move Down</source>
+        <translation>Move Down</translation>
+    </message>
+    <message>
         <source>Attribution</source>
         <translation>Attribution</translation>
     </message>
@@ -184,6 +192,26 @@
         <source>Google Hybrid</source>
         <translation>Google Hybrid</translation>
             </message>
+    <message>
+        <source>PostgreSQL data source</source>
+        <translation>PostgreSQL data source</translation>
+    </message>
+    <message>
+        <source>Dynamically load PostGIS layers from PostgreSQL (instead of a static export)</source>
+        <translation>Dynamically load PostGIS layers from PostgreSQL (instead of a static export)</translation>
+    </message>
+    <message>
+        <source>Requires a hosting environment with PHP and Apache active. Not compatible with a local export or fully static hosting (GitHub Pages, etc.). Only applies to layers already connected to PostGIS in QGIS.</source>
+        <translation>Requires a hosting environment with PHP and Apache active. Not compatible with a local export or fully static hosting (GitHub Pages, etc.). Only applies to layers already connected to PostGIS in QGIS.</translation>
+    </message>
+    <message>
+        <source>PostgreSQL mode</source>
+        <translation>PostgreSQL mode</translation>
+    </message>
+    <message>
+        <source>This export includes layers loaded dynamically from PostgreSQL. It requires a hosting environment with PHP and Apache active (with .htaccess support). It will NOT work when opened locally, on GitHub Pages, or any static hosting. Please deploy the exported folder to a PHP-capable server.</source>
+        <translation>This export includes layers loaded dynamically from PostgreSQL. It requires a hosting environment with PHP and Apache active (with .htaccess support). It will NOT work when opened locally, on GitHub Pages, or any static hosting. Please deploy the exported folder to a PHP-capable server.</translation>
+    </message>
     <message>
         <source>WIKI_HTML</source>
         <translation>

@@ -1,0 +1,16 @@
+# .htaccess — généré par Universal Map2web
+# Bloque l'accès direct au fichier de configuration PostgreSQL.
+# Note : ne fonctionne que sous Apache avec mod_authz_core/mod_access_compat actifs.
+# Sous Nginx ou hébergement 100% statique (GitHub Pages, Netlify...), ce mécanisme
+# est inopérant : le mode PostgreSQL dynamique n'est pas compatible avec ces cibles.
+
+<Files "db_config.php">
+    Require all denied
+</Files>
+
+<IfModule !mod_authz_core.c>
+    <Files "db_config.php">
+        Order allow,deny
+        Deny from all
+    </Files>
+</IfModule>

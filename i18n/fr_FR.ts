@@ -300,6 +300,14 @@
         <translation>1. Sélectionner une couche :</translation>
     </message>
     <message>
+        <source>Move Up</source>
+        <translation>Monter</translation>
+    </message>
+    <message>
+        <source>Move Down</source>
+        <translation>Descendre</translation>
+    </message>
+    <message>
         <source>2. Check fields to display:</source>
         <translation>2. Cocher les champs à afficher :</translation>
     </message>
@@ -330,6 +338,26 @@
     <message>
         <source>Open automatically in browser</source>
         <translation>Ouvrir automatiquement dans le navigateur</translation>
+    </message>
+    <message>
+        <source>PostgreSQL data source</source>
+        <translation>Source de données PostgreSQL</translation>
+    </message>
+    <message>
+        <source>Dynamically load PostGIS layers from PostgreSQL (instead of a static export)</source>
+        <translation>Charger dynamiquement les couches PostGIS depuis PostgreSQL (au lieu d'un export statique)</translation>
+    </message>
+    <message>
+        <source>Requires a hosting environment with PHP and Apache active. Not compatible with a local export or fully static hosting (GitHub Pages, etc.). Only applies to layers already connected to PostGIS in QGIS.</source>
+        <translation>Nécessite un environnement d'hébergement avec PHP et Apache actifs. Non compatible avec un export local ou un hébergement entièrement statique (GitHub Pages, etc.). S'applique uniquement aux couches déjà connectées à PostGIS dans QGIS.</translation>
+    </message>
+    <message>
+        <source>PostgreSQL mode</source>
+        <translation>Mode PostgreSQL</translation>
+    </message>
+    <message>
+        <source>This export includes layers loaded dynamically from PostgreSQL. It requires a hosting environment with PHP and Apache active (with .htaccess support). It will NOT work when opened locally, on GitHub Pages, or any static hosting. Please deploy the exported folder to a PHP-capable server.</source>
+        <translation>Cet export inclut des couches chargées dynamiquement depuis PostgreSQL. Il nécessite un environnement d'hébergement avec PHP et Apache actifs (avec support .htaccess). Il ne fonctionnera PAS s'il est ouvert localement, sur GitHub Pages, ou sur tout hébergement statique. Veuillez déployer le dossier exporté sur un serveur compatible PHP.</translation>
     </message>
     <message>
         <source>WIKI_HTML</source>

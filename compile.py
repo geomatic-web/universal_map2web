@@ -21,7 +21,9 @@ try:
     print("\n1. Compilation de l'interface utilisateur...")
 
     # Lire le fichier .ui
-    with open("universal_map2web_dialog_base.ui", "r", encoding="utf-8") as ui_file:
+    with open(
+        "universal_map2web_dialog_base.ui", "r", encoding="utf-8"
+    ) as ui_file:
         ui_content = ui_file.read()
 
     # Générer le code Python

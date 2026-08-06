@@ -108,7 +108,7 @@
 <body>
 
     <h1>Universal Map2web</h1>
-    <p class="version"><strong>Version:</strong> 1.0.0 | <strong>QGIS:</strong> 3.16+</p>
+    <p class="version"><strong>Version:</strong> 1.2.0 | <strong>QGIS:</strong> 3.16+</p>
 
     <p>QGIS plugin to export vector layers as <strong>interactive HTML maps</strong> with QGIS symbology preservation.
     </p>
@@ -123,6 +123,7 @@
         <li>4 visual themes: Light, Dark, Professional, Colorful</li>
         <li>Point clustering</li>
         <li>Per-layer popup configuration</li>
+        <li>Dynamic PostgreSQL/PostGIS mode (live data instead of a static export)</li>
     </ul>
 
     <h2>Quick guide</h2>
@@ -134,6 +135,7 @@
     <ol>
         <li>Select the <strong>layers</strong> to export (Layers tab)</li>
         <li>Configure <strong>popups</strong> (fields to display on click)</li>
+        <li>Optionally enable <strong>dynamic PostgreSQL/PostGIS mode</strong> for layers connected to a database</li>
         <li>Choose <strong>basemap</strong> and <strong>theme</strong></li>
         <li>Customize: <strong>title</strong>, <strong>logo</strong>, <strong>header color</strong></li>
         <li>Enable desired <strong>tools</strong></li>
@@ -167,7 +169,8 @@
 
     <h3>4. Advanced filtering</h3>
     <p>In the map sidebar: select <strong>layer</strong> → <strong>field</strong> → <strong>operator</strong> → enter
-        <strong>value</strong> → <strong>Apply</strong>.</p>
+        <strong>value</strong> → <strong>Apply</strong>.
+    </p>
     <p>Available operators: = ≠ contains starts with &gt; &lt; ≥ ≤</p>
 
     <h3>5. Layer management on map</h3>
@@ -176,6 +179,23 @@
         <li><strong>Clustering</strong>: enable "Cluster points" (point layers)</li>
         <li><strong>Legend</strong>: automatic display of categories and colors</li>
     </ul>
+
+    <h3>6. Dynamic PostgreSQL mode</h3>
+    <p>For layers already connected to PostgreSQL/PostGIS in QGIS, enable <strong>"Load PostGIS layers dynamically
+            from PostgreSQL (instead of a static export)"</strong> in the dialog.</p>
+    <ul>
+        <li>The existing QGIS connection is reused: no credentials are re-entered in the plugin</li>
+        <li>A protected <strong>get_data.php</strong> endpoint and <strong>db_config.php</strong> are generated in
+            the export folder, secured by a random <strong>API key</strong> and an <strong>.htaccess</strong> rule
+        </li>
+        <li>The web map queries the database live (with bounding-box filtering) instead of using a fixed GeoJSON
+            snapshot</li>
+        <li>Layers left unchecked, or not connected to PostgreSQL, are exported as static GeoJSON as usual</li>
+    </ul>
+    <div class="note">
+        Requires a PHP-capable web server with the <strong>pdo_pgsql</strong> extension to host the exported site
+        — a plain static file host is not enough for this mode.
+    </div>
 
     <h2>Requirements</h2>
     <table>
@@ -220,7 +240,7 @@
 
     <hr>
     <p style="text-align: center; color: #7f8c8d; font-size: 11px;">
-        Universal Map2web v1.0.0 | © kibora B. Jean-Baptiste | July 2026
+        Universal Map2web v1.2.0 | © kibora B. Jean-Baptiste | July 2026
     </p>
 
 </body>

@@ -2,9 +2,15 @@
 import os
 from qgis.PyQt import QtGui
 from qgis.PyQt.QtCore import Qt, QCoreApplication, QSettings
-from qgis.PyQt.QtWidgets import QDialog, QColorDialog, QFileDialog, QListWidgetItem
+from qgis.PyQt.QtWidgets import (
+    QDialog,
+    QColorDialog,
+    QFileDialog,
+    QListWidgetItem,
+)
 from qgis.core import QgsProject, QgsMapLayer
 from qgis.PyQt import uic
+from .qt_compat import qenum
 
 FORM_CLASS, _ = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), "universal_map2web_dialog_base.ui")
@@ -18,7 +24,7 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
         self.popup_config = {}
         self.derniere_couche_id = None
 
-        # ✅ Appliquer les traductions immédiatement
+        # Appliquer les traductions de l'interface immédiatement
         self.apply_translations()
 
         if hasattr(self, "btnChoisirLogo"):
@@ -31,6 +37,10 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
             self.btnDeselectAll.clicked.connect(self.tout_deselectionner)
         if hasattr(self, "btnInvertSelection"):
             self.btnInvertSelection.clicked.connect(self.inverser_selection)
+        if hasattr(self, "btnMoveUp"):
+            self.btnMoveUp.clicked.connect(self.monter_couche)
+        if hasattr(self, "btnMoveDown"):
+            self.btnMoveDown.clicked.connect(self.descendre_couche)
         if hasattr(self, "listCouchesPopup"):
             self.listCouchesPopup.currentItemChanged.connect(
                 self.changement_couche_popup
@@ -44,7 +54,7 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
 
     def apply_translations(self):
         """Applique les traductions à tous les éléments de l'interface"""
-        print("🌐 Application des traductions...")
+        print("Application des traductions...")
 
         # --- Onglets ---
         if hasattr(self, "tabWidget"):
@@ -109,9 +119,6 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
             self.btnChoisirCouleur.setText(self.tr("Choose a color"))
 
         # --- Thèmes ---
-        # On traduit le TEXTE affiché mais on fige la VALEUR réelle (clé de THEMES)
-        # dans les données de l'item, pour que html_generator.py puisse la relire
-        # sans dépendre de la langue de l'interface.
         if hasattr(self, "comboTheme"):
             self.comboTheme.setItemText(0, self.tr("Light"))
             self.comboTheme.setItemData(0, "Clair")
@@ -124,12 +131,17 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
 
         # --- Onglet Couches ---
         if hasattr(self, "groupSelectionCouches"):
-            self.groupSelectionCouches.setTitle(self.tr("Layer selection to export"))
+            self.groupSelectionCouches.setTitle(
+                self.tr("Layer selection to export")
+            )
         if hasattr(self, "groupPopupsConfiguration"):
             self.groupPopupsConfiguration.setTitle(
                 self.tr("Popup configuration per layer")
             )
-
+        if hasattr(self, "btnMoveUp"):
+            self.btnMoveUp.setText(self.tr("Move Up"))
+        if hasattr(self, "btnMoveDown"):
+            self.btnMoveDown.setText(self.tr("Move Down"))
         if hasattr(self, "btnSelectAll"):
             self.btnSelectAll.setText(self.tr("Select all"))
         if hasattr(self, "btnDeselectAll"):
@@ -157,7 +169,28 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
         if hasattr(self, "chkZip"):
             self.chkZip.setText(self.tr("Export as ZIP file"))
         if hasattr(self, "chkOuvrirNavigateur"):
-            self.chkOuvrirNavigateur.setText(self.tr("Open automatically in browser"))
+            self.chkOuvrirNavigateur.setText(
+                self.tr("Open automatically in browser")
+            )
+
+        if hasattr(self, "groupPostgres"):
+            self.groupPostgres.setTitle(self.tr("PostgreSQL data source"))
+        if hasattr(self, "chkPostgresDynamique"):
+            self.chkPostgresDynamique.setText(
+                self.tr(
+                    "Dynamically load PostGIS layers from PostgreSQL "
+                    "(instead of a static export)"
+                )
+            )
+        if hasattr(self, "lblPostgresAvertissement"):
+            self.lblPostgresAvertissement.setText(
+                self.tr(
+                    "Requires a hosting environment with PHP and Apache active. "
+                    "Not compatible with a local export or fully static hosting "
+                    "(GitHub Pages, etc.). Only applies to layers already "
+                    "connected to PostGIS in QGIS."
+                )
+            )
 
         # --- Fond de plan (combo) ---
         if hasattr(self, "comboFondPlan"):
@@ -166,9 +199,12 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
                 if "OpenStreetMap" in item or "OpenStreetMap" in self.tr(
                     "OpenStreetMap"
                 ):
-                    self.comboFondPlan.setItemText(i, f"🌍 {self.tr('OpenStreetMap')}")
-                elif "Google Satellite" in item or "Google Satellite" in self.tr(
-                    "Google Satellite"
+                    self.comboFondPlan.setItemText(
+                        i, f"🌍 {self.tr('OpenStreetMap')}"
+                    )
+                elif (
+                    "Google Satellite" in item
+                    or "Google Satellite" in self.tr("Google Satellite")
                 ):
                     self.comboFondPlan.setItemText(
                         i, f"🛰️ {self.tr('Google Satellite')}"
@@ -176,7 +212,9 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
                 elif "Google Hybrid" in item or "Google Hybrid" in self.tr(
                     "Google Hybrid"
                 ):
-                    self.comboFondPlan.setItemText(i, f"🌐 {self.tr('Google Hybrid')}")
+                    self.comboFondPlan.setItemText(
+                        i, f"🌐 {self.tr('Google Hybrid')}"
+                    )
 
         if hasattr(self, "chkFondPlanPersonnalise"):
             self.chkFondPlanPersonnalise.setText(self.tr("Custom URL"))
@@ -189,16 +227,18 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
         if hasattr(self, "buttonBox"):
             from qgis.PyQt.QtWidgets import QDialogButtonBox
 
-            ok_button = self.buttonBox.button(QDialogButtonBox.StandardButton.Ok)
+            ok_button = self.buttonBox.button(
+                qenum(QDialogButtonBox, "StandardButton", "Ok")
+            )
             if ok_button:
                 ok_button.setText(self.tr("OK"))
             cancel_button = self.buttonBox.button(
-                QDialogButtonBox.StandardButton.Cancel
+                qenum(QDialogButtonBox, "StandardButton", "Cancel")
             )
             if cancel_button:
                 cancel_button.setText(self.tr("Cancel"))
 
-        print("✅ Traductions appliquées")
+        print("Traductions appliquées")
 
     def load_wiki_content(self):
         """Charge le contenu du Wiki selon la langue"""
@@ -218,7 +258,7 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
             if os.path.exists(wiki_file):
                 with open(wiki_file, "r", encoding="utf-8") as f:
                     self.wikiTextEdit.setHtml(f.read())
-                print(f"✅ Wiki chargé depuis {wiki_file}")
+                print(f"Wiki chargé depuis {wiki_file}")
             else:
                 # Fallback : utiliser la traduction
                 wiki_html = self.tr("WIKI_HTML")
@@ -229,25 +269,31 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
                         "<h1>Universal Map2web</h1><p>Wiki non disponible.</p>"
                     )
         except Exception as e:
-            print(f"❌ Erreur chargement Wiki: {e}")
+            print(f"Erreur chargement Wiki: {e}")
             self.wikiTextEdit.setHtml(f"<h1>Erreur</h1><p>{str(e)}</p>")
 
     def charger_couches_qgis(self):
-        if not hasattr(self, "listCouches") or not hasattr(self, "listCouchesPopup"):
+        if not hasattr(self, "listCouches") or not hasattr(
+            self, "listCouchesPopup"
+        ):
             return
         self.listCouches.clear()
         self.listCouchesPopup.clear()
 
         layers = QgsProject.instance().mapLayers().values()
         for layer in layers:
-            if layer.type() == QgsMapLayer.LayerType.VectorLayer:
+            if layer.type() == qenum(QgsMapLayer, "LayerType", "VectorLayer"):
                 item_export = QListWidgetItem(layer.name())
-                item_export.setCheckState(Qt.CheckState.Checked)
-                item_export.setData(Qt.ItemDataRole.UserRole, layer.id())
+                item_export.setCheckState(qenum(Qt, "CheckState", "Checked"))
+                item_export.setData(
+                    qenum(Qt, "ItemDataRole", "UserRole"), layer.id()
+                )
                 self.listCouches.addItem(item_export)
 
                 item_popup = QListWidgetItem(layer.name())
-                item_popup.setData(Qt.ItemDataRole.UserRole, layer.id())
+                item_popup.setData(
+                    qenum(Qt, "ItemDataRole", "UserRole"), layer.id()
+                )
                 self.listCouchesPopup.addItem(item_popup)
 
                 self.popup_config[layer.id()] = [
@@ -260,7 +306,10 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
     # ── Onglet Personnalisation ──────────────────────────────
     def selectionner_logo(self):
         fichier, _ = QFileDialog.getOpenFileName(
-            self, self.tr("Choose a logo"), "", "Images (*.png *.jpg *.jpeg *.svg)"
+            self,
+            self.tr("Choose a logo"),
+            "",
+            "Images (*.png *.jpg *.jpeg *.svg)",
         )
         if fichier and hasattr(self, "lblLogoPath"):
             self.lblLogoPath.setText(os.path.basename(fichier))
@@ -283,13 +332,17 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
         if not hasattr(self, "listCouches"):
             return
         for i in range(self.listCouches.count()):
-            self.listCouches.item(i).setCheckState(Qt.CheckState.Checked)
+            self.listCouches.item(i).setCheckState(
+                qenum(Qt, "CheckState", "Checked")
+            )
 
     def tout_deselectionner(self):
         if not hasattr(self, "listCouches"):
             return
         for i in range(self.listCouches.count()):
-            self.listCouches.item(i).setCheckState(Qt.CheckState.Unchecked)
+            self.listCouches.item(i).setCheckState(
+                qenum(Qt, "CheckState", "Unchecked")
+            )
 
     def inverser_selection(self):
         if not hasattr(self, "listCouches"):
@@ -297,21 +350,46 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
         for i in range(self.listCouches.count()):
             item = self.listCouches.item(i)
             new_state = (
-                Qt.CheckState.Unchecked
-                if item.checkState() == Qt.CheckState.Checked
-                else Qt.CheckState.Checked
+                qenum(Qt, "CheckState", "Unchecked")
+                if item.checkState() == qenum(Qt, "CheckState", "Checked")
+                else qenum(Qt, "CheckState", "Checked")
             )
             item.setCheckState(new_state)
+
+    def monter_couche(self):
+        """Déplace la couche sélectionnée d'une position vers le haut."""
+        if not hasattr(self, "listCouches"):
+            return
+        row = self.listCouches.currentRow()
+        if row <= 0:
+            return
+        item = self.listCouches.takeItem(row)
+        self.listCouches.insertItem(row - 1, item)
+        self.listCouches.setCurrentRow(row - 1)
+
+    def descendre_couche(self):
+        """Déplace la couche sélectionnée d'une position vers le bas."""
+        if not hasattr(self, "listCouches"):
+            return
+        row = self.listCouches.currentRow()
+        if row < 0 or row >= self.listCouches.count() - 1:
+            return
+        item = self.listCouches.takeItem(row)
+        self.listCouches.insertItem(row + 1, item)
+        self.listCouches.setCurrentRow(row + 1)
 
     # ── Mémorisation des popups ──────────────────────────────
     def sauvegarder_champs_couche_actuelle(self):
         if not hasattr(self, "listChampsPopup"):
             return
-        if self.derniere_couche_id and self.derniere_couche_id in self.popup_config:
+        if (
+            self.derniere_couche_id
+            and self.derniere_couche_id in self.popup_config
+        ):
             champs_coches = []
             for i in range(self.listChampsPopup.count()):
                 item = self.listChampsPopup.item(i)
-                if item.checkState() == Qt.CheckState.Checked:
+                if item.checkState() == qenum(Qt, "CheckState", "Checked"):
                     champs_coches.append(item.text())
             self.popup_config[self.derniere_couche_id] = champs_coches
 
@@ -319,7 +397,9 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
         if not hasattr(self, "listChampsPopup"):
             return
         if previous_item:
-            previous_id = previous_item.data(Qt.ItemDataRole.UserRole)
+            previous_id = previous_item.data(
+                qenum(Qt, "ItemDataRole", "UserRole")
+            )
             self.derniere_couche_id = previous_id
             self.sauvegarder_champs_couche_actuelle()
 
@@ -327,7 +407,7 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
         if not current_item:
             return
 
-        layer_id = current_item.data(Qt.ItemDataRole.UserRole)
+        layer_id = current_item.data(qenum(Qt, "ItemDataRole", "UserRole"))
         self.derniere_couche_id = layer_id
         layer = QgsProject.instance().mapLayer(layer_id)
         if layer:
@@ -338,9 +418,9 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
                 field_name = field.name()
                 item_champ = QListWidgetItem(field_name)
                 item_champ.setCheckState(
-                    Qt.CheckState.Checked
+                    qenum(Qt, "CheckState", "Checked")
                     if field_name in champs_sauvegardes
-                    else Qt.CheckState.Unchecked
+                    else qenum(Qt, "CheckState", "Unchecked")
                 )
                 self.listChampsPopup.addItem(item_champ)
 
