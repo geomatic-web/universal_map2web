@@ -19,24 +19,29 @@ from .styles import (
 )
 
 
-def layer_to_geojson(layer, popup_fields=None):
-    """Convertit une couche vecteur QGIS en FeatureCollection GeoJSON (WGS84)."""
+def layer_to_geojson(
+    layer, popup_fields=None, nom_fichier_couche=None, styles_dir=None
+):
+    """Convertit une couche vecteur QGIS en FeatureCollection GeoJSON (WGS84).
+
+    `nom_fichier_couche`/`styles_dir` sont optionnels : s'ils sont fournis, les
+    motifs de remplissage polygone (hachures, grilles de points...) sont
+    exportés en tuiles PNG et rattachés aux styles (cf. styles.py).
+
+    Renvoie (feature_collection, a_des_motifs).
+    """
     features = []
     crs_dest = QgsCoordinateReferenceSystem("EPSG:4326")
-    transform = QgsCoordinateTransform(
-        layer.crs(), crs_dest, QgsProject.instance()
-    )
+    transform = QgsCoordinateTransform(layer.crs(), crs_dest, QgsProject.instance())
 
     renderer = layer.renderer()
     geom_type = layer.geometryType()
     attribut_classification = (
-        renderer.classAttribute()
-        if hasattr(renderer, "classAttribute")
-        else None
+        renderer.classAttribute() if hasattr(renderer, "classAttribute") else None
     )
 
-    carte_styles, style_defaut = construire_carte_styles_renderer(
-        renderer, geom_type
+    carte_styles, style_defaut, a_des_motifs = construire_carte_styles_renderer(
+        renderer, geom_type, nom_fichier_couche, styles_dir
     )
 
     for feature in layer.getFeatures():
@@ -47,9 +52,7 @@ def layer_to_geojson(layer, popup_fields=None):
 
             props = {}
             champs_a_exporter = (
-                popup_fields
-                if popup_fields
-                else [f.name() for f in layer.fields()]
+                popup_fields if popup_fields else [f.name() for f in layer.fields()]
             )
             for field_name in champs_a_exporter:
                 if layer.fields().indexOf(field_name) != -1:
@@ -57,9 +60,7 @@ def layer_to_geojson(layer, popup_fields=None):
                     props[field_name] = str(val) if val is not None else ""
 
             val_classe = (
-                normaliser_valeur_classification(
-                    feature[attribut_classification]
-                )
+                normaliser_valeur_classification(feature[attribut_classification])
                 if (
                     attribut_classification
                     and feature[attribut_classification] is not None
@@ -79,8 +80,9 @@ def layer_to_geojson(layer, popup_fields=None):
                 }
             )
 
-    return {
+    feature_collection = {
         "type": "FeatureCollection",
         "crs": {"type": "name", "properties": {"name": "EPSG:4326"}},
         "features": features,
     }
+    return feature_collection, a_des_motifs

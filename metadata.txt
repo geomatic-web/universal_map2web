@@ -3,7 +3,7 @@ name=Universal Map2web
 qgisMinimumVersion=3.0.0
 qgisMaximumVersion=4.99
 description=Export QGIS layers to interactive web maps with Leaflet
-version=1.2.0
+version=1.2.1
 author=Jean-baptiste Bazikité KIBORA
 email=jeanbaptiste.kibora@tic.gov.bf
 
@@ -14,7 +14,7 @@ repository=https://github.com/geomatic-web/universal_map2web
 license=GNU GPL v2
 
 hasProcessingProvider=no
-changelog=Version 1.2.0 : Dynamic PostgreSQL/PostGIS mode (live data via a secure PHP endpoint, API key, .htaccess protection), automatic style mapping for dynamic layers, per-layer popup field selection now reliably saved before export, bug fixes. Version 1.1.0 : Multi-language support (English/French), Language selection in the interface, QGIS interface translation, Exported web page translation, Dark theme by default, Translated Wiki, Bug fixes. Version 1.0.0 : First stable release, Leaflet export, QGIS symbology preservation, Customizable popups, Advanced filter, Point clustering, Integrated tools, Interface themes, Customizable logo.
+changelog=Version 1.2.1 : Persistent map layout configuration settings (logo, title, background color saved before export), full support for layer categorized symbology in the map legend. Version 1.2.0 : Dynamic PostgreSQL/PostGIS mode (live data via a secure PHP endpoint, API key, .htaccess protection), automatic style mapping for dynamic layers, per-layer popup field selection now reliably saved before export, bug fixes. Version 1.1.0 : Multi-language support (English/French), Language selection in the interface, QGIS interface translation, Exported web page translation, Dark theme by default, Translated Wiki, Bug fixes. Version 1.0.0 : First stable release, Leaflet export, QGIS symbology preservation, Customizable popups, Advanced filter, Point clustering, Integrated tools, Interface themes, Customizable logo.
 
 tags=web, map, export, leaflet, gis, cartography, interactive, qgis, symbology, multilingual, postgresql, postgis, database
 

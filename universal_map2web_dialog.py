@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
+import json
 import os
-from qgis.PyQt import QtGui
-from qgis.PyQt.QtCore import Qt, QCoreApplication, QSettings
+from qgis.core import QgsMapLayer, QgsProject
+from qgis.PyQt import QtGui, uic
+from qgis.PyQt.QtCore import QCoreApplication, QSettings, Qt
 from qgis.PyQt.QtWidgets import (
-    QDialog,
     QColorDialog,
+    QDialog,
     QFileDialog,
     QListWidgetItem,
 )
-from qgis.core import QgsProject, QgsMapLayer
-from qgis.PyQt import uic
+
 from .qt_compat import qenum
 
 FORM_CLASS, _ = uic.loadUiType(
@@ -18,6 +19,7 @@ FORM_CLASS, _ = uic.loadUiType(
 
 
 class UniversalMap2webDialog(QDialog, FORM_CLASS):
+
     def __init__(self, parent=None):
         super(UniversalMap2webDialog, self).__init__(parent)
         self.setupUi(self)
@@ -47,6 +49,9 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
             )
 
         self.charger_couches_qgis()
+
+        # Restoration de la configuration enregistrée dans le projet
+        self.restaurer_configuration_projet()
 
     def tr(self, text):
         """Traduit un texte"""
@@ -131,9 +136,7 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
 
         # --- Onglet Couches ---
         if hasattr(self, "groupSelectionCouches"):
-            self.groupSelectionCouches.setTitle(
-                self.tr("Layer selection to export")
-            )
+            self.groupSelectionCouches.setTitle(self.tr("Layer selection to export"))
         if hasattr(self, "groupPopupsConfiguration"):
             self.groupPopupsConfiguration.setTitle(
                 self.tr("Popup configuration per layer")
@@ -169,9 +172,7 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
         if hasattr(self, "chkZip"):
             self.chkZip.setText(self.tr("Export as ZIP file"))
         if hasattr(self, "chkOuvrirNavigateur"):
-            self.chkOuvrirNavigateur.setText(
-                self.tr("Open automatically in browser")
-            )
+            self.chkOuvrirNavigateur.setText(self.tr("Open automatically in browser"))
 
         if hasattr(self, "groupPostgres"):
             self.groupPostgres.setTitle(self.tr("PostgreSQL data source"))
@@ -199,12 +200,9 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
                 if "OpenStreetMap" in item or "OpenStreetMap" in self.tr(
                     "OpenStreetMap"
                 ):
-                    self.comboFondPlan.setItemText(
-                        i, f"🌍 {self.tr('OpenStreetMap')}"
-                    )
-                elif (
-                    "Google Satellite" in item
-                    or "Google Satellite" in self.tr("Google Satellite")
+                    self.comboFondPlan.setItemText(i, f"🌍 {self.tr('OpenStreetMap')}")
+                elif "Google Satellite" in item or "Google Satellite" in self.tr(
+                    "Google Satellite"
                 ):
                     self.comboFondPlan.setItemText(
                         i, f"🛰️ {self.tr('Google Satellite')}"
@@ -212,9 +210,7 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
                 elif "Google Hybrid" in item or "Google Hybrid" in self.tr(
                     "Google Hybrid"
                 ):
-                    self.comboFondPlan.setItemText(
-                        i, f"🌐 {self.tr('Google Hybrid')}"
-                    )
+                    self.comboFondPlan.setItemText(i, f"🌐 {self.tr('Google Hybrid')}")
 
         if hasattr(self, "chkFondPlanPersonnalise"):
             self.chkFondPlanPersonnalise.setText(self.tr("Custom URL"))
@@ -223,7 +219,7 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
         if hasattr(self, "wikiTextEdit"):
             self.load_wiki_content()
 
-        # --- Boutons OK / Cancel (CORRIGÉ) ---
+        # --- Boutons OK / Cancel ---
         if hasattr(self, "buttonBox"):
             from qgis.PyQt.QtWidgets import QDialogButtonBox
 
@@ -260,7 +256,6 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
                     self.wikiTextEdit.setHtml(f.read())
                 print(f"Wiki chargé depuis {wiki_file}")
             else:
-                # Fallback : utiliser la traduction
                 wiki_html = self.tr("WIKI_HTML")
                 if wiki_html and wiki_html != "WIKI_HTML":
                     self.wikiTextEdit.setHtml(wiki_html)
@@ -273,9 +268,7 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
             self.wikiTextEdit.setHtml(f"<h1>Erreur</h1><p>{str(e)}</p>")
 
     def charger_couches_qgis(self):
-        if not hasattr(self, "listCouches") or not hasattr(
-            self, "listCouchesPopup"
-        ):
+        if not hasattr(self, "listCouches") or not hasattr(self, "listCouchesPopup"):
             return
         self.listCouches.clear()
         self.listCouchesPopup.clear()
@@ -285,15 +278,11 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
             if layer.type() == qenum(QgsMapLayer, "LayerType", "VectorLayer"):
                 item_export = QListWidgetItem(layer.name())
                 item_export.setCheckState(qenum(Qt, "CheckState", "Checked"))
-                item_export.setData(
-                    qenum(Qt, "ItemDataRole", "UserRole"), layer.id()
-                )
+                item_export.setData(qenum(Qt, "ItemDataRole", "UserRole"), layer.id())
                 self.listCouches.addItem(item_export)
 
                 item_popup = QListWidgetItem(layer.name())
-                item_popup.setData(
-                    qenum(Qt, "ItemDataRole", "UserRole"), layer.id()
-                )
+                item_popup.setData(qenum(Qt, "ItemDataRole", "UserRole"), layer.id())
                 self.listCouchesPopup.addItem(item_popup)
 
                 self.popup_config[layer.id()] = [
@@ -302,6 +291,196 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
 
         if self.listCouchesPopup.count() > 0:
             self.listCouchesPopup.setCurrentRow(0)
+
+    # ── Sauvegarde et Restauration des paramètres de configuration ────────
+    def sauvegarder_configuration_projet(self):
+        """Sauvegarde toutes les options de la fenêtre dans le fichier de projet QGIS."""
+        project = QgsProject.instance()
+        sec = "UniversalMap2web"
+
+        # Personnalisation
+        if hasattr(self, "txtTitreCarte"):
+            project.writeEntry(sec, "txtTitreCarte", self.txtTitreCarte.text())
+        if hasattr(self, "lblLogoPath"):
+            project.writeEntry(sec, "logoPath", self.lblLogoPath.toolTip() or "")
+            project.writeEntry(sec, "logoText", self.lblLogoPath.text())
+        if hasattr(self, "chkAfficherLogo"):
+            project.writeEntry(sec, "chkAfficherLogo", self.chkAfficherLogo.isChecked())
+        if hasattr(self, "txtCouleurEntete"):
+            project.writeEntry(sec, "txtCouleurEntete", self.txtCouleurEntete.text())
+        if hasattr(self, "comboTheme"):
+            project.writeEntry(sec, "comboTheme", self.comboTheme.currentIndex())
+
+        # Fond de plan
+        if hasattr(self, "comboFondPlan"):
+            project.writeEntry(sec, "comboFondPlan", self.comboFondPlan.currentIndex())
+        if hasattr(self, "chkFondPlanPersonnalise"):
+            project.writeEntry(
+                sec,
+                "chkFondPlanPersonnalise",
+                self.chkFondPlanPersonnalise.isChecked(),
+            )
+        if hasattr(self, "txtFondPlanURL"):
+            project.writeEntry(sec, "txtFondPlanURL", self.txtFondPlanURL.text())
+
+        # Outils
+        chks = [
+            "chkRecherche",
+            "chkGeoloc",
+            "chkMesure",
+            "chkImprimer",
+            "chkPleinEcran",
+            "chkMiniMap",
+            "chkScale",
+            "chkMousePosition",
+            "chkAttribution",
+            "chkFiltreAvance",
+        ]
+        for chk in chks:
+            if hasattr(self, chk):
+                project.writeEntry(sec, chk, getattr(self, chk).isChecked())
+
+        # Options avancées
+        if hasattr(self, "chkSimplifier"):
+            project.writeEntry(sec, "chkSimplifier", self.chkSimplifier.isChecked())
+        if hasattr(self, "spinTolerance"):
+            project.writeEntry(sec, "spinTolerance", str(self.spinTolerance.value()))
+        if hasattr(self, "chkCompresser"):
+            project.writeEntry(sec, "chkCompresser", self.chkCompresser.isChecked())
+        if hasattr(self, "chkPrecision"):
+            project.writeEntry(sec, "chkPrecision", self.chkPrecision.isChecked())
+        if hasattr(self, "spinPrecision"):
+            project.writeEntry(sec, "spinPrecision", self.spinPrecision.value())
+        if hasattr(self, "chkPostgresDynamique"):
+            project.writeEntry(
+                sec, "chkPostgresDynamique", self.chkPostgresDynamique.isChecked()
+            )
+        if hasattr(self, "chkZip"):
+            project.writeEntry(sec, "chkZip", self.chkZip.isChecked())
+        if hasattr(self, "chkOuvrirNavigateur"):
+            project.writeEntry(
+                sec, "chkOuvrirNavigateur", self.chkOuvrirNavigateur.isChecked()
+            )
+
+        # Sauvegarde de la configuration des popups (JSON)
+        project.writeEntry(sec, "popup_config", json.dumps(self.popup_config))
+
+    def restaurer_configuration_projet(self):
+        """Restaure les options précédemment sauvegardées dans le projet QGIS."""
+        project = QgsProject.instance()
+        sec = "UniversalMap2web"
+
+        # Vérification si une configuration existe pour ce projet
+        valeur_test, ok = project.readEntry(sec, "txtTitreCarte", "")
+        if not ok:
+            return
+
+        # Personnalisation
+        if hasattr(self, "txtTitreCarte"):
+            val, _ = project.readEntry(sec, "txtTitreCarte", "")
+            if val:
+                self.txtTitreCarte.setText(val)
+
+        if hasattr(self, "lblLogoPath"):
+            path, _ = project.readEntry(sec, "logoPath", "")
+            text, _ = project.readEntry(sec, "logoText", self.tr("No logo"))
+            self.lblLogoPath.setText(text)
+            if path:
+                self.lblLogoPath.setToolTip(path)
+
+        if hasattr(self, "chkAfficherLogo"):
+            val, _ = project.readBoolEntry(sec, "chkAfficherLogo", True)
+            self.chkAfficherLogo.setChecked(val)
+
+        if hasattr(self, "txtCouleurEntete"):
+            val, _ = project.readEntry(sec, "txtCouleurEntete", "#1a1a2e")
+            self.txtCouleurEntete.setText(val)
+            if hasattr(self, "btnChoisirCouleur") and val:
+                self.btnChoisirCouleur.setStyleSheet(
+                    f"background-color: {val}; color: white;"
+                )
+
+        if hasattr(self, "comboTheme"):
+            val, _ = project.readNumEntry(sec, "comboTheme", 0)
+            if 0 <= val < self.comboTheme.count():
+                self.comboTheme.setCurrentIndex(val)
+
+        # Fond de plan
+        if hasattr(self, "comboFondPlan"):
+            val, _ = project.readNumEntry(sec, "comboFondPlan", 0)
+            if 0 <= val < self.comboFondPlan.count():
+                self.comboFondPlan.setCurrentIndex(val)
+
+        if hasattr(self, "chkFondPlanPersonnalise"):
+            val, _ = project.readBoolEntry(sec, "chkFondPlanPersonnalise", False)
+            self.chkFondPlanPersonnalise.setChecked(val)
+
+        if hasattr(self, "txtFondPlanURL"):
+            val, _ = project.readEntry(sec, "txtFondPlanURL", "")
+            self.txtFondPlanURL.setText(val)
+
+        # Outils
+        chks = [
+            "chkRecherche",
+            "chkGeoloc",
+            "chkMesure",
+            "chkImprimer",
+            "chkPleinEcran",
+            "chkMiniMap",
+            "chkScale",
+            "chkMousePosition",
+            "chkAttribution",
+            "chkFiltreAvance",
+        ]
+        for chk in chks:
+            if hasattr(self, chk):
+                val, _ = project.readBoolEntry(sec, chk, getattr(self, chk).isChecked())
+                getattr(self, chk).setChecked(val)
+
+        # Options avancées
+        if hasattr(self, "chkSimplifier"):
+            val, _ = project.readBoolEntry(sec, "chkSimplifier", False)
+            self.chkSimplifier.setChecked(val)
+
+        if hasattr(self, "spinTolerance"):
+            val, _ = project.readDoubleEntry(sec, "spinTolerance", 0.0)
+            self.spinTolerance.setValue(val)
+
+        if hasattr(self, "chkCompresser"):
+            val, _ = project.readBoolEntry(sec, "chkCompresser", False)
+            self.chkCompresser.setChecked(val)
+
+        if hasattr(self, "chkPrecision"):
+            val, _ = project.readBoolEntry(sec, "chkPrecision", False)
+            self.chkPrecision.setChecked(val)
+
+        if hasattr(self, "spinPrecision"):
+            val, _ = project.readNumEntry(sec, "spinPrecision", 6)
+            self.spinPrecision.setValue(val)
+
+        if hasattr(self, "chkPostgresDynamique"):
+            val, _ = project.readBoolEntry(sec, "chkPostgresDynamique", False)
+            self.chkPostgresDynamique.setChecked(val)
+
+        if hasattr(self, "chkZip"):
+            val, _ = project.readBoolEntry(sec, "chkZip", False)
+            self.chkZip.setChecked(val)
+
+        if hasattr(self, "chkOuvrirNavigateur"):
+            val, _ = project.readBoolEntry(sec, "chkOuvrirNavigateur", True)
+            self.chkOuvrirNavigateur.setChecked(val)
+
+        # Restauration de la configuration des Popups
+        popup_json, ok = project.readEntry(sec, "popup_config", "")
+        if ok and popup_json:
+            try:
+                self.popup_config = json.loads(popup_json)
+                # Recharger les cases à cocher si une couche est actuellement sélectionnée
+                current_item = self.listCouchesPopup.currentItem()
+                if current_item:
+                    self.changement_couche_popup(current_item, None)
+            except Exception as e:
+                print(f"Erreur chargement popups: {e}")
 
     # ── Onglet Personnalisation ──────────────────────────────
     def selectionner_logo(self):
@@ -332,17 +511,13 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
         if not hasattr(self, "listCouches"):
             return
         for i in range(self.listCouches.count()):
-            self.listCouches.item(i).setCheckState(
-                qenum(Qt, "CheckState", "Checked")
-            )
+            self.listCouches.item(i).setCheckState(qenum(Qt, "CheckState", "Checked"))
 
     def tout_deselectionner(self):
         if not hasattr(self, "listCouches"):
             return
         for i in range(self.listCouches.count()):
-            self.listCouches.item(i).setCheckState(
-                qenum(Qt, "CheckState", "Unchecked")
-            )
+            self.listCouches.item(i).setCheckState(qenum(Qt, "CheckState", "Unchecked"))
 
     def inverser_selection(self):
         if not hasattr(self, "listCouches"):
@@ -382,10 +557,7 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
     def sauvegarder_champs_couche_actuelle(self):
         if not hasattr(self, "listChampsPopup"):
             return
-        if (
-            self.derniere_couche_id
-            and self.derniere_couche_id in self.popup_config
-        ):
+        if self.derniere_couche_id and self.derniere_couche_id in self.popup_config:
             champs_coches = []
             for i in range(self.listChampsPopup.count()):
                 item = self.listChampsPopup.item(i)
@@ -397,9 +569,7 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
         if not hasattr(self, "listChampsPopup"):
             return
         if previous_item:
-            previous_id = previous_item.data(
-                qenum(Qt, "ItemDataRole", "UserRole")
-            )
+            previous_id = previous_item.data(qenum(Qt, "ItemDataRole", "UserRole"))
             self.derniere_couche_id = previous_id
             self.sauvegarder_champs_couche_actuelle()
 
@@ -426,4 +596,6 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
 
     def accept(self):
         self.sauvegarder_champs_couche_actuelle()
+        # Sauvegarder la configuration globale dans le fichier .qgz lors de la validation
+        self.sauvegarder_configuration_projet()
         super(UniversalMap2webDialog, self).accept()

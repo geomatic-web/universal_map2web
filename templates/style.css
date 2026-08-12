@@ -82,8 +82,13 @@
                               font-size: 12px; color: var(--text-muted); }
         .img-legend-icon { width: 16px; height: 16px; object-fit: contain; }
         .legend-poly-swatch {
-            display: inline-block; width: 14px; height: 14px; border-radius: 2px;
-            border: 2px solid #3388ff; background-color: rgba(51,136,255,0.2); flex-shrink: 0;
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border-radius: 2px;
+            border: 1px dashed #e67e22;
+            background-color: rgba(230, 126, 34, 0.2);
+            flex-shrink: 0;
         }
         .legend-line-swatch {
             display: inline-block; width: 22px; height: 3px;
@@ -152,8 +157,6 @@
             .logo-container img { max-height: 30px; max-width: 80px; }
             #fondSelector { padding: 5px 8px !important; font-size: 11px !important; }
 
-            /* La sidebar devient un tiroir flottant par-dessus la carte plutôt
-               que de partager l'espace horizontal avec elle. */
             #sidebar {
                 position: absolute; top: 0; left: 0; height: 100%;
                 width: 86vw; max-width: 340px; max-height: none;
@@ -161,8 +164,6 @@
                 box-shadow: 8px 0 30px rgba(0,0,0,0.5);
             }
             #sidebar.sidebar-open { transform: translateX(0); }
-            /* Sur mobile, sidebar-hidden ne doit pas réduire la largeur (cf. desktop) :
-               la fermeture se fait uniquement via la translation hors écran. */
             #sidebar.sidebar-hidden { width: 86vw; max-width: 340px; padding: 20px; }
 
             .filtre-btns { flex-direction: column; }
@@ -194,3 +195,98 @@
             pointer-events: none;
             /* Empêche l'étiquette d'interférer avec les clics */
         }
+
+/* Thème sombre : Si la page ou le body utilise un thème sombre, 
+   on passe les cartes de couches (.group-couche) en fond sombre */
+[data-theme="dark"] .group-couche,
+body.dark-theme .group-couche,
+body.dark-mode .group-couche {
+    background: #252a38 !important; /* Fond sombre ajusté */
+    border-color: #383e50 !important;
+}
+
+[data-theme="dark"] .item-couche-tit,
+body.dark-theme .item-couche-tit,
+body.dark-mode .item-couche-tit {
+    color: #ffffff !important; /* Titre de la couche en blanc */
+}
+
+[data-theme="dark"] .sous-legende-item,
+[data-theme="dark"] .cluster-toggle-row,
+body.dark-theme .sous-legende-item,
+body.dark-mode .sous-legende-item {
+    color: #cbd5e1 !important; /* Sous-catégories et textes secondaires en gris très clair */
+}
+
+
+.group-couche {
+    color: var(--text-main);
+}
+
+.item-couche-tit label {
+    color: inherit;
+}
+
+[data-theme="dark"] .group-couche,
+body.dark-theme .group-couche,
+body.dark-mode .group-couche {
+    background: #252a38 !important; /* Fond sombre ajusté */
+    border-color: #383e50 !important;
+}
+
+[data-theme="dark"] .item-couche-tit,
+body.dark-theme .item-couche-tit,
+body.dark-mode .item-couche-tit {
+    color: #ffffff !important; /* Titre de la couche en blanc */
+}
+
+[data-theme="dark"] .sous-legende-item,
+[data-theme="dark"] .cluster-toggle-row,
+body.dark-theme .sous-legende-item,
+body.dark-mode .sous-legende-item {
+    color: #cbd5e1 !important; /* Sous-catégories et textes secondaires en gris très clair */
+}
+
+
+.group-couche {
+    color: var(--text-main);
+}
+
+.item-couche-tit label {
+    color: inherit;
+}
+
+
+
+
+.group-couche {
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+}
+
+.item-couche-tit,
+.item-couche-tit label,
+.item-couche-tit-gauche {
+    color: #0f172a !important;
+    /* Noir / bleu nuit très foncé */
+}
+
+.sous-legende-item {
+    color: #334155 !important;
+}
+
+
+.cluster-toggle-row {
+    color: #475569 !important;
+}
+
+.btn-legende-toolbar {
+    color: #334155 !important;
+    background-color: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+}
+
+.btn-legende-toolbar:hover {
+    color: var(--accent) !important;
+    background-color: #f1f5f9 !important;
+}

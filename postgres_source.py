@@ -88,25 +88,17 @@ def generer_fichiers_postgres(output_dir, configs_par_couche, api_key):
     """Écrit db_config.php, .htaccess et get_data.php dans le dossier d'export.
     `configs_par_couche` est un dict {nom_fichier_couche: config_connexion}."""
 
-    with open(
-        os.path.join(output_dir, "db_config.php"), "w", encoding="utf-8"
-    ) as f:
+    with open(os.path.join(output_dir, "db_config.php"), "w", encoding="utf-8") as f:
         f.write(_construire_db_config_php(configs_par_couche, api_key))
 
-    with open(
-        os.path.join(TEMPLATES_DIR, "get_data.php"), "r", encoding="utf-8"
-    ) as f:
+    with open(os.path.join(TEMPLATES_DIR, "get_data.php"), "r", encoding="utf-8") as f:
         get_data_php = f.read()
-    with open(
-        os.path.join(output_dir, "get_data.php"), "w", encoding="utf-8"
-    ) as f:
+    with open(os.path.join(output_dir, "get_data.php"), "w", encoding="utf-8") as f:
         f.write(get_data_php)
 
     with open(
         os.path.join(TEMPLATES_DIR, "postgres.htaccess"), "r", encoding="utf-8"
     ) as f:
         htaccess = f.read()
-    with open(
-        os.path.join(output_dir, ".htaccess"), "w", encoding="utf-8"
-    ) as f:
+    with open(os.path.join(output_dir, ".htaccess"), "w", encoding="utf-8") as f:
         f.write(htaccess)

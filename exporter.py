@@ -87,9 +87,7 @@ class Exporter:
                 len(couches_a_exporter),
                 dialog,
             )
-            progress.setWindowModality(
-                qenum(Qt, "WindowModality", "WindowModal")
-            )
+            progress.setWindowModality(qenum(Qt, "WindowModality", "WindowModal"))
 
             postgres_dynamique = getattr(dialog, "chkPostgresDynamique", None)
             postgres_dynamique = (
@@ -124,34 +122,32 @@ class Exporter:
                     else None
                 )
 
-                couche_en_pg_dynamique = (
-                    postgres_dynamique and est_couche_postgres(layer)
+                couche_en_pg_dynamique = postgres_dynamique and est_couche_postgres(
+                    layer
                 )
 
                 if couche_en_pg_dynamique:
                     # Pas de dump GeoJSON : la page web ira chercher les données en
-                    # direct via get_data.php. On calcule uniquement la petite table
-                    # de correspondance valeur->style (issue du renderer QGIS) pour
-                    # que le JS puisse reproduire le style par entité côté
-                    # client.
-                    carte_styles, style_defaut = (
+                    # direct via get_data.php.
+                    carte_styles, style_defaut, a_des_motifs = (
                         construire_carte_styles_renderer(
-                            renderer, layer.geometryType()
+                            renderer,
+                            layer.geometryType(),
+                            nom_fichier,
+                            self.styles_dir,
                         )
                     )
-                    configs_postgres[nom_fichier] = extraire_config_postgres(
-                        layer
-                    )
+                    configs_postgres[nom_fichier] = extraire_config_postgres(layer)
                     # La clé API n'est connue qu'après la boucle (générée une seule
                     # fois pour tout l'export) : on la substitue ensuite.
                     reference_fichier = (
                         f"get_data.php?layer={nom_fichier}&key=__API_KEY__"
                     )
                 else:
-                    geojson_data = layer_to_geojson(layer, popup_fields)
-                    chemin_geojson = os.path.join(
-                        data_dir, f"{nom_fichier}.geojson"
+                    geojson_data, a_des_motifs = layer_to_geojson(
+                        layer, popup_fields, nom_fichier, self.styles_dir
                     )
+                    chemin_geojson = os.path.join(data_dir, f"{nom_fichier}.geojson")
                     with open(chemin_geojson, "w", encoding="utf-8") as f:
                         json.dump(geojson_data, f, indent=2)
                     reference_fichier = f"data/{nom_fichier}.geojson"
@@ -159,19 +155,16 @@ class Exporter:
 
                 self.export_data[layer.name()] = {
                     "fichier": reference_fichier,
-                    "source": (
-                        "postgres" if couche_en_pg_dynamique else "geojson"
-                    ),
+                    "source": ("postgres" if couche_en_pg_dynamique else "geojson"),
                     "style_map": carte_styles,
                     "style_defaut": style_defaut,
+                    "needs_svg": a_des_motifs,
                     "geom_type": get_geometry_type(layer),
                     "popup_fields": popup_fields,
                     "legend_style": legend_icons,
                     "is_polygon": (
                         layer.geometryType()
-                        == qenum(
-                            QgsWkbTypes, "GeometryType", "PolygonGeometry"
-                        )
+                        == qenum(QgsWkbTypes, "GeometryType", "PolygonGeometry")
                     ),
                     "is_line": (
                         layer.geometryType()
@@ -189,18 +182,14 @@ class Exporter:
 
             if configs_postgres:
                 api_key = generer_cle_api()
-                generer_fichiers_postgres(
-                    self.output_dir, configs_postgres, api_key
-                )
+                generer_fichiers_postgres(self.output_dir, configs_postgres, api_key)
                 for info in self.export_data.values():
                     if info.get("source") == "postgres":
                         info["fichier"] = info["fichier"].replace(
                             "__API_KEY__", api_key
                         )
 
-            html_generator.generer_export(
-                dialog, self.export_data, self.output_dir
-            )
+            html_generator.generer_export(dialog, self.export_data, self.output_dir)
 
             if configs_postgres:
                 QMessageBox.information(

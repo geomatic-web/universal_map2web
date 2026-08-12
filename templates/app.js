@@ -1,6 +1,56 @@
 var I18N = JSON.parse('__I18N_JSON__');
 var metaCouches = JSON.parse('__META_COUCHES_JSON__');
-var map = L.map('map', {zoomControl: true}).setView([0, 0], 2);
+// preferCanvas : rendu Canvas par défaut pour toutes les couches vectorielles
+var map = L.map('map', {zoomControl: true, preferCanvas: true}).setView([0, 0], 2);
+
+// Renderer SVG partagé pour les motifs de remplissage
+var svgRendererPartage = L.svg({padding: 0.5});
+
+// Cache des <pattern> SVG déjà créés
+var motifsSvgEnregistres = {};
+
+function idMotifValide(cheminImg) {
+    return 'motif-' + cheminImg.replace(/[^a-zA-Z0-9_-]/g, '_');
+}
+
+function assurerMotifSVG(motif) {
+    if (!motif || !motif.img) return null;
+    var id = idMotifValide(motif.img);
+    if (motifsSvgEnregistres[id]) return 'url(#' + id + ')';
+
+    if (!svgRendererPartage._container) {
+        svgRendererPartage.addTo(map);
+    }
+    var svgRoot = svgRendererPartage._container;
+    if (!svgRoot) return null;
+
+    var NS = 'http://www.w3.org/2000/svg';
+    var defs = svgRoot.querySelector('defs');
+    if (!defs) {
+        defs = document.createElementNS(NS, 'defs');
+        svgRoot.insertBefore(defs, svgRoot.firstChild);
+    }
+
+    var taille = motif.taille || 16;
+    var pattern = document.createElementNS(NS, 'pattern');
+    pattern.setAttribute('id', id);
+    pattern.setAttribute('patternUnits', 'userSpaceOnUse');
+    pattern.setAttribute('width', taille);
+    pattern.setAttribute('height', taille);
+
+    var image = document.createElementNS(NS, 'image');
+    image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', motif.img);
+    image.setAttribute('href', motif.img);
+    image.setAttribute('x', 0);
+    image.setAttribute('y', 0);
+    image.setAttribute('width', taille);
+    image.setAttribute('height', taille);
+    pattern.appendChild(image);
+
+    defs.appendChild(pattern);
+    motifsSvgEnregistres[id] = true;
+    return 'url(#' + id + ')';
+}
 
 var baseLayers = {
     "BASE": L.tileLayer("__URL_FOND__", {maxZoom: 20, crossOrigin: true}),
@@ -34,7 +84,7 @@ function resoudreStylePostgres(feature, info) {
     var carte = info.style_map || {};
     var styleDefaut = info.style_defaut || {
         color: '#3388ff', fillColor: '#3388ff', weight: 1,
-        opacity: 1, fillOpacity: 0.6, radius: 6
+        opacity: 1, fillOpacity: 0.6, radius: 8
     };
 
     var valBrute = null;
@@ -88,6 +138,34 @@ function resoudreStylePostgres(feature, info) {
     }
 }
 
+function appliquerStyleFeat(feature, styleInfo) {
+    if (!styleInfo) return {};
+
+    let styleApplicable = styleInfo;
+    if (styleInfo.style_map || styleInfo.__plages__) {
+        styleApplicable = resoudreStylePostgres(feature, styleInfo) || styleInfo.default;
+    }
+
+    if (styleApplicable && styleApplicable.motifs) {
+        assurerMotifSVG(styleApplicable.motifs);
+        return {
+            fillColor: 'url(#' + styleApplicable.motifs + ')',
+            fillOpacity: styleApplicable.fillOpacity || 0.8,
+            color: styleApplicable.color || '#333',
+            weight: styleApplicable.weight || 1,
+            renderer: svgRendererPartage
+        };
+    }
+
+    return {
+        fillColor: styleApplicable.fillColor || styleApplicable.color || '#3388ff',
+        fillOpacity: styleApplicable.fillOpacity !== undefined ? styleApplicable.fillOpacity : 0.5,
+        color: styleApplicable.color || '#3388ff',
+        weight: styleApplicable.weight || 2,
+        dashArray: styleApplicable.dashArray || null
+    };
+}
+
 // ── Utilitaires couleur ──────────────────────────────────────
 function hexToRgba(hex, alpha) {
     if (!hex || hex.length < 7) return 'rgba(51,136,255,0.2)';
@@ -105,24 +183,20 @@ function texteContrastant(hex) {
     return luminance > 0.6 ? '#1a1a2e' : '#ffffff';
 }
 
-// Applique la couleur, la taille et le tampon/halo CSS à l'étiquette Leaflet (taille ajustée)
 function appliquerStyleEtiquette(element, etiquetteInfo) {
     if (!element || !etiquetteInfo) return;
     
-    // Style de la police : réduit la taille par défaut à 8.5pt si elle est trop grande
     if (etiquetteInfo.couleur) element.style.color = etiquetteInfo.couleur;
     if (etiquetteInfo.taille) {
-        // Ex: réduction de 20% de la taille QGIS ou plafonnement pour un affichage Web propre
         var tailleWeb = Math.min(Math.max(parseInt(etiquetteInfo.taille) * 0.85, 8), 11);
         element.style.fontSize = tailleWeb + 'pt';
     } else {
         element.style.fontSize = '8.5pt';
     }
     
-    // Application du tampon (halo discret)
     if (etiquetteInfo.tampon_actif) {
         var c = etiquetteInfo.tampon_couleur || '#ffffff';
-        var t = Math.min(etiquetteInfo.tampon_taille || 1, 1.5); // Limite l'épaisseur du tampon à 1.5px
+        var t = Math.min(etiquetteInfo.tampon_taille || 1, 1.5);
         
         element.style.textShadow = 
             '-' + t + 'px -' + t + 'px 0 ' + c + ', ' +
@@ -136,7 +210,6 @@ function appliquerStyleEtiquette(element, etiquetteInfo) {
     }
 }
 
-// ── Fabrique d'icône de cluster colorée selon la couleur dominante du groupe ──
 function fabriqueIconeCluster(couleurBase) {
     return function(cluster) {
         var n = cluster.getChildCount();
@@ -153,16 +226,17 @@ function fabriqueIconeCluster(couleurBase) {
 }
 
 var couches_leaflet   = {};
-var couches_geolayers = {};   // layer GeoJSON brut (sans cluster), pour reset filtre
-var couches_cluster_color = {}; // couleur dominante utilisée pour chaque cluster de couche
+var couches_geolayers = {};
+var couches_cluster_color = {};
 var geoLayersData     = {};
 var promesses_chargement = [];
 var legendContainer = document.getElementById('legende-liste');
 
-// Construit un layer Leaflet (cluster ou direct) à partir d'un GeoJSON déjà chargé
 function construireLayer(nom, info, data, activerCluster) {
     var isPoint = !!info.is_point;
+    var isPolygon = !!info.is_polygon;
     var clusterGroup = null;
+    var overlaysMotifs = [];
 
     var couleurCluster = '#4ecdc4';
     if (data.features && data.features.length > 0) {
@@ -193,38 +267,70 @@ function construireLayer(nom, info, data, activerCluster) {
         });
     }
 
-    var geoLayer = L.geoJSON(data, {
+    var optionsGeoJSON = {
         pointToLayer: function(feature, latlng) {
             var st  = feature.properties._qgis_style || {};
             var val = feature.properties._qgis_class_val;
 
-            var matchImg = '';
-            if (info.legend_style) {
+            if ((!st.color && !st.fillColor && !st.icone && !st.icon_url && !st.img_path) && (info.style_map || info.__plages__)) {
+                st = resoudreStylePostgres(feature, info) || st;
+            }
+
+            var matchImg = st.icone || st.icon_url || st.img_path || '';
+
+            if (!matchImg && info.legend_style) {
                 info.legend_style.forEach(function(node) {
-                    if (node.label === val || node.valeur === val) matchImg = node.img_path;
+                    if (node.label === val || node.valeur === val) {
+                        matchImg = node.img_path || node.icon_url;
+                    }
                 });
-                if (!matchImg && info.legend_style.length > 0) matchImg = info.legend_style[0].img_path;
             }
 
             var marker;
             if (matchImg) {
-                marker = L.marker(latlng, { icon: L.icon({
-                    iconUrl: matchImg, iconSize: [20, 20],
-                    iconAnchor: [10, 10], popupAnchor: [0, -12]
-                }) });
+                // ───────────── RESOLUTION DYNAMIQUE TAILLE DE L'ICÔNE ─────────────
+                var iconW = 32, iconH = 32;
+                var anchorX = 16, anchorY = 32;
+
+                if (st.iconeProps && st.iconeProps.size) {
+                    iconW = st.iconeProps.size[0];
+                    iconH = st.iconeProps.size[1];
+                    if (st.iconeProps.anchor) {
+                        anchorX = st.iconeProps.anchor[0];
+                        anchorY = st.iconeProps.anchor[1];
+                    } else {
+                        anchorX = Math.round(iconW / 2);
+                        anchorY = iconH;
+                    }
+                } else if (st.iconSize) {
+                    iconW = st.iconSize[0]; iconH = st.iconSize[1];
+                    anchorX = Math.round(iconW / 2); anchorY = iconH;
+                } else if (st.size) {
+                    var sz = typeof st.size === 'number' ? st.size : 32;
+                    iconW = sz; iconH = sz;
+                    anchorX = Math.round(iconW / 2); anchorY = iconH;
+                }
+
+                marker = L.marker(latlng, { 
+                    icon: L.icon({
+                        iconUrl: matchImg, 
+                        iconSize: [iconW, iconH],
+                        iconAnchor: [anchorX, anchorY], 
+                        popupAnchor: [0, -anchorY]
+                    }) 
+                });
             } else {
                 marker = L.circleMarker(latlng, {
-                    radius:      st.radius      || 6,
+                    radius:      st.radius      || 8,
                     color:       st.color       || '#3388ff',
-                    fillColor:   st.fillColor   || '#3388ff',
-                    weight:      st.weight      != null ? st.weight      : 1,
+                    fillColor:   st.fillColor   || st.color || '#3388ff',
+                    weight:      st.weight      != null ? st.weight      : 1.5,
                     opacity:     st.opacity     != null ? st.opacity     : 1,
                     fillOpacity: st.fillOpacity != null ? st.fillOpacity : 0.85
                 });
             }
             marker.options.__qgisColor = st.fillColor || st.color || couleurCluster;
 
-            // Étiquette QGIS (points)
             if (info.etiquette && info.etiquette.champ && feature.properties[info.etiquette.champ] !== undefined) {
                 marker.bindTooltip(String(feature.properties[info.etiquette.champ]), {
                     permanent: true, 
@@ -246,6 +352,11 @@ function construireLayer(nom, info, data, activerCluster) {
 
         style: function(feature) {
             var s = (feature.properties && feature.properties._qgis_style) || {};
+
+            if ((!s.color && !s.fillColor) && (info.style_map || info.__plages__)) {
+                s = resoudreStylePostgres(feature, info) || s;
+            }
+
             return {
                 color:       s.color       || '#3388ff',
                 fillColor:   s.fillColor   || s.color || '#3388ff',
@@ -271,7 +382,6 @@ function construireLayer(nom, info, data, activerCluster) {
             content += '</table></div>';
             layer.bindPopup(content);
 
-            // Étiquette QGIS (lignes/polygones)
             if (info.etiquette && info.etiquette.champ && feature.properties[info.etiquette.champ] !== undefined && !isPoint) {
                 layer.bindTooltip(String(feature.properties[info.etiquette.champ]), {
                     permanent: true, 
@@ -286,7 +396,33 @@ function construireLayer(nom, info, data, activerCluster) {
                     }
                 });
             }
+
+            var stMotifs = (feature.properties && feature.properties._qgis_style) || {};
+            if (isPolygon && stMotifs.motifs && stMotifs.motifs.length && layer.getLatLngs) {
+                stMotifs.motifs.forEach(function(motif) {
+                    var refMotif = assurerMotifSVG(motif);
+                    if (!refMotif) return;
+                    var overlay = L.polygon(layer.getLatLngs(), {
+                        renderer: svgRendererPartage,
+                        fillColor: refMotif,
+                        fillOpacity: 1,
+                        stroke: false,
+                        interactive: false
+                    });
+                    overlaysMotifs.push(overlay);
+                });
+            }
         }
+    };
+
+    if (info.needs_svg) {
+        optionsGeoJSON.renderer = svgRendererPartage;
+    }
+
+    var geoLayer = L.geoJSON(data, optionsGeoJSON);
+
+    overlaysMotifs.forEach(function(overlay) {
+        geoLayer.addLayer(overlay);
     });
 
     var resultat;
@@ -299,6 +435,7 @@ function construireLayer(nom, info, data, activerCluster) {
     return { actif: resultat, brut: geoLayer };
 }
 
+// ── Rendu de la légende HTML ─────────────────────────────────
 Object.keys(metaCouches).forEach(function(nom) {
     var info = metaCouches[nom];
     var safeId = nom.replace(/[^a-zA-Z0-9]/g, '_');
@@ -316,16 +453,33 @@ Object.keys(metaCouches).forEach(function(nom) {
 
     var corps = groupDiv.querySelector('#corps_' + safeId);
 
+    // Style d'image sécurisé pour la légende (ne se fait plus rogner)
+    var imgStyleLegende = 'style="max-height:28px; max-width:28px; object-fit:contain; flex-shrink:0; vertical-align:middle; display:inline-block;"';
+
     if (info.is_polygon) {
-        corps.innerHTML += '<div class="sous-legende-item">'
-            + '<span class="legend-poly-swatch" id="poly_leg_' + safeId + '"></span>'
-            + '<span>' + nom + '</span></div>';
+        if (info.legend_style && info.legend_style.length > 0) {
+            info.legend_style.forEach(function(node) {
+                corps.innerHTML += '<div class="sous-legende-item">'
+                    + '<img class="img-legend-icon" src="' + node.img_path + '" ' + imgStyleLegende + ' />'
+                    + '<span>' + node.label + '</span></div>';
+            });
+        } else {
+            corps.innerHTML += '<div class="sous-legende-item">'
+                + '<span class="legend-poly-swatch" id="poly_leg_' + safeId + '"></span>'
+                + '<span>' + nom + '</span></div>';
+        }
     } else if (info.is_line) {
         if (info.legend_style && info.legend_style.length > 0) {
             info.legend_style.forEach(function(node, idx) {
-                corps.innerHTML += '<div class="sous-legende-item">'
-                    + '<span class="legend-line-swatch" id="line_leg_' + safeId + '_' + idx + '" data-default="' + idx + '"></span>'
-                    + '<span>' + node.label + '</span></div>';
+                if (node.img_path) {
+                    corps.innerHTML += '<div class="sous-legende-item">'
+                        + '<img class="img-legend-icon" src="' + node.img_path + '" ' + imgStyleLegende + ' />'
+                        + '<span>' + node.label + '</span></div>';
+                } else {
+                    corps.innerHTML += '<div class="sous-legende-item">'
+                        + '<span class="legend-line-swatch" id="line_leg_' + safeId + '_' + idx + '" data-default="' + idx + '"></span>'
+                        + '<span>' + node.label + '</span></div>';
+                }
             });
         } else {
             corps.innerHTML += '<div class="sous-legende-item">'
@@ -335,7 +489,7 @@ Object.keys(metaCouches).forEach(function(nom) {
     } else {
         (info.legend_style || []).forEach(function(node) {
             corps.innerHTML += '<div class="sous-legende-item">'
-                + '<img class="img-legend-icon" src="' + node.img_path + '" />'
+                + '<img class="img-legend-icon" src="' + node.img_path + '" ' + imgStyleLegende + ' />'
                 + '<span>' + node.label + '</span></div>';
         });
         corps.innerHTML += '<div class="cluster-toggle-row">'

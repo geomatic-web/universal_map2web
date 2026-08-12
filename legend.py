@@ -2,40 +2,21 @@
 """
 legend.py — Génération des miniatures PNG de légende (points et lignes catégorisés)
 à partir du renderer/symbologie QGIS d'une couche.
-
-NOTE DE CORRECTION : le fichier d'origine contenait un bloc de code dupliqué et
-orphelin (résidu d'un copier-coller) qui utilisait la variable `nom_fichier_couche`
-sans qu'elle ne soit jamais définie ni passée en paramètre, d'où les erreurs
-flake8 F821 "undefined name 'nom_fichier_couche'". Ce module ne conserve que la
-version correcte de la fonction, où le nom de fichier est bien reçu en paramètre.
 """
 
 import os
 
-from qgis.core import QgsSymbolLayerUtils, QgsWkbTypes
+from qgis.core import QgsSymbolLayerUtils
 from qgis.PyQt.QtCore import QSize
 
 from .qt_compat import qenum
 
-from .styles import normaliser_valeur_classification
+from .styles import normaliser_valeur_classification, taille_canevas_icone
 
 
 def extraire_icones_symbologie(layer, nom_fichier_couche, styles_dir):
-    """Génère des miniatures PNG pour la légende des points et lignes.
-
-    Args:
-        layer: la couche vecteur QGIS.
-        nom_fichier_couche: nom de fichier (déjà nettoyé) identifiant la couche,
-            utilisé pour préfixer les fichiers PNG générés et éviter les collisions
-            entre couches.
-        styles_dir: dossier de sortie où écrire les images (créé si nécessaire).
-    """
+    """Génère des miniatures PNG pour la légende des points et lignes."""
     icones_exportees = []
-    if layer.geometryType() == qenum(
-        QgsWkbTypes, "GeometryType", "PolygonGeometry"
-    ):
-        return icones_exportees
-
     renderer = layer.renderer()
     if not renderer:
         return icones_exportees
@@ -45,7 +26,10 @@ def extraire_icones_symbologie(layer, nom_fichier_couche, styles_dir):
     def _exporter_icone(symbol, suffixe):
         img_name = f"icon_{nom_fichier_couche}_{suffixe}.png"
         img_path = os.path.join(styles_dir, img_name)
-        pixmap = QgsSymbolLayerUtils.symbolPreviewPixmap(symbol, QSize(24, 24))
+        taille_px = taille_canevas_icone(symbol)
+        pixmap = QgsSymbolLayerUtils.symbolPreviewPixmap(
+            symbol, QSize(taille_px, taille_px)
+        )
         pixmap.save(img_path, "PNG")
         return f"styles_images/{img_name}"
 
@@ -56,12 +40,7 @@ def extraire_icones_symbologie(layer, nom_fichier_couche, styles_dir):
             if symbol:
                 icones_exportees.append(
                     {
-                        # Normalisé de la même façon que dans styles.py, pour que la
-                        # correspondance valeur -> icône reste valide en mode PostgreSQL
-                        # (où la valeur revient typée nativement par PostgreSQL/JSON).
-                        "valeur": normaliser_valeur_classification(
-                            cat.value()
-                        ),
+                        "valeur": normaliser_valeur_classification(cat.value()),
                         "label": label,
                         "img_path": _exporter_icone(symbol, str(idx)),
                     }
@@ -72,9 +51,7 @@ def extraire_icones_symbologie(layer, nom_fichier_couche, styles_dir):
             label = (
                 rang.label()
                 if rang.label()
-                else "{:.2f} \u2013 {:.2f}".format(
-                    rang.lowerValue(), rang.upperValue()
-                )
+                else "{:.2f} \u2013 {:.2f}".format(rang.lowerValue(), rang.upperValue())
             )
             symbol = rang.symbol()
             if symbol:

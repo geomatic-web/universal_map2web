@@ -131,9 +131,7 @@ def generer_export(dialog, export_data, output_dir, locale=None):
         else "Ma Carte Web"
     )
     couleur_entete = (
-        dialog.txtCouleurEntete.text()
-        if hasattr(dialog, "txtCouleurEntete")
-        else None
+        dialog.txtCouleurEntete.text() if hasattr(dialog, "txtCouleurEntete") else None
     ) or "#1a1a2e"
 
     s = get_strings(locale)
@@ -146,9 +144,7 @@ def generer_export(dialog, export_data, output_dir, locale=None):
     )
 
     fond_plan = (
-        dialog.comboFondPlan.currentText()
-        if hasattr(dialog, "comboFondPlan")
-        else ""
+        dialog.comboFondPlan.currentText() if hasattr(dialog, "comboFondPlan") else ""
     )
     # Nettoyage pour correspondance exacte (supprime les émojis s'ils existent dans la combo)
     fond_cle = next((k for k in FOND_URLS if k in fond_plan), "OpenStreetMap")
@@ -174,9 +170,7 @@ def generer_export(dialog, export_data, output_dir, locale=None):
     )
 
     # ── index.html ──────────────────────────────────────────────
-    with open(
-        os.path.join(TEMPLATES_DIR, "index.html"), "r", encoding="utf-8"
-    ) as f:
+    with open(os.path.join(TEMPLATES_DIR, "index.html"), "r", encoding="utf-8") as f:
         index_html = f.read()
 
     remplacements = {
@@ -225,9 +219,7 @@ def generer_export(dialog, export_data, output_dir, locale=None):
     for marqueur, valeur in remplacements.items():
         index_html = index_html.replace(marqueur, valeur)
 
-    with open(
-        os.path.join(output_dir, "index.html"), "w", encoding="utf-8"
-    ) as f:
+    with open(os.path.join(output_dir, "index.html"), "w", encoding="utf-8") as f:
         f.write(index_html)
 
     # ── style.css ──────────────────────────────────────────────

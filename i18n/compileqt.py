@@ -50,9 +50,7 @@ def compile_translations():
             if result.returncode == 0:
                 print(f"✅ Compilé : {file} → {os.path.basename(qm_path)}")
             else:
-                print(
-                    f"❌ Erreur lors de la compilation de {file}: {result.stderr}"
-                )
+                print(f"❌ Erreur lors de la compilation de {file}: {result.stderr}")
 
 
 if __name__ == "__main__":

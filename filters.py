@@ -28,8 +28,4 @@ OPERATEURS_FILTRE = [
 def get_filterable_fields(popup_fields):
     """Retourne les champs réellement proposables dans le filtre (exclut les champs
     techniques internes préfixés par '_qgis_' injectés dans le GeoJSON)."""
-    return [
-        champ
-        for champ in (popup_fields or [])
-        if not champ.startswith("_qgis_")
-    ]
+    return [champ for champ in (popup_fields or []) if not champ.startswith("_qgis_")]

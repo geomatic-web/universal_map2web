@@ -68,7 +68,9 @@ def build_outils_js(options, locale=None):
     outils_js = ""
 
     if options.get("attribution", True):
-        outils_js += "\n        map.attributionControl.setPrefix('Leaflet | Universal Map2web');"
+        outils_js += (
+            "\n        map.attributionControl.setPrefix('Leaflet | Universal Map2web');"
+        )
     else:
         outils_js += "\n        map.removeControl(map.attributionControl);"
 
@@ -115,7 +117,6 @@ def build_outils_js(options, locale=None):
 
     if options.get("imprimer"):
         # Bouton d'impression natif Leaflet.Control (pas de dépendance externe
-        # — fiable à 100%)
         outils_js += (
             "\n        var PrintControl = L.Control.extend({ options: { position: 'topleft' }, "
             "onAdd: function() { var c = L.DomUtil.create('div', 'leaflet-bar leaflet-control'); "
@@ -140,15 +141,11 @@ def render_app_js(export_data, url_fond, options, output_path, locale=None):
     et écrit le résultat dans output_path. `locale` ('fr'/'en') détermine la langue
     de l'interface de la carte exportée ; si None, elle est déduite de la langue
     actuelle de QGIS."""
-    with open(
-        os.path.join(TEMPLATES_DIR, "app.js"), "r", encoding="utf-8"
-    ) as f:
+    with open(os.path.join(TEMPLATES_DIR, "app.js"), "r", encoding="utf-8") as f:
         contenu = f.read()
 
     meta_couches_json = json.dumps(export_data, ensure_ascii=False)
-    meta_couches_escaped = meta_couches_json.replace("\\", "\\\\").replace(
-        "'", "\\'"
-    )
+    meta_couches_escaped = meta_couches_json.replace("\\", "\\\\").replace("'", "\\'")
 
     s = get_strings(locale)
     i18n_json = json.dumps(s, ensure_ascii=False)
