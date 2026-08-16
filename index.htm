@@ -6,8 +6,8 @@
 
     <!-- ============ MÉTADONNÉES SEO ============ -->
     <title>Universal Map2web - Extension QGIS pour cartes web interactives par Jean-Baptiste KIBORA</title>
-    <meta name="description" content="Extension QGIS Universal Map2web pour exporter des cartes web interactives avec Leaflet. Développée par Jean-Baptiste KIBORA. Tutoriels sur YouTube.">
-    <meta name="keywords" content="QGIS, carte web, Leaflet, export cartes, Universal Map2web, plugin QGIS, géomatique, Jean-Baptiste KIBORA, CEFOGIA">
+    <meta name="description" content="Extension QGIS Universal Map2web pour exporter des cartes web interactives avec Leaflet, avec mode PostgreSQL/PostGIS dynamique. Développée par Jean-Baptiste KIBORA. Tutoriels sur YouTube.">
+    <meta name="keywords" content="QGIS, carte web, Leaflet, export cartes, Universal Map2web, plugin QGIS, géomatique, PostgreSQL, PostGIS, données dynamiques, Jean-Baptiste KIBORA, CEFOGIA">
     <meta name="author" content="Jean-Baptiste KIBORA">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://github.com/geomatic-web/universal_map2web">
@@ -19,7 +19,7 @@
 
     <!-- Open Graph (réseaux sociaux) -->
     <meta property="og:title" content="Universal Map2web - Extension QGIS pour cartes web interactives">
-    <meta property="og:description" content="Extension QGIS pour exporter des cartes web interactives avec Leaflet. Par Jean-Baptiste KIBORA.">
+    <meta property="og:description" content="Extension QGIS pour exporter des cartes web interactives avec Leaflet, avec mode PostgreSQL/PostGIS dynamique. Par Jean-Baptiste KIBORA.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://github.com/geomatic-web/universal_map2web">
     <meta property="og:image" content="https://github.com/geomatic-web/universal_map2web/raw/main/icon.png">
@@ -36,9 +36,10 @@
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
       "name": "Universal Map2web",
-      "description": "Extension QGIS pour exporter des cartes web interactives avec Leaflet.",
+      "description": "Extension QGIS pour exporter des cartes web interactives avec Leaflet, avec mode PostgreSQL/PostGIS dynamique.",
       "applicationCategory": "Geospatial",
       "operatingSystem": "QGIS 3.40+",
+      "keywords": "QGIS, Leaflet, PostgreSQL, PostGIS, cartes web interactives",
       "author": {
         "@type": "Person",
         "name": "Jean-Baptiste KIBORA",
@@ -49,7 +50,7 @@
         ]
       },
       "url": "https://github.com/geomatic-web/universal_map2web",
-      "version": "1.0.0",
+      "version": "1.2.1",
       "license": "GPL v2"
     }
     </script>
@@ -292,6 +293,7 @@
                 <li><a href="#tools">Tools &amp; Options</a></li>
                 <li><a href="#themes">Themes &amp; Customization</a></li>
                 <li><a href="#filtering">Advanced Filtering</a></li>
+                <li><a href="#postgis">PostGIS Dynamic Mode</a></li>
                 <li><a href="#tips">Tips</a></li>
                 <li><a href="#troubleshooting">Troubleshooting</a></li>
                 <li><a href="#requirements">Requirements</a></li>
@@ -369,6 +371,9 @@
                 <li><strong>Simplify geometries</strong> — reduces vertex count for faster loading</li>
                 <li><strong>Compress JSON data</strong> — smaller GeoJSON output files</li>
                 <li><strong>Round coordinates</strong> — trims decimal precision</li>
+                <li><strong>Load PostGIS layers dynamically from PostgreSQL</strong> — keeps layers already
+                    connected to PostgreSQL/PostGIS in QGIS live on the exported map instead of freezing them
+                    into static GeoJSON (see <a href="#postgis">PostGIS Dynamic Mode</a>)</li>
                 <li><strong>Export as ZIP</strong> — packages the whole export in a single archive</li>
                 <li><strong>Open automatically in browser</strong> — starts a local server and opens the map
                     once export finishes</li>
@@ -473,6 +478,50 @@
             </div>
         </div>
 
+        <!-- ==================== POSTGIS DYNAMIC MODE ==================== -->
+        <div id="postgis" class="section">
+            <h2>PostGIS Dynamic Mode <span class="badge" style="margin-top:0;">New in 1.2.1</span></h2>
+            <p>For layers already connected to PostgreSQL/PostGIS in QGIS, Universal Map2web can now keep them
+                <strong>live</strong> on the exported web map instead of freezing them into a static GeoJSON
+                snapshot taken at export time.</p>
+
+            <h3>How to enable it</h3>
+            <ol>
+                <li>In the export dialog, check <strong>"Load PostGIS layers dynamically from PostgreSQL (instead
+                    of a static export)"</strong></li>
+                <li>The plugin automatically reuses the connection already configured in QGIS — no credentials
+                    need to be re-entered</li>
+                <li>Export as usual — layers not connected to PostgreSQL, or left unchecked, are still exported
+                    as static GeoJSON</li>
+            </ol>
+
+            <h3>What gets generated</h3>
+            <ul>
+                <li>A single <code>get_data.php</code> endpoint that serves live feature data to the web map</li>
+                <li>A protected <code>db_config.php</code> file holding the database connection details</li>
+                <li>A random <strong>API key</strong>, generated for each export, restricting access to the
+                    <code>get_data.php</code> endpoint</li>
+                <li>An <code>.htaccess</code> file that blocks direct access to <code>db_config.php</code></li>
+            </ul>
+
+            <h3>How it behaves</h3>
+            <p>The web map queries the database live, with optional bounding-box filtering, so visitors always
+                see current data instead of a snapshot frozen at export time. Layers left in static mode continue
+                to work exactly as before.</p>
+
+            <div class="warning">
+                <strong>Requirement:</strong> hosting the exported site in this mode requires a
+                <strong>PHP-capable web server</strong> with the <code>pdo_pgsql</code> extension enabled. A plain
+                static file host (e.g. GitHub Pages, a basic file share) is <strong>not enough</strong> for
+                dynamic layers — use static GeoJSON export instead in that case.
+            </div>
+            <div class="note">
+                <strong>Security tip:</strong> keep the generated <code>db_config.php</code> and
+                <code>.htaccess</code> files in place and unmodified — they are what prevents direct, unauthenticated
+                access to your database credentials and query endpoint.
+            </div>
+        </div>
+
         <!-- ==================== TIPS ==================== -->
         <div id="tips" class="section">
             <h2>Tips and Best Practices</h2>
@@ -558,6 +607,23 @@
                 </ul>
             </div>
 
+            <h3>PostGIS layers show no data once hosted online</h3>
+            <div class="warning">
+                <strong>Symptom:</strong> the map works locally but dynamic layers stay empty once deployed to a
+                web server.
+            </div>
+            <div class="success">
+                <strong>Solutions:</strong>
+                <ul>
+                    <li>Confirm the host is a <strong>PHP server with the <code>pdo_pgsql</code> extension</strong>
+                        enabled — a static-only host cannot run <code>get_data.php</code></li>
+                    <li>Make sure <code>db_config.php</code> and <code>.htaccess</code> were uploaded alongside
+                        the rest of the export, unmodified</li>
+                    <li>Check that the PostgreSQL server accepts remote connections from your web host, and that
+                        its firewall allows the connection</li>
+                </ul>
+            </div>
+
             <div class="note">
                 <strong>Good to know:</strong> most issues come down to browser/firewall permissions for the local
                 preview server, or a layer's visibility/selection state in QGIS at export time.
@@ -573,6 +639,7 @@
                 <tr><td>Browser</td><td>Chrome 90+, Firefox 88+, Edge 90+</td></tr>
                 <tr><td>Memory</td><td>4 GB RAM minimum</td></tr>
                 <tr><td>Internet</td><td>Required for basemaps and web libraries (Leaflet, plugins)</td></tr>
+                <tr><td>Hosting (PostGIS dynamic mode only)</td><td>PHP-capable web server with the <code>pdo_pgsql</code> extension enabled</td></tr>
             </table>
         </div>
 
