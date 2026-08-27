@@ -118,7 +118,10 @@ Universal Map2web est une extension QGIS qui exporte vos couches vectorielles en
 
 ## Tutorial video
 
-https://youtu.be/V67q3jCYKow
+[https://youtu.be/V67q3jCYKow](https://www.youtube.com/watch?v=6DIGVI7V55E)
+
+La documentation complète disponible ici:
+[Télécharger la version pdf (PDF)](docs/Universal%20map2web%20User%20Manuel.pdf)
 
 ## Fonctionnalités
 
