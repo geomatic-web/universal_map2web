@@ -10,7 +10,9 @@
     <meta name="keywords" content="QGIS, carte web, Leaflet, export cartes, Universal Map2web, plugin QGIS, géomatique, PostgreSQL, PostGIS, données dynamiques, Jean-Baptiste KIBORA, CEFOGIA">
     <meta name="author" content="Jean-Baptiste KIBORA">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://github.com/geomatic-web/universal_map2web">
+    <!-- IMPORTANT : remplacez par l'URL réelle où cette page de documentation est hébergée -->
+    <link rel="canonical" href="https://geomatic-web.github.io/universal_map2web/">
+    <link rel="icon" type="image/png" href="icon.png">
 
     <!-- Liens d'autorité -->
     <link rel="author" href="https://geomatic-web.github.io/seformerengeomatique">
@@ -21,14 +23,19 @@
     <meta property="og:title" content="Universal Map2web - Extension QGIS pour cartes web interactives">
     <meta property="og:description" content="Extension QGIS pour exporter des cartes web interactives avec Leaflet, avec mode PostgreSQL/PostGIS dynamique. Par Jean-Baptiste KIBORA.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://github.com/geomatic-web/universal_map2web">
+    <meta property="og:url" content="https://geomatic-web.github.io/universal_map2web/">
     <meta property="og:image" content="https://github.com/geomatic-web/universal_map2web/raw/main/icon.png">
     <meta property="og:image:alt" content="Icône Universal Map2web">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:locale:alternate" content="en_US">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Universal Map2web - Extension QGIS pour cartes web interactives">
     <meta name="twitter:description" content="Extension QGIS pour exporter des cartes web interactives avec Leaflet. Par Jean-Baptiste KIBORA.">
+    <meta name="twitter:image" content="https://github.com/geomatic-web/universal_map2web/raw/main/icon.png">
 
     <!-- ============ DONNÉES STRUCTURÉES (JSON-LD) ============ -->
     <script type="application/ld+json">
@@ -39,6 +46,12 @@
       "description": "Extension QGIS pour exporter des cartes web interactives avec Leaflet, avec mode PostgreSQL/PostGIS dynamique.",
       "applicationCategory": "Geospatial",
       "operatingSystem": "QGIS 3.40+",
+      "softwareVersion": "1.2.1",
+      "datePublished": "2024-01-01",
+      "dateModified": "2026-01-01",
+      "downloadUrl": "https://plugins.qgis.org/plugins/universal_map2web/",
+      "installUrl": "https://plugins.qgis.org/plugins/universal_map2web/",
+      "screenshot": "https://github.com/geomatic-web/universal_map2web/raw/main/icon.png",
       "keywords": "QGIS, Leaflet, PostgreSQL, PostGIS, cartes web interactives",
       "author": {
         "@type": "Person",
@@ -49,9 +62,13 @@
           "https://github.com/geomatic-web"
         ]
       },
-      "url": "https://github.com/geomatic-web/universal_map2web",
+      "sameAs": [
+        "https://github.com/geomatic-web/universal_map2web",
+        "https://plugins.qgis.org/plugins/universal_map2web/"
+      ],
+      "url": "https://geomatic-web.github.io/universal_map2web/",
       "version": "1.2.1",
-      "license": "GPL v2"
+      "license": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html"
     }
     </script>
     <style>
@@ -66,18 +83,24 @@
             color: #333;
             background: #f5f7fa;
         }
-        .container {
-            max-width: 1200px;
+        .layout {
+            display: flex;
+            align-items: flex-start;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+        }
+        .container {
+            flex: 1;
+            min-width: 0;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 30px 30px 30px 0;
         }
         header {
             background: linear-gradient(135deg, #16a085, #1a5276);
             color: white;
-            padding: 40px 0;
+            padding: 30px 20px;
             text-align: center;
-            border-radius: 0 0 20px 20px;
-            margin-bottom: 30px;
         }
         header h1 {
             font-size: 2.5em;
@@ -96,34 +119,68 @@
             font-size: 0.9em;
             margin-top: 15px;
         }
-        nav {
-            background: white;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        .sidebar {
+            width: 260px;
+            flex-shrink: 0;
             position: sticky;
-            top: 10px;
-            z-index: 100;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            background: white;
+            border-right: 1px solid #e5e9ee;
+            padding: 25px 18px;
+        }
+        .sidebar .sidebar-title {
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #999;
+            margin: 18px 0 8px 10px;
+            font-weight: bold;
+        }
+        .sidebar .sidebar-title:first-child {
+            margin-top: 0;
         }
         nav ul {
             list-style: none;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
         }
         nav ul li a {
+            display: block;
             text-decoration: none;
-            color: #16a085;
-            font-weight: bold;
-            padding: 5px 10px;
-            border-radius: 5px;
-            transition: background 0.3s;
+            color: #444;
+            font-weight: 600;
+            font-size: 0.95em;
+            padding: 9px 12px;
+            border-radius: 8px;
+            border-left: 3px solid transparent;
+            transition: background 0.2s, color 0.2s, border-color 0.2s;
+            margin-bottom: 2px;
         }
         nav ul li a:hover {
-            background: #16a085;
-            color: white;
+            background: #eafaf5;
+            color: #16a085;
+        }
+        nav ul li a.active {
+            background: #eafaf5;
+            color: #16a085;
+            border-left-color: #16a085;
+        }
+        .mobile-toggle {
+            display: none;
+            background: white;
+            border: none;
+            color: #16a085;
+            font-weight: bold;
+            font-size: 1em;
+            padding: 12px 20px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        }
+        .mobile-toggle::after {
+            content: "▾";
+            float: right;
         }
         .section {
             background: white;
@@ -226,13 +283,28 @@
             color: #777;
             font-size: 0.9em;
         }
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            nav ul {
+        @media (max-width: 900px) {
+            .layout {
                 flex-direction: column;
-                align-items: center;
+            }
+            .mobile-toggle {
+                display: block;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid #e5e9ee;
+                padding: 10px 18px 15px;
+                display: none;
+            }
+            .sidebar.open {
+                display: block;
+            }
+            .container {
+                padding: 15px;
+                max-width: 100%;
             }
         }
         .header-content {
@@ -285,21 +357,34 @@
         </div>
     </header>
 
-    <div class="container">
-        <nav>
-            <ul>
-                <li><a href="#installation">Installation</a></li>
-                <li><a href="#usage">Usage</a></li>
-                <li><a href="#tools">Tools &amp; Options</a></li>
-                <li><a href="#themes">Themes &amp; Customization</a></li>
-                <li><a href="#filtering">Advanced Filtering</a></li>
-                <li><a href="#postgis">PostGIS Dynamic Mode</a></li>
-                <li><a href="#tips">Tips</a></li>
-                <li><a href="#troubleshooting">Troubleshooting</a></li>
-                <li><a href="#requirements">Requirements</a></li>
-                <li><a href="#support">Support</a></li>
-            </ul>
-        </nav>
+    <button class="mobile-toggle" id="mobileToggle">Documentation menu</button>
+
+    <div class="layout">
+        <aside class="sidebar" id="sidebar">
+            <nav aria-label="Documentation navigation">
+                <p class="sidebar-title">Getting started</p>
+                <ul>
+                    <li><a href="#installation">Installation</a></li>
+                    <li><a href="#usage">Usage</a></li>
+                    <li><a href="#tools">Tools &amp; Options</a></li>
+                    <li><a href="#themes">Themes &amp; Customization</a></li>
+                </ul>
+                <p class="sidebar-title">Advanced</p>
+                <ul>
+                    <li><a href="#filtering">Advanced Filtering</a></li>
+                    <li><a href="#postgis">PostGIS Dynamic Mode</a></li>
+                </ul>
+                <p class="sidebar-title">Help</p>
+                <ul>
+                    <li><a href="#tips">Tips</a></li>
+                    <li><a href="#troubleshooting">Troubleshooting</a></li>
+                    <li><a href="#requirements">Requirements</a></li>
+                    <li><a href="#support">Support</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+    <main class="container">
 
         <!-- ==================== INSTALLATION ==================== -->
         <div id="installation" class="section">
@@ -313,6 +398,9 @@
                         <li>Search for <strong>"Universal Map2web"</strong></li>
                         <li>Click <strong>Install</strong></li>
                     </ol>
+                    <p style="margin-top:10px;">Or view the plugin page directly:
+                        <a href="https://plugins.qgis.org/plugins/universal_map2web/">plugins.qgis.org/plugins/universal_map2web</a>
+                    </p>
                 </div>
                 <div class="card">
                     <h3>From GitHub</h3>
@@ -656,6 +744,10 @@
                     <p><a href="https://github.com/geomatic-web/universal_map2web">github.com/geomatic-web/universal_map2web</a></p>
                 </div>
                 <div class="card">
+                    <h3>QGIS Plugin Repository</h3>
+                    <p><a href="https://plugins.qgis.org/plugins/universal_map2web/">plugins.qgis.org/plugins/universal_map2web</a></p>
+                </div>
+                <div class="card">
                     <h3>Report a bug</h3>
                     <p><a href="https://github.com/geomatic-web/universal_map2web/issues">Open an issue</a></p>
                 </div>
@@ -666,10 +758,45 @@
             </div>
         </div>
 
-        <footer>
-            <p>© 2026 Jean-Baptiste KIBORA | Universal Map2web - Licensed under GPL v2</p>
-            <p>Version 1.2.1</p>
-        </footer>
+    </main>
     </div>
+
+    <footer>
+        <p>© 2026 Jean-Baptiste KIBORA | Universal Map2web - Licensed under GPL v2</p>
+        <p>Version 1.2.1</p>
+    </footer>
+
+    <script>
+        // Ouverture/fermeture de la sidebar sur mobile
+        const toggleBtn = document.getElementById('mobileToggle');
+        const sidebar = document.getElementById('sidebar');
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+        sidebar.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => sidebar.classList.remove('open'));
+        });
+
+        // Surlignage du lien actif selon la section visible
+        const links = Array.from(sidebar.querySelectorAll('a'));
+        const sections = links
+            .map(link => document.querySelector(link.getAttribute('href')))
+            .filter(Boolean);
+
+        const setActive = () => {
+            let currentId = sections[0] ? sections[0].id : null;
+            const scrollPos = window.scrollY + 120;
+            sections.forEach(section => {
+                if (section.offsetTop <= scrollPos) {
+                    currentId = section.id;
+                }
+            });
+            links.forEach(link => {
+                link.classList.toggle('active', link.getAttribute('href') === '#' + currentId);
+            });
+        };
+        document.addEventListener('scroll', setActive, { passive: true });
+        window.addEventListener('load', setActive);
+    </script>
 </body>
 </html>
