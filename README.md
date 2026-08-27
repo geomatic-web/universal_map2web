@@ -19,7 +19,7 @@ https://www.youtube.com/watch?v=6DIGVI7V55E
 ## Documentation
 
 The complete user manual is available here:
-Download the Universal Map2web Manual (PDF)](docs/Universal%20map2web%20User%20Manuel.pdf)
+[Download the Universal Map2web User Manual (PDF)](docs/Universal%20map2web%20User%20Manual.pdf)
 
 ## Features
 
