@@ -9,8 +9,6 @@ import os
 from qgis.core import QgsSymbolLayerUtils
 from qgis.PyQt.QtCore import QSize
 
-from .qt_compat import qenum
-
 from .styles import normaliser_valeur_classification, taille_canevas_icone
 
 

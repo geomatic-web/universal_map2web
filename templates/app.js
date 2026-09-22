@@ -53,17 +53,232 @@ function assurerMotifSVG(motif) {
 }
 
 var baseLayers = {
-    "BASE": L.tileLayer("__URL_FOND__", {maxZoom: 20, crossOrigin: true}),
     "OSM": L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom: 19, crossOrigin: true}),
     "SAT": L.tileLayer("https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}", {maxZoom: 20})
 };
-baseLayers["BASE"].addTo(map);
 
-function changerFond() {
-    var sel = document.getElementById('fondSelector').value;
-    for (var k in baseLayers) {map.removeLayer(baseLayers[k]); }
-    baseLayers[sel].addTo(map);
+function changerFond(sel) {
+    for (var k in baseLayers) {
+        if (baseLayers[k] && map.hasLayer(baseLayers[k])) map.removeLayer(baseLayers[k]);
+    }
+    var couche = baseLayers[sel] || baseLayers.BASE || baseLayers.OSM;
+    if (couche) couche.addTo(map);
 }
+
+// Fond initial : "BASE" si disponible, sinon repli sur OSM pour ne jamais
+// planter (ex. si le fond configuré dans QGIS n'a pas pu être résolu).
+changerFond('BASE');
+
+// ── Sélecteur de fond de carte façon Google Maps (bas-gauche) ──────────
+var BaseLayerControl = L.Control.extend({
+    options: { position: 'bottomleft' },
+    onAdd: function () {
+        var container = L.DomUtil.create('div', 'map-layers-control');
+        L.DomEvent.disableClickPropagation(container);
+        L.DomEvent.disableScrollPropagation(container);
+
+        // Bouton fermé : miniature "plan" (style OSM), sans texte, comme Google Maps
+        var btn = L.DomUtil.create('div', 'map-layers-btn map-layers-thumb map-layers-thumb-plan', container);
+        btn.title = I18N.layers_control_title || 'Calques';
+        btn.setAttribute('aria-label', I18N.layers_control_title || 'Calques');
+
+        var panel = L.DomUtil.create('div', 'map-layers-panel', container);
+
+        var fonds = [
+             { cle: 'OSM', thumb: 'map-layers-thumb-plan', icone: '', libelle: I18N.layer_osm_label || 'Carte OSM' },
+            { cle: 'SAT', thumb: 'map-layers-thumb-sat', icone: '', libelle: I18N.layer_sat_label || 'Image satellite' }
+        ];
+
+        fonds.forEach(function (f) {
+            var item = L.DomUtil.create(
+                'div',
+                'map-layers-option' + (f.cle === 'BASE' ? ' active' : ''),
+                panel
+            );
+            item.innerHTML = '<span class="map-layers-opt-icon map-layers-thumb ' + f.thumb + '"></span>' +
+                '<span class="' + (f.cle === 'SAT' ? 'icon-sat' : 'icon-map') + '">' + f.icone + '</span>' +
+                '<span>' + f.libelle + '</span>';
+            L.DomEvent.on(item, 'click', function () {
+                changerFond(f.cle);
+                var tousLesItems = panel.querySelectorAll('.map-layers-option');
+                for (var i = 0; i < tousLesItems.length; i++) {
+                    tousLesItems[i].classList.remove('active');
+                }
+                item.classList.add('active');
+                panel.classList.remove('open');
+            });
+        });
+
+        L.DomEvent.on(btn, 'click', function (e) {
+            L.DomEvent.stop(e);
+            panel.classList.toggle('open');
+        });
+        L.DomEvent.on(document, 'click', function () {
+            panel.classList.remove('open');
+        });
+
+        return container;
+    }
+});
+map.addControl(new BaseLayerControl());
+
+// ── Outil de mesure de distance et de superficie (règle/équerre) ───────
+// 100% intégré et localisé, sans lib externe : icônes explicites, texte
+// traduit fr/en, et coordonnées de clic lues directement depuis
+// l'évènement Leaflet (map.on('click', ...)) donc toujours exactes,
+// quelle que soit la mise en page de la page (en-tête, barre latérale…).
+var MeasureControl = L.Control.extend({
+    options: { position: 'topleft' },
+    onAdd: function () {
+        var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+        L.DomEvent.disableClickPropagation(container);
+        L.DomEvent.disableScrollPropagation(container);
+
+        var btnDistance = L.DomUtil.create('a', 'map-measure-btn', container);
+        btnDistance.href = '#';
+        btnDistance.innerHTML = '📏';
+        btnDistance.title = I18N.measure_title || 'Mesurer une distance';
+        btnDistance.setAttribute('role', 'button');
+        btnDistance.setAttribute('aria-label', btnDistance.title);
+
+        var btnArea = L.DomUtil.create('a', 'map-measure-btn', container);
+        btnArea.href = '#';
+        btnArea.innerHTML = '📐';
+        btnArea.title = I18N.measure_area_title || 'Mesurer une superficie';
+        btnArea.setAttribute('role', 'button');
+        btnArea.setAttribute('aria-label', btnArea.title);
+
+        var modeActif = null; // 'distance' | 'area' | null
+        var points = [];
+        var forme = null;
+        var tooltip = null;
+
+        function formaterDistance(metres) {
+            if (metres >= 1000) return (metres / 1000).toFixed(2) + ' km';
+            return Math.round(metres) + ' m';
+        }
+
+        function formaterSuperficie(m2) {
+            if (m2 >= 1000000) return (m2 / 1000000).toFixed(2) + ' km²';
+            if (m2 >= 10000) return (m2 / 10000).toFixed(2) + ' ha';
+            return Math.round(m2) + ' m²';
+        }
+
+        function distanceTotale() {
+            var total = 0;
+            for (var i = 1; i < points.length; i++) {
+                total += points[i - 1].distanceTo(points[i]);
+            }
+            return total;
+        }
+
+        // Formule géodésique standard de calcul d'aire sur sphère
+        // (même principe que Leaflet.GeometryUtil.geodesicArea).
+        function superficieGeodesique(latlngs) {
+            var n = latlngs.length, aire = 0, d2r = Math.PI / 180;
+            if (n < 3) return 0;
+            for (var i = 0; i < n; i++) {
+                var p1 = latlngs[i], p2 = latlngs[(i + 1) % n];
+                aire += ((p2.lng - p1.lng) * d2r) *
+                        (2 + Math.sin(p1.lat * d2r) + Math.sin(p2.lat * d2r));
+            }
+            return Math.abs(aire * 6378137.0 * 6378137.0 / 2.0);
+        }
+
+        function majAffichage() {
+            if (forme) { map.removeLayer(forme); forme = null; }
+
+            if (modeActif === 'area' && points.length > 2) {
+                forme = L.polygon(points, {
+                    color: '#f9ca24', weight: 3, dashArray: '6,6',
+                    fillColor: '#f9ca24', fillOpacity: 0.15
+                }).addTo(map);
+            } else if (points.length > 1) {
+                forme = L.polyline(points, {
+                    color: '#f9ca24', weight: 3, dashArray: '6,6'
+                }).addTo(map);
+            }
+
+            var dernier = points[points.length - 1];
+            if (!dernier) return;
+
+            var texte;
+            if (modeActif === 'area') {
+                var aireTxt = points.length > 2
+                    ? formaterSuperficie(superficieGeodesique(points))
+                    : '…';
+                texte = (I18N.measure_area_label || 'Superficie') + ' : ' + aireTxt;
+            } else {
+                texte = (I18N.measure_total_label || 'Distance totale') + ' : ' +
+                    formaterDistance(distanceTotale());
+            }
+
+            if (!tooltip) {
+                tooltip = L.tooltip({
+                    permanent: true, direction: 'right', className: 'map-measure-tooltip'
+                }).setLatLng(dernier).setContent(texte).addTo(map);
+            } else {
+                tooltip.setLatLng(dernier).setContent(texte);
+            }
+        }
+
+        function reinitialiserMesure() {
+            points = [];
+            if (forme) { map.removeLayer(forme); forme = null; }
+            if (tooltip) { map.removeLayer(tooltip); tooltip = null; }
+        }
+
+        function onCarteClick(e) {
+            points.push(e.latlng);
+            majAffichage();
+        }
+
+        function onCarteDblClick(e) {
+            L.DomEvent.stop(e);
+            desactiver();
+        }
+
+        function activer(mode, btn) {
+            modeActif = mode;
+            reinitialiserMesure();
+            L.DomUtil.addClass(btn, 'active');
+            map.getContainer().style.cursor = 'crosshair';
+            map.doubleClickZoom.disable();
+            map.on('click', onCarteClick);
+            map.on('dblclick', onCarteDblClick);
+        }
+
+        function desactiver() {
+            modeActif = null;
+            L.DomUtil.removeClass(btnDistance, 'active');
+            L.DomUtil.removeClass(btnArea, 'active');
+            map.getContainer().style.cursor = '';
+            map.doubleClickZoom.enable();
+            map.off('click', onCarteClick);
+            map.off('dblclick', onCarteDblClick);
+        }
+
+        function basculer(mode, btn) {
+            if (modeActif === mode) {
+                desactiver();
+                reinitialiserMesure();
+            } else {
+                activer(mode, btn);
+            }
+        }
+
+        L.DomEvent.on(btnDistance, 'click', function (e) {
+            L.DomEvent.stop(e);
+            basculer('distance', btnDistance);
+        });
+        L.DomEvent.on(btnArea, 'click', function (e) {
+            L.DomEvent.stop(e);
+            basculer('area', btnArea);
+        });
+
+        return container;
+    }
+});
 
 __OUTILS_JS__
 

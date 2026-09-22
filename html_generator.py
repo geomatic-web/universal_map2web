@@ -162,7 +162,7 @@ def generer_export(dialog, export_data, output_dir, locale=None):
     extra_css, extra_js = build_extra_libs(options)
 
     mousepos_html = (
-        '<div id="mouse-pos" style="position:absolute;bottom:28px;left:5px;'
+        '<div id="mouse-pos" style="position:absolute;bottom:28px;left:100px;'
         "background:rgba(0,0,0,0.65);color:#fff;padding:3px 8px;border-radius:4px;"
         'font-size:11px;z-index:999;pointer-events:none;"></div>'
         if options.get("mousepos")

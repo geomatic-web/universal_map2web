@@ -14,11 +14,9 @@ from .web_i18n import get_strings
 TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), "templates")
 
 # (clé d'option du dialogue, lib CSS, lib JS) pour chaque outil optionnel
+# NB : "mesure" n'a plus besoin de lib externe — outil de mesure maison,
+# intégré et localisé (voir MeasureControl dans templates/app.js).
 _LIBS_CDN = {
-    "mesure": {
-        "css": '\n    <link rel="stylesheet" href="https://unpkg.com/leaflet-measure@3.1.0/dist/leaflet-measure.css" />',
-        "js": '\n    <script src="https://unpkg.com/leaflet-measure@3.1.0/dist/leaflet-measure.js"></script>',
-    },
     "pleinecran": {
         "css": '\n    <link rel="stylesheet" href="https://unpkg.com/leaflet.fullscreen@1.6.0/Control.FullScreen.css" />',
         "js": '\n    <script src="https://unpkg.com/leaflet.fullscreen@1.6.0/Control.FullScreen.js"></script>',
@@ -85,11 +83,10 @@ def build_outils_js(options, locale=None):
         )
 
     if options.get("mesure"):
-        outils_js += (
-            "\n        if (typeof L.control.measure !== 'undefined') { "
-            "L.control.measure({ primaryLengthUnit:'kilometers', secondaryLengthUnit:'meters', "
-            "primaryAreaUnit:'sqkilometers', activeColor:'#4ecdc4', completedColor:'#4ecdc4' }).addTo(map); }"
-        )
+        # Outil de mesure maison (voir MeasureControl dans templates/app.js) :
+        # pas de lib externe, entièrement localisé fr/en, coordonnées de clic
+        # lues directement depuis l'évènement Leaflet (pas de décalage).
+        outils_js += "\n        map.addControl(new MeasureControl());"
 
     if options.get("pleinecran"):
         outils_js += (
@@ -104,8 +101,16 @@ def build_outils_js(options, locale=None):
     if options.get("recherche"):
         outils_js += (
             "\n        if (typeof L.Control.Geocoder !== 'undefined') { "
-            "L.Control.geocoder({ defaultMarkGeocode: false, placeholder: %s }).addTo(map); }"
-            % json.dumps(s["search_placeholder"], ensure_ascii=False)
+            "var geocodeurRecherche = L.Control.geocoder({ defaultMarkGeocode: false, placeholder: %s }).addTo(map); "
+            # defaultMarkGeocode:false désactive le comportement automatique du
+            # plugin (zoom + marqueur) : on le remplace ici par notre propre
+            # gestionnaire pour garantir le zoom/la localisation au clic sur
+            # un résultat, avec un marqueur temporaire et son étiquette.
+            "geocodeurRecherche.on('markgeocode', function(e) { "
+            "var bbox = e.geocode.bbox; "
+            "if (bbox) { map.fitBounds(bbox); } else { map.setView(e.geocode.center, 14); } "
+            "L.marker(e.geocode.center).addTo(map).bindPopup(e.geocode.name).openPopup(); "
+            "}); }" % json.dumps(s["search_placeholder"], ensure_ascii=False)
         )
 
     if options.get("minimap"):
