@@ -1,5 +1,6 @@
 var I18N = JSON.parse('__I18N_JSON__');
 var metaCouches = JSON.parse('__META_COUCHES_JSON__');
+var WMS_LAYERS = JSON.parse('__WMS_LAYERS_JSON__');
 // preferCanvas : rendu Canvas par défaut pour toutes les couches vectorielles
 var map = L.map('map', {zoomControl: true, preferCanvas: true}).setView([0, 0], 2);
 
@@ -240,6 +241,7 @@ var MeasureControl = L.Control.extend({
 
         function activer(mode, btn) {
             modeActif = mode;
+            window.__mesureActive = true;
             reinitialiserMesure();
             L.DomUtil.addClass(btn, 'active');
             map.getContainer().style.cursor = 'crosshair';
@@ -250,6 +252,7 @@ var MeasureControl = L.Control.extend({
 
         function desactiver() {
             modeActif = null;
+            window.__mesureActive = false;
             L.DomUtil.removeClass(btnDistance, 'active');
             L.DomUtil.removeClass(btnArea, 'active');
             map.getContainer().style.cursor = '';
@@ -650,6 +653,363 @@ function construireLayer(nom, info, data, activerCluster) {
     return { actif: resultat, brut: geoLayer };
 }
 
+// ═══════════════════════════════════════════════════════
+// TABLE ATTRIBUTAIRE (fenêtre flottante par couche)
+// Fonctionne pour toutes les couches vectorielles : shapefile/GeoJSON
+// statique, PostgreSQL et WFS (toutes passent par geoLayersData[nom]).
+// ═══════════════════════════════════════════════════════
+var ICONE_TABLE_SVG = '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">'
+    + '<path fill="none" stroke="currentColor" stroke-width="1.3" '
+    + 'd="M1.7 2.7h12.6v10.6H1.7zM1.7 6.2h12.6M1.7 9.7h12.6M6 2.7v10.6"/></svg>';
+
+var fenetresTable = {};
+var zIndexTable = 2000;
+var surbrillanceTable = null;
+
+function champsTable(features) {
+    var vus = {}, liste = [];
+    features.forEach(function(f) {
+        Object.keys(f.properties || {}).forEach(function(k) {
+            if (k.indexOf('_qgis_') === 0 || vus[k]) return;
+            vus[k] = true;
+            liste.push(k);
+        });
+    });
+    return liste;
+}
+
+function texteCellule(v) {
+    if (v === null || v === undefined) return '';
+    if (typeof v === 'object') {
+        try { return JSON.stringify(v); } catch (e) { return String(v); }
+    }
+    return String(v);
+}
+
+function comparerValeurs(a, b) {
+    var na = parseFloat(a), nb = parseFloat(b);
+    if (a !== '' && b !== '' && !isNaN(na) && !isNaN(nb) && isFinite(a) && isFinite(b)) {
+        return na - nb;
+    }
+    return String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: 'base' });
+}
+
+function effacerSurbrillanceTable() {
+    if (surbrillanceTable) {
+        map.removeLayer(surbrillanceTable);
+        surbrillanceTable = null;
+    }
+}
+
+function surlignerObjetTable(f, zoomer) {
+    effacerSurbrillanceTable();
+    try {
+        surbrillanceTable = L.geoJSON(f, {
+            style: function() {
+                return { color: '#ffeb3b', weight: 5, opacity: 1,
+                         fillColor: '#ffeb3b', fillOpacity: 0.35, interactive: false };
+            },
+            pointToLayer: function(feat, latlng) {
+                return L.circleMarker(latlng, { radius: 12, color: '#ffeb3b', weight: 4,
+                         fillColor: '#ff9800', fillOpacity: 0.6, interactive: false });
+            }
+        }).addTo(map);
+        if (zoomer) {
+            var b = surbrillanceTable.getBounds();
+            if (b.isValid()) map.fitBounds(b, { maxZoom: 17, padding: [40, 40] });
+        }
+    } catch (e) {
+        console.warn('Surbrillance impossible :', e);
+    }
+}
+
+function exporterCsvTable(nom, champs, lignes) {
+    var sep = ';'; // séparateur attendu par Excel en configuration française
+    function esc(v) {
+        var s = texteCellule(v);
+        if (/[";\r\n]/.test(s)) s = '"' + s.replace(/"/g, '""') + '"';
+        return s;
+    }
+    var sortie = [champs.map(esc).join(sep)];
+    lignes.forEach(function(f) {
+        var p = f.properties || {};
+        sortie.push(champs.map(function(c) { return esc(p[c]); }).join(sep));
+    });
+    var blob = new Blob(['\uFEFF' + sortie.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = nom.replace(/[\\\/:*?"<>|\s]+/g, '_') + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function() { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+
+function ouvrirTableAttributaire(nom) {
+    var data = geoLayersData[nom];
+    if (!data || !data.features) return;
+
+    // Déjà ouverte : on la remet simplement au premier plan
+    if (fenetresTable[nom]) {
+        fenetresTable[nom].style.zIndex = ++zIndexTable;
+        return;
+    }
+
+    var features = data.features;
+    var champs = champsTable(features);
+    var etat = { tri: null, dir: 1, recherche: '', filtres: {}, page: 0, taille: 100, lignes: [] };
+    var dernierZoom = null;
+
+    // ── Squelette de la fenêtre ───────────────────────────
+    var win = document.createElement('div');
+    win.className = 'attr-win';
+    var decalage = Object.keys(fenetresTable).length * 28;
+    win.style.left = (90 + decalage) + 'px';
+    win.style.top = (80 + decalage) + 'px';
+    win.style.zIndex = ++zIndexTable;
+
+    var bar = document.createElement('div');
+    bar.className = 'attr-win-bar';
+    var titre = document.createElement('span');
+    titre.className = 'attr-win-title';
+    titre.textContent = I18N.attr_table_title + ' — ' + nom;
+    var btnFermer = document.createElement('button');
+    btnFermer.type = 'button';
+    btnFermer.className = 'attr-win-close';
+    btnFermer.title = I18N.attr_table_close;
+    btnFermer.textContent = '×';
+    bar.appendChild(titre);
+    bar.appendChild(btnFermer);
+
+    var info = document.createElement('div');
+    info.className = 'attr-win-info';
+    info.textContent = I18N.attr_table_instructions;
+
+    var outils = document.createElement('div');
+    outils.className = 'attr-win-tools';
+    var btnCsv = document.createElement('button');
+    btnCsv.type = 'button';
+    btnCsv.className = 'attr-btn';
+    btnCsv.textContent = I18N.attr_table_export;
+    var champRecherche = document.createElement('input');
+    champRecherche.type = 'search';
+    champRecherche.className = 'attr-search';
+    champRecherche.placeholder = I18N.attr_table_search_ph;
+    var compteur = document.createElement('span');
+    compteur.className = 'attr-count';
+    outils.appendChild(btnCsv);
+    outils.appendChild(champRecherche);
+    outils.appendChild(compteur);
+
+    var zoneScroll = document.createElement('div');
+    zoneScroll.className = 'attr-win-scroll';
+    var table = document.createElement('table');
+    table.className = 'attr-table';
+    var thead = document.createElement('thead');
+    var trNoms = document.createElement('tr');
+    var trFiltres = document.createElement('tr');
+    var fleches = {};
+
+    champs.forEach(function(c) {
+        var th = document.createElement('th');
+        th.title = c;
+        var lib = document.createElement('span');
+        lib.textContent = c;
+        var fl = document.createElement('span');
+        fl.className = 'attr-sort';
+        fleches[c] = fl;
+        th.appendChild(lib);
+        th.appendChild(fl);
+        th.addEventListener('click', function() {
+            if (etat.tri === c) { etat.dir = -etat.dir; } else { etat.tri = c; etat.dir = 1; }
+            rafraichir(true);
+        });
+        trNoms.appendChild(th);
+
+        var tdF = document.createElement('th');
+        tdF.className = 'attr-filter-cell';
+        var inp = document.createElement('input');
+        inp.type = 'text';
+        inp.placeholder = I18N.attr_table_filter_ph;
+        inp.addEventListener('input', function() {
+            etat.filtres[c] = inp.value.toLowerCase();
+            rafraichir(true);
+        });
+        tdF.appendChild(inp);
+        trFiltres.appendChild(tdF);
+    });
+    thead.appendChild(trNoms);
+    thead.appendChild(trFiltres);
+    var tbody = document.createElement('tbody');
+    table.appendChild(thead);
+    table.appendChild(tbody);
+    zoneScroll.appendChild(table);
+
+    var pied = document.createElement('div');
+    pied.className = 'attr-win-pager';
+    var btnPrec = document.createElement('button');
+    btnPrec.type = 'button';
+    btnPrec.className = 'attr-btn';
+    btnPrec.textContent = '‹ ' + I18N.attr_table_prev;
+    var infoPage = document.createElement('span');
+    var btnSuiv = document.createElement('button');
+    btnSuiv.type = 'button';
+    btnSuiv.className = 'attr-btn';
+    btnSuiv.textContent = I18N.attr_table_next + ' ›';
+    pied.appendChild(btnPrec);
+    pied.appendChild(infoPage);
+    pied.appendChild(btnSuiv);
+
+    win.appendChild(bar);
+    win.appendChild(info);
+    win.appendChild(outils);
+    win.appendChild(zoneScroll);
+    win.appendChild(pied);
+    document.body.appendChild(win);
+    fenetresTable[nom] = win;
+
+    // ── Filtrage / tri / pagination ───────────────────────
+    function calculerLignes() {
+        var rech = etat.recherche;
+        var actifs = Object.keys(etat.filtres).filter(function(c) { return etat.filtres[c]; });
+        var res = features.filter(function(f) {
+            var p = f.properties || {};
+            for (var i = 0; i < actifs.length; i++) {
+                if (texteCellule(p[actifs[i]]).toLowerCase().indexOf(etat.filtres[actifs[i]]) === -1) return false;
+            }
+            if (rech) {
+                var trouve = false;
+                for (var j = 0; j < champs.length; j++) {
+                    if (texteCellule(p[champs[j]]).toLowerCase().indexOf(rech) !== -1) { trouve = true; break; }
+                }
+                if (!trouve) return false;
+            }
+            return true;
+        });
+        if (etat.tri) {
+            var col = etat.tri, d = etat.dir;
+            res.sort(function(a, b) {
+                return d * comparerValeurs(texteCellule((a.properties || {})[col]),
+                                           texteCellule((b.properties || {})[col]));
+            });
+        }
+        etat.lignes = res;
+    }
+
+    function rafraichir(recalculer) {
+        if (recalculer) { calculerLignes(); etat.page = 0; }
+        var total = etat.lignes.length;
+        var nbPages = Math.max(1, Math.ceil(total / etat.taille));
+        if (etat.page >= nbPages) etat.page = nbPages - 1;
+        var debut = etat.page * etat.taille;
+        var tranche = etat.lignes.slice(debut, debut + etat.taille);
+
+        champs.forEach(function(c) {
+            fleches[c].textContent = (etat.tri === c) ? (etat.dir === 1 ? ' ▲' : ' ▼') : '';
+        });
+
+        tbody.innerHTML = '';
+        if (tranche.length === 0) {
+            var trVide = document.createElement('tr');
+            var tdVide = document.createElement('td');
+            tdVide.colSpan = Math.max(1, champs.length);
+            tdVide.className = 'attr-empty';
+            tdVide.textContent = I18N.attr_table_empty;
+            trVide.appendChild(tdVide);
+            tbody.appendChild(trVide);
+        }
+        tranche.forEach(function(f) {
+            var tr = document.createElement('tr');
+            var p = f.properties || {};
+            champs.forEach(function(c) {
+                var td = document.createElement('td');
+                td.textContent = texteCellule(p[c]);
+                tr.appendChild(td);
+            });
+            tr.addEventListener('mouseenter', function(e) {
+                surlignerObjetTable(f, e.ctrlKey);
+                dernierZoom = e.ctrlKey ? f : null;
+            });
+            tr.addEventListener('mousemove', function(e) {
+                if (e.ctrlKey && dernierZoom !== f) {
+                    surlignerObjetTable(f, true);
+                    dernierZoom = f;
+                }
+            });
+            tr.addEventListener('mouseleave', function() {
+                effacerSurbrillanceTable();
+                dernierZoom = null;
+            });
+            tr.addEventListener('click', function() {
+                var sel = tbody.querySelector('tr.attr-selected');
+                if (sel) sel.classList.remove('attr-selected');
+                tr.classList.add('attr-selected');
+                surlignerObjetTable(f, true);
+                dernierZoom = f;
+            });
+            tbody.appendChild(tr);
+        });
+
+        compteur.textContent = total + ' / ' + features.length + ' ' + I18N.attr_table_objects;
+        infoPage.textContent = (etat.page + 1) + ' ' + I18N.attr_table_of + ' ' + nbPages;
+        btnPrec.disabled = etat.page <= 0;
+        btnSuiv.disabled = etat.page >= nbPages - 1;
+    }
+
+    champRecherche.addEventListener('input', function() {
+        etat.recherche = champRecherche.value.toLowerCase();
+        rafraichir(true);
+    });
+    btnPrec.addEventListener('click', function() { etat.page--; rafraichir(false); zoneScroll.scrollTop = 0; });
+    btnSuiv.addEventListener('click', function() { etat.page++; rafraichir(false); zoneScroll.scrollTop = 0; });
+    btnCsv.addEventListener('click', function() { exporterCsvTable(nom, champs, etat.lignes); });
+
+    btnFermer.addEventListener('click', function() {
+        effacerSurbrillanceTable();
+        win.remove();
+        delete fenetresTable[nom];
+    });
+
+    // ── Déplacement par la barre de titre (souris et tactile) ──
+    win.addEventListener('pointerdown', function() { win.style.zIndex = ++zIndexTable; });
+    bar.addEventListener('pointerdown', function(e) {
+        if (e.target.closest('button')) return;
+        var r = win.getBoundingClientRect();
+        var dx = e.clientX - r.left, dy = e.clientY - r.top;
+        bar.setPointerCapture(e.pointerId);
+        function deplacer(ev) {
+            win.style.left = Math.max(0, Math.min(window.innerWidth - 60, ev.clientX - dx)) + 'px';
+            win.style.top = Math.max(0, Math.min(window.innerHeight - 40, ev.clientY - dy)) + 'px';
+        }
+        function fin() {
+            bar.removeEventListener('pointermove', deplacer);
+            bar.removeEventListener('pointerup', fin);
+        }
+        bar.addEventListener('pointermove', deplacer);
+        bar.addEventListener('pointerup', fin);
+    });
+
+    rafraichir(true);
+}
+
+// ── Zoom sur l'emprise d'une couche ──────────────────────
+var ICONE_ZOOM_SVG = '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">'
+    + '<circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.3"/>'
+    + '<path d="M10.5 10.5L14.5 14.5M7 5v4M5 7h4" fill="none" stroke="currentColor" '
+    + 'stroke-width="1.3" stroke-linecap="round"/></svg>';
+var emprisesCouches = {};
+
+function zoomerSurCouche(nom) {
+    var data = geoLayersData[nom];
+    if (!data || !data.features || !data.features.length) return;
+    try {
+        if (!emprisesCouches[nom]) emprisesCouches[nom] = L.geoJSON(data).getBounds();
+        var b = emprisesCouches[nom];
+        if (b && b.isValid()) map.fitBounds(b, { maxZoom: 18, padding: [30, 30] });
+    } catch (e) {
+        console.warn('Zoom sur la couche impossible :', e);
+    }
+}
+
 // ── Rendu de la légende HTML ─────────────────────────────────
 Object.keys(metaCouches).forEach(function(nom) {
     var info = metaCouches[nom];
@@ -660,6 +1020,8 @@ Object.keys(metaCouches).forEach(function(nom) {
     groupDiv.innerHTML = '<div class="item-couche-tit">'
         + '<div class="item-couche-tit-gauche">'
         + '<input type="checkbox" id="chk_' + safeId + '" checked />'
+        + '<button type="button" class="btn-table" id="tbl_' + safeId + '" disabled title="' + I18N.attr_table_btn_title + '">' + ICONE_TABLE_SVG + '</button>'
+        + '<button type="button" class="btn-table" id="zoom_' + safeId + '" disabled title="' + I18N.zoom_layer_title + '">' + ICONE_ZOOM_SVG + '</button>'
         + '<label for="chk_' + safeId + '">' + nom + '</label>'
         + '</div>'
         + '<button class="btn-collapse" id="toggle_' + safeId + '" title="' + I18N.collapse_toggle_title + '">▾</button>'
@@ -720,15 +1082,37 @@ Object.keys(metaCouches).forEach(function(nom) {
     });
 
     var p = fetch(info.fichier)
-        .then(function(r) { return r.json(); })
+        .then(function(r) {
+            if (!r.ok) { throw new Error('HTTP ' + r.status); }
+            return r.json();
+        })
         .then(function(data) {
-            if (info.source === 'postgres' && data.features) {
+            if ((info.source === 'postgres' || info.source === 'wfs') && data.features) {
                 data.features.forEach(function(f) {
                     resoudreStylePostgres(f, info);
                 });
             }
 
             geoLayersData[nom] = data;
+
+            var btnTbl = document.getElementById('tbl_' + safeId);
+            if (btnTbl) {
+                btnTbl.disabled = false;
+                btnTbl.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    ouvrirTableAttributaire(nom);
+                });
+            }
+            var btnZoom = document.getElementById('zoom_' + safeId);
+            if (btnZoom) {
+                btnZoom.disabled = false;
+                btnZoom.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    zoomerSurCouche(nom);
+                });
+            }
 
             if (data.features && data.features.length > 0) {
                 if (info.is_polygon) {
@@ -785,6 +1169,19 @@ Object.keys(metaCouches).forEach(function(nom) {
             }
 
             return couches_leaflet[nom];
+        })
+        .catch(function (err) {
+            // Une couche en échec (ex. serveur WFS/Postgres injoignable ou
+            // bloqué par CORS) ne doit pas empêcher l'affichage des autres
+            // couches ni le cadrage automatique de la carte.
+            console.warn('Échec du chargement de la couche "' + nom + '" :', err);
+            var corpsErreur = document.getElementById('corps_' + safeId);
+            if (corpsErreur) {
+                corpsErreur.innerHTML = '<div style="padding:8px 10px; font-size:11px; color:#e74c3c;">'
+                    + (I18N.layer_load_error || 'Impossible de charger cette couche (serveur injoignable ou CORS).')
+                    + '</div>';
+            }
+            return null;
         });
 
     promesses_chargement.push(p);
@@ -793,6 +1190,149 @@ Object.keys(metaCouches).forEach(function(nom) {
         if (e.target.checked && couches_leaflet[nom]) { map.addLayer(couches_leaflet[nom]); }
         else if (couches_leaflet[nom]) { map.removeLayer(couches_leaflet[nom]); }
     });
+});
+
+// ── Couches WMS (raster, chargées en direct depuis le serveur) ─────────
+// Contrairement aux couches vecteur, une couche WMS n'a ni popup, ni champs,
+// ni style QGIS à reproduire : c'est un calque d'images en tuiles interrogé
+// à chaque déplacement de la carte — donc toujours "live" par nature.
+var couchesWMS_leaflet = {};
+Object.keys(WMS_LAYERS).forEach(function (nom) {
+    var cfg = WMS_LAYERS[nom];
+    if (!cfg || !cfg.url || !cfg.layers) {
+        console.warn('Couche WMS "' + nom + '" ignorée : URL ou nom de couche manquant.', cfg);
+        return;
+    }
+    var safeId = 'wms_' + nom.replace(/[^a-zA-Z0-9]/g, '_');
+
+    var optionsWMS = {
+        layers: cfg.layers,
+        format: (/^image\//.test(cfg.format || '') ? cfg.format : 'image/png'),
+        transparent: cfg.transparent !== false,
+        version: cfg.version || '1.3.0',
+        styles: cfg.styles || '',
+        opacity: (typeof cfg.opacite_defaut === 'number') ? cfg.opacite_defaut : 1
+        // Pas de "crs" personnalisée ici volontairement : forcer une CRS
+        // différente de celle de la carte (3857) sur une L.tileLayer.wms est
+        // une limitation connue de Leaflet (la bbox par tuile part en vrille
+        // et demande l'emprise entière au lieu d'une tuile). On laisse donc
+        // Leaflet interroger le serveur en EPSG:3857 (celle de la carte) —
+        // GeoServer, comme la quasi-totalité des serveurs WMS, reprojette à
+        // la volée vers n'importe quelle CRS supportée, quelle que soit la
+        // CRS native de la couche.
+    };
+
+    var coucheWMS = L.tileLayer.wms(cfg.url, optionsWMS);
+    coucheWMS.on('tileerror', function (err) {
+        console.warn('Erreur de tuile WMS pour "' + nom + '" :', err);
+    });
+    couchesWMS_leaflet[nom] = coucheWMS;
+    coucheWMS.addTo(map);
+
+    var itemWMS = document.createElement('div');
+    itemWMS.className = 'group-couche';
+    itemWMS.innerHTML = '<div class="item-couche-tit">'
+        + '<input type="checkbox" id="chk_' + safeId + '" checked />'
+        + '<label for="chk_' + safeId + '">🛰️ ' + nom + '</label></div>';
+    legendContainer.appendChild(itemWMS);
+
+    document.getElementById('chk_' + safeId).addEventListener('change', function (e) {
+        if (e.target.checked) { coucheWMS.addTo(map); }
+        else { map.removeLayer(coucheWMS); }
+    });
+});
+
+// ── Interrogation des couches WMS au clic (WMS GetFeatureInfo) ─────────
+// Le serveur renvoie les attributs de l'objet situé sous le clic. On tente
+// d'abord le JSON (tableau propre) puis le HTML ; si le navigateur bloque
+// la requête (CORS), la réponse HTML est affichée dans un cadre (iframe).
+function echapperHtml(v) {
+    return String(v === null || v === undefined ? '' : v)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function urlGetFeatureInfo(coucheWMS, latlng, infoFormat) {
+    var crs = map.options.crs;
+    var pt = map.latLngToContainerPoint(latlng);
+    var taille = map.getSize();
+    var b = map.getBounds();
+    var sw = crs.project(b.getSouthWest());
+    var ne = crs.project(b.getNorthEast());
+    var wp = coucheWMS.wmsParams;
+    var v13 = parseFloat(wp.version) >= 1.3;
+    var params = {
+        service: 'WMS',
+        request: 'GetFeatureInfo',
+        version: wp.version,
+        layers: wp.layers,
+        query_layers: wp.layers,
+        styles: wp.styles || '',
+        format: wp.format,
+        transparent: wp.transparent,
+        info_format: infoFormat,
+        feature_count: 10,
+        bbox: [sw.x, sw.y, ne.x, ne.y].join(','),
+        width: taille.x,
+        height: taille.y
+    };
+    params[v13 ? 'crs' : 'srs'] = crs.code;
+    params[v13 ? 'i' : 'x'] = Math.round(pt.x);
+    params[v13 ? 'j' : 'y'] = Math.round(pt.y);
+    var base = coucheWMS._url;
+    return base + (base.indexOf('?') < 0 ? '?' : '&') + L.Util.getParamString(params).slice(1);
+}
+
+function htmlDepuisGeoJSON(data) {
+    var feats = (data && data.features) || [];
+    if (!feats.length) { return null; }
+    return feats.map(function (f) {
+        var props = f.properties || {};
+        var lignes = Object.keys(props).map(function (k) {
+            return '<tr><th style="text-align:left;padding:2px 8px 2px 0;">' + echapperHtml(k)
+                 + '</th><td>' + echapperHtml(props[k]) + '</td></tr>';
+        }).join('');
+        return '<table style="font-size:12px;border-collapse:collapse;">' + lignes + '</table>';
+    }).join('<hr style="margin:6px 0;">');
+}
+
+map.on('click', function (e) {
+    if (window.__mesureActive) { return; }
+    var cible = e.originalEvent && e.originalEvent.target;
+    if (cible && cible.closest && cible.closest('.leaflet-interactive')) { return; }
+
+    var actives = Object.keys(couchesWMS_leaflet).filter(function (n) {
+        return map.hasLayer(couchesWMS_leaflet[n]);
+    });
+    if (!actives.length) { return; }
+
+    // On interroge la couche WMS la plus haute (dernière ajoutée) en priorité
+    var nom = actives[actives.length - 1];
+    var couche = couchesWMS_leaflet[nom];
+    var popup = L.popup({maxWidth: 400}).setLatLng(e.latlng)
+        .setContent('<b>' + echapperHtml(nom) + '</b><br>' + echapperHtml(I18N.loading || 'Chargement…'))
+        .openOn(map);
+
+    function afficherIframe() {
+        var u = urlGetFeatureInfo(couche, e.latlng, 'text/html');
+        popup.setContent('<b>' + echapperHtml(nom) + '</b><br>'
+            + '<iframe src="' + echapperHtml(u) + '" style="width:300px;height:180px;border:0;"></iframe>');
+    }
+
+    fetch(urlGetFeatureInfo(couche, e.latlng, 'application/json'))
+        .then(function (r) {
+            if (!r.ok) { throw new Error('HTTP ' + r.status); }
+            return r.json();
+        })
+        .then(function (data) {
+            var html = htmlDepuisGeoJSON(data);
+            popup.setContent('<b>' + echapperHtml(nom) + '</b><br>'
+                + (html || echapperHtml(I18N.no_feature || 'Aucun objet à cet endroit.')));
+        })
+        .catch(function (err) {
+            console.warn('GetFeatureInfo JSON indisponible pour "' + nom + '" :', err);
+            afficherIframe();
+        });
 });
 
 function ajusterVueSurDonnees(bounds) {

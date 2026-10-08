@@ -11,6 +11,7 @@ from qgis.PyQt.QtWidgets import (
     QListWidgetItem,
 )
 
+from .ogc_live_source import est_couche_wms
 from .qt_compat import qenum
 
 FORM_CLASS, _ = uic.loadUiType(
@@ -137,6 +138,10 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
         # --- Onglet Couches ---
         if hasattr(self, "groupSelectionCouches"):
             self.groupSelectionCouches.setTitle(self.tr("Layer selection to export"))
+        if hasattr(self, "groupCouchesWMS"):
+            self.groupCouchesWMS.setTitle(
+                self.tr("WMS layers (loaded live from the server)")
+            )
         if hasattr(self, "groupPopupsConfiguration"):
             self.groupPopupsConfiguration.setTitle(
                 self.tr("Popup configuration per layer")
@@ -272,10 +277,15 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
             return
         self.listCouches.clear()
         self.listCouchesPopup.clear()
+        if hasattr(self, "listCouchesWMS"):
+            self.listCouchesWMS.clear()
 
         layers = QgsProject.instance().mapLayers().values()
         for layer in layers:
             if layer.type() == qenum(QgsMapLayer, "LayerType", "VectorLayer"):
+                # Les couches WFS sont des couches vecteur comme les autres :
+                # elles apparaissent ici (export en direct géré automatiquement
+                # à l'export, voir ogc_live_source.est_couche_wfs).
                 item_export = QListWidgetItem(layer.name())
                 item_export.setCheckState(qenum(Qt, "CheckState", "Checked"))
                 item_export.setData(qenum(Qt, "ItemDataRole", "UserRole"), layer.id())
@@ -288,6 +298,11 @@ class UniversalMap2webDialog(QDialog, FORM_CLASS):
                 self.popup_config[layer.id()] = [
                     field.name() for field in layer.fields()
                 ]
+            elif hasattr(self, "listCouchesWMS") and est_couche_wms(layer):
+                item_wms = QListWidgetItem(f"🛰️ {layer.name()}")
+                item_wms.setCheckState(qenum(Qt, "CheckState", "Checked"))
+                item_wms.setData(qenum(Qt, "ItemDataRole", "UserRole"), layer.id())
+                self.listCouchesWMS.addItem(item_wms)
 
         if self.listCouchesPopup.count() > 0:
             self.listCouchesPopup.setCurrentRow(0)

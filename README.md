@@ -3,7 +3,7 @@
 **Export your QGIS layers to interactive web maps with Leaflet!**
 
 [![QGIS Plugin](https://img.shields.io/badge/QGIS-Plugin-brightgreen)](https://github.com/geomatic-web/universal-map2web)
-[![Version](https://img.shields.io/badge/version-1.2.1-blue)](https://github.com/geomatic-web/universal_map2web)
+[![Version](https://img.shields.io/badge/version-1.3.0-blue)](https://github.com/geomatic-web/universal_map2web)
 [![License](https://img.shields.io/badge/license-GPLv2-orange)](https://github.com/geomatic-web/universal_map2web)
 
 ## En English
@@ -36,6 +36,9 @@ The complete user manual is available here:
 - 11 **Export to PNG, PDF and CSV**
 - 12 **Multi-language support** (English/French)
 - 13 **Dynamic PostgreSQL/PostGIS mode**: layers already connected to a PostGIS database in QGIS can stay live on the exported web map instead of being frozen into a static GeoJSON file
+- 14 **Attribute table** for every vector layer: floating window with sorting, per-column filters, global search, map highlighting and CSV export
+- 15 **Zoom to layer** button next to each layer
+- 16 **Live WFS (vector) and WMS (raster) layers** loaded directly from GeoServer or any OGC server (CORS required, see below)
 
 ## Dynamic PostgreSQL mode
 
@@ -49,6 +52,93 @@ For layers already connected to PostgreSQL/PostGIS in QGIS, you can enable **"Lo
 - Layers not connected to PostgreSQL, or when this option is left unchecked, are still exported as static GeoJSON as before
 
 **Requirement**: a PHP-capable web server with the `pdo_pgsql` extension is needed to host the exported site in this mode (a plain static file host is not enough).
+
+## Attribute table
+
+Every vector layer (shapefile/GeoJSON, WFS or PostgreSQL/PostGIS) has a small **table icon** in front of its name in the legend of the exported map. Click it to open the attribute table in a floating window:
+
+- Draggable and resizable window; several tables can be open at the same time
+- Click a column header to **sort**; type under a header to **filter** that column; use the global search box to search all columns
+- **Hover a row** to highlight the feature on the map; hold **Ctrl** while hovering (or click the row) to zoom to it
+- **Export to CSV** of the rows currently displayed (after filtering and sorting), `;`-separated, UTF-8 with BOM so Excel opens it correctly
+- Paged display (100 rows per page) so large layers stay fast
+
+A **magnifier icon** next to the table icon zooms the map to the extent of the layer.
+
+> The table shows the features actually loaded in the page. In dynamic PostgreSQL mode with bounding-box filtering, only the features of the loaded area are listed.
+
+## Live WFS / WMS layers
+
+- **WFS (vector)**: a vector layer that is connected to a WFS service in QGIS is detected automatically. No GeoJSON file is written: the exported page requests the features (`GetFeature`, `application/json`) directly from the WFS server each time it loads. No PHP backend is needed. The layer behaves like any other vector layer (symbology, popups, filter, attribute table).
+- **WMS (raster)**: layers connected to a WMS service appear in a separate **WMS layers** list in the export dialog. They are displayed as tiles requested live from the server. Clicking the map queries the server (`GetFeatureInfo`) and shows the result in a popup.
+
+The connection settings are read from the layer already configured in QGIS: nothing has to be typed again in the plugin.
+
+**Requirements for live OGC layers**
+
+- The GeoServer (or other OGC server) must be reachable from the **visitor's browser**, not only from your computer
+- If the exported map is served over `https://`, the OGC server must also use `https://` (browsers block mixed content)
+- The server must allow **CORS** (see below)
+- For WFS, the `application/json` output format must be available (enabled by default in GeoServer)
+
+## Enabling CORS on GeoServer (WFS and WMS)
+
+The exported map is opened from another *origin* than your GeoServer (your website, or `http://localhost:PORT` when using the built-in local server). The browser only allows the page to read GeoServer responses if GeoServer sends the `Access-Control-Allow-Origin` header. The built-in local server does not remove this requirement for remote WFS/WMS services.
+
+| Service | Without CORS |
+|---|---|
+| **WFS** | The layer cannot be loaded: the legend shows *"Could not load this layer (server unreachable or blocked by CORS)"* |
+| **WMS** | Tiles are still displayed (they are loaded as images), but click-to-query (`GetFeatureInfo` as JSON) is blocked and the plugin falls back to an HTML frame |
+
+**Option A – GeoServer Web Administration (recent versions)**
+Recent GeoServer versions include a CORS setting in the Web Administration interface (see *Enable CORS* in the GeoServer documentation, section *Container Considerations*). Enable it, then **restart GeoServer**.
+
+**Option B – `web.xml` (all versions)**
+Edit `webapps/geoserver/WEB-INF/web.xml` and uncomment (or add) the CORS `<filter>` **and** its `<filter-mapping>`, then restart.
+
+*Standalone / binary installer (Jetty):*
+
+```xml
+<filter>
+  <filter-name>cross-origin</filter-name>
+  <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
+</filter>
+<filter-mapping>
+  <filter-name>cross-origin</filter-name>
+  <url-pattern>/*</url-pattern>
+</filter-mapping>
+```
+
+*WAR deployed in Tomcat:*
+
+```xml
+<filter>
+  <filter-name>CorsFilter</filter-name>
+  <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+  <init-param>
+    <param-name>cors.allowed.origins</param-name>
+    <param-value>*</param-value>
+  </init-param>
+  <init-param>
+    <param-name>cors.allowed.methods</param-name>
+    <param-value>GET,POST,HEAD,OPTIONS</param-value>
+  </init-param>
+  <init-param>
+    <param-name>cors.allowed.headers</param-name>
+    <param-value>Content-Type,X-Requested-With,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers</param-value>
+  </init-param>
+</filter>
+<filter-mapping>
+  <filter-name>CorsFilter</filter-name>
+  <url-pattern>/*</url-pattern>
+</filter-mapping>
+```
+
+**Important**
+
+- Use **one** method only. Enabling CORS in the interface *and* in `web.xml` (or also in a reverse proxy such as Apache/Nginx) sends duplicate `Access-Control-Allow-Origin` values, which makes browsers reject the response
+- `*` allows any website. In production, replace it with your own site(s), e.g. `https://maps.example.org`
+- Check it with: `curl -I -H "Origin: https://maps.example.org" "https://your-geoserver/geoserver/ows?service=WFS&request=GetCapabilities"` and look for `Access-Control-Allow-Origin` in the response headers
 
 ## Interface
 
@@ -138,6 +228,9 @@ La documentation complète disponible ici:
 - 11 **Export PNG, PDF et CSV**
 - 12 **Support multilingue** (Anglais/Français)
 - 13 **Mode PostgreSQL/PostGIS dynamique** : les couches déjà connectées à une base PostGIS dans QGIS peuvent rester en direct sur la carte web exportée, au lieu d'être figées dans un fichier GeoJSON statique
+- 14 **Table attributaire** pour chaque couche vectorielle : fenêtre flottante avec tri, filtres par colonne, recherche globale, surbrillance sur la carte et export CSV
+- 15 **Bouton « Zoom sur la couche »** à côté de chaque couche
+- 16 **Couches WFS (vecteur) et WMS (raster) en direct** chargées directement depuis GeoServer ou tout serveur OGC (CORS requis, voir ci-dessous)
 
 ## Mode PostgreSQL dynamique
 
@@ -151,6 +244,93 @@ Pour les couches déjà connectées à PostgreSQL/PostGIS dans QGIS, vous pouvez
 - Les couches non connectées à PostgreSQL, ou lorsque cette option reste décochée, continuent d'être exportées en GeoJSON statique comme auparavant
 
 **Prérequis** : un serveur web compatible PHP avec l'extension `pdo_pgsql` est nécessaire pour héberger le site exporté dans ce mode (un simple hébergement de fichiers statiques ne suffit pas).
+
+## Table attributaire
+
+Chaque couche vectorielle (shapefile/GeoJSON, WFS ou PostgreSQL/PostGIS) possède une petite **icône de table** devant son nom dans la légende de la carte exportée. Un clic l'ouvre dans une fenêtre flottante :
+
+- Fenêtre déplaçable et redimensionnable ; plusieurs tables peuvent être ouvertes en même temps
+- Clic sur un en-tête de colonne pour **trier** ; saisie sous un en-tête pour **filtrer** cette colonne ; champ de recherche global pour chercher dans toutes les colonnes
+- **Survol d'une ligne** : l'objet est mis en surbrillance sur la carte ; maintenez **Ctrl** pendant le survol (ou cliquez la ligne) pour zoomer dessus
+- **Export CSV** des lignes affichées (après filtrage et tri), séparateur `;`, UTF-8 avec BOM pour une ouverture correcte dans Excel
+- Affichage paginé (100 lignes par page) pour rester fluide sur les grosses couches
+
+Une **icône loupe** à côté de l'icône de table permet de zoomer sur l'emprise de la couche.
+
+> La table affiche les objets réellement chargés dans la page. En mode PostgreSQL dynamique avec filtrage par emprise, seuls les objets de la zone chargée sont listés.
+
+## Couches WFS / WMS en direct
+
+- **WFS (vecteur)** : une couche vectorielle connectée à un service WFS dans QGIS est détectée automatiquement. Aucun fichier GeoJSON n'est écrit : la page exportée demande les entités (`GetFeature`, `application/json`) directement au serveur WFS à chaque chargement. Aucun backend PHP n'est nécessaire. La couche se comporte comme les autres couches vectorielles (symbologie, popups, filtre, table attributaire).
+- **WMS (raster)** : les couches connectées à un service WMS apparaissent dans une liste séparée **Couches WMS** de la boîte de dialogue d'export. Elles sont affichées sous forme de tuiles demandées en direct au serveur. Un clic sur la carte interroge le serveur (`GetFeatureInfo`) et affiche le résultat dans un popup.
+
+Les paramètres de connexion sont lus depuis la couche déjà configurée dans QGIS : rien n'est à ressaisir dans l'extension.
+
+**Prérequis pour les couches OGC en direct**
+
+- Le GeoServer (ou autre serveur OGC) doit être accessible depuis le **navigateur du visiteur**, pas seulement depuis votre ordinateur
+- Si la carte exportée est servie en `https://`, le serveur OGC doit aussi être en `https://` (les navigateurs bloquent le contenu mixte)
+- Le serveur doit autoriser le **CORS** (voir ci-dessous)
+- Pour le WFS, le format de sortie `application/json` doit être disponible (activé par défaut dans GeoServer)
+
+## Activer le CORS sur GeoServer (WFS et WMS)
+
+La carte exportée est ouverte depuis une autre *origine* que votre GeoServer (votre site web, ou `http://localhost:PORT` avec le serveur local intégré). Le navigateur n'autorise la page à lire les réponses de GeoServer que si celui-ci envoie l'en-tête `Access-Control-Allow-Origin`. Le serveur local intégré ne supprime pas cette exigence pour des services WFS/WMS distants.
+
+| Service | Sans CORS |
+|---|---|
+| **WFS** | La couche ne peut pas être chargée : la légende affiche *« Impossible de charger cette couche (serveur injoignable ou bloqué par CORS) »* |
+| **WMS** | Les tuiles s'affichent quand même (elles sont chargées comme des images), mais l'interrogation au clic (`GetFeatureInfo` en JSON) est bloquée et l'extension bascule sur un cadre HTML |
+
+**Option A – Interface d'administration de GeoServer (versions récentes)**
+Les versions récentes de GeoServer proposent un réglage CORS dans l'interface d'administration web (voir *Enable CORS* dans la documentation GeoServer, section *Container Considerations*). Activez-le puis **redémarrez GeoServer**.
+
+**Option B – `web.xml` (toutes versions)**
+Modifiez `webapps/geoserver/WEB-INF/web.xml` et décommentez (ou ajoutez) le `<filter>` CORS **et** son `<filter-mapping>`, puis redémarrez.
+
+*Version autonome / installeur binaire (Jetty) :*
+
+```xml
+<filter>
+  <filter-name>cross-origin</filter-name>
+  <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
+</filter>
+<filter-mapping>
+  <filter-name>cross-origin</filter-name>
+  <url-pattern>/*</url-pattern>
+</filter-mapping>
+```
+
+*WAR déployé dans Tomcat :*
+
+```xml
+<filter>
+  <filter-name>CorsFilter</filter-name>
+  <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+  <init-param>
+    <param-name>cors.allowed.origins</param-name>
+    <param-value>*</param-value>
+  </init-param>
+  <init-param>
+    <param-name>cors.allowed.methods</param-name>
+    <param-value>GET,POST,HEAD,OPTIONS</param-value>
+  </init-param>
+  <init-param>
+    <param-name>cors.allowed.headers</param-name>
+    <param-value>Content-Type,X-Requested-With,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers</param-value>
+  </init-param>
+</filter>
+<filter-mapping>
+  <filter-name>CorsFilter</filter-name>
+  <url-pattern>/*</url-pattern>
+</filter-mapping>
+```
+
+**Important**
+
+- N'utilisez **qu'une seule** méthode. Activer le CORS dans l'interface *et* dans `web.xml` (ou aussi dans un proxy inverse Apache/Nginx) envoie des valeurs `Access-Control-Allow-Origin` en double, ce qui fait rejeter la réponse par les navigateurs
+- `*` autorise n'importe quel site. En production, remplacez-le par votre ou vos sites, par ex. `https://cartes.exemple.org`
+- Vérification : `curl -I -H "Origin: https://cartes.exemple.org" "https://votre-geoserver/geoserver/ows?service=WFS&request=GetCapabilities"` puis cherchez `Access-Control-Allow-Origin` dans les en-têtes de réponse
 
 ## Interface
 
@@ -211,3 +391,5 @@ Ce projet est sous licence GNU GPL v2. Voir le fichier [LICENSE](LICENSE) pour p
 - [QGIS](https://qgis.org) - Le meilleur SIG open source
 - [Leaflet](https://leafletjs.com) - La bibliothèque cartographique JavaScript
 - [qgis2web](https://github.com/tomchadwin/qgis2web) - Source d'inspiration
+- [OGC](https://www.ogc.org) - Open Geospatial Consortium, les standards ouverts à l'origine du WFS et du WMS
+- [OpenStreetMap](https://www.openstreetmap.org) - Les données cartographiques libres et collaboratives utilisées pour le fond de carte

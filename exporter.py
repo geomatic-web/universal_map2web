@@ -18,6 +18,13 @@ from . import html_generator
 from .geojson import layer_to_geojson
 from .labels import extraire_etiquettes
 from .legend import extraire_icones_symbologie
+from .ogc_live_source import (
+    construire_url_wfs_live,
+    est_couche_wfs,
+    est_couche_wms,
+    extraire_config_wfs,
+    extraire_config_wms,
+)
 from .postgres_source import (
     est_couche_postgres,
     extraire_config_postgres,
@@ -125,6 +132,7 @@ class Exporter:
                 couche_en_pg_dynamique = postgres_dynamique and est_couche_postgres(
                     layer
                 )
+                couche_en_wfs_live = est_couche_wfs(layer)
 
                 if couche_en_pg_dynamique:
                     # Pas de dump GeoJSON : la page web ira chercher les données en
@@ -143,6 +151,22 @@ class Exporter:
                     reference_fichier = (
                         f"get_data.php?layer={nom_fichier}&key=__API_KEY__"
                     )
+                elif couche_en_wfs_live:
+                    # Pas de dump GeoJSON non plus : la couche est déjà connectée à
+                    # un service WFS dans QGIS, on transmet directement l'URL
+                    # GetFeature (GeoJSON) du serveur. La page web interrogera ce
+                    # serveur à chaque chargement — aucun backend requis, contrairement
+                    # au mode PostgreSQL dynamique.
+                    carte_styles, style_defaut, a_des_motifs = (
+                        construire_carte_styles_renderer(
+                            renderer,
+                            layer.geometryType(),
+                            nom_fichier,
+                            self.styles_dir,
+                        )
+                    )
+                    config_wfs = extraire_config_wfs(layer)
+                    reference_fichier = construire_url_wfs_live(config_wfs)
                 else:
                     geojson_data, a_des_motifs = layer_to_geojson(
                         layer, popup_fields, nom_fichier, self.styles_dir
@@ -153,9 +177,16 @@ class Exporter:
                     reference_fichier = f"data/{nom_fichier}.geojson"
                     carte_styles, style_defaut = None, None
 
+                if couche_en_pg_dynamique:
+                    source_couche = "postgres"
+                elif couche_en_wfs_live:
+                    source_couche = "wfs"
+                else:
+                    source_couche = "geojson"
+
                 self.export_data[layer.name()] = {
                     "fichier": reference_fichier,
-                    "source": ("postgres" if couche_en_pg_dynamique else "geojson"),
+                    "source": source_couche,
                     "style_map": carte_styles,
                     "style_defaut": style_defaut,
                     "needs_svg": a_des_motifs,
@@ -189,7 +220,23 @@ class Exporter:
                             "__API_KEY__", api_key
                         )
 
-            html_generator.generer_export(dialog, self.export_data, self.output_dir)
+            # ── Couches WMS cochées : chargées en direct (tuiles raster),
+            # transmises telles quelles à la page web (aucun fichier à écrire).
+            wms_layers = {}
+            if hasattr(dialog, "listCouchesWMS"):
+                for i in range(dialog.listCouchesWMS.count()):
+                    item = dialog.listCouchesWMS.item(i)
+                    if item.checkState() == qenum(Qt, "CheckState", "Checked"):
+                        layer_id = item.data(qenum(Qt, "ItemDataRole", "UserRole"))
+                        layer_wms = QgsProject.instance().mapLayer(layer_id)
+                        if layer_wms and est_couche_wms(layer_wms):
+                            wms_layers[layer_wms.name()] = extraire_config_wms(
+                                layer_wms
+                            )
+
+            html_generator.generer_export(
+                dialog, self.export_data, self.output_dir, wms_layers=wms_layers
+            )
 
             if configs_postgres:
                 QMessageBox.information(

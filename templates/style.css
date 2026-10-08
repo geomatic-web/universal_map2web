@@ -352,3 +352,72 @@ body.dark-mode .sous-legende-item {
     color: var(--accent) !important;
     background-color: #f1f5f9 !important;
 }
+
+/* ── Table attributaire (fenêtre flottante) ───────────────── */
+.btn-table {
+    background: white; border: none; cursor: pointer; color: var(--text-muted);
+    padding: 2px 5px; margin-right: 4px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; transition: color 0.2s;
+}
+.btn-table:hover:not(:disabled) { color: var(--accent); }
+.btn-table:disabled { opacity: 0.35; cursor: default; }
+
+.attr-win {
+    position: fixed; width: 640px; height: 420px; min-width: 280px; min-height: 200px;
+    max-width: 96vw; max-height: 92vh; resize: both; overflow: hidden;
+    display: flex; flex-direction: column;
+    background: #ffffff; color: #222222;
+    border: 1px solid var(--border, #ccc); border-radius: 8px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.35); font-size: 12px;
+}
+.attr-win-bar {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    padding: 7px 10px; cursor: move; touch-action: none; user-select: none;
+    background: var(--header-color, #34495e); color: #fff; font-weight: 600;
+}
+.attr-win-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.attr-win-close {
+    background: none; border: none; color: #fff; font-size: 20px; line-height: 1;
+    cursor: pointer; padding: 0 4px;
+}
+.attr-win-close:hover { color: #ffeb3b; }
+.attr-win-info { padding: 6px 10px; font-size: 11px; color: var(--text-muted, #666); }
+.attr-win-tools { display: flex; align-items: center; gap: 8px; padding: 0 10px 8px; flex-wrap: wrap; }
+.attr-btn {
+    padding: 4px 10px; border: 1px solid var(--border, #ccc); border-radius: 4px; cursor: pointer;
+    background: var(--bg-select, #f3f3f3); color: var(--text-main, #222); font-size: 12px;
+}
+.attr-btn:hover:not(:disabled) { color: var(--accent, #2980b9); border-color: var(--accent, #2980b9); }
+.attr-btn:disabled { opacity: 0.4; cursor: default; }
+.attr-search {
+    flex: 1; min-width: 120px; padding: 4px 8px; border-radius: 4px; font-size: 12px;
+    border: 1px solid var(--border, #ccc); background: var(--bg-select, #fff); color: var(--text-main, #222);
+}
+.attr-count { font-size: 11px; color: var(--text-muted, #666); white-space: nowrap; }
+.attr-win-scroll { flex: 1; min-height: 0; overflow: auto; border-top: 1px solid var(--border, #ccc); }
+.attr-table { border-collapse: collapse; width: max-content; min-width: 100%; }
+.attr-table th, .attr-table td {
+    padding: 4px 8px; text-align: left; border: 1px solid var(--border, #ddd);
+    white-space: nowrap; max-width: 320px; overflow: hidden; text-overflow: ellipsis;
+}
+.attr-table thead th {
+    position: sticky; top: 0; z-index: 2; cursor: pointer;
+    background: #eeeeee; color: #222222;
+}
+.attr-table thead tr:nth-child(2) th { top: 27px; cursor: default; padding: 3px; }
+.attr-filter-cell input {
+    width: 100%; min-width: 70px; box-sizing: border-box; padding: 2px 5px; font-size: 11px;
+    border: 1px solid var(--border, #ccc); border-radius: 3px;
+    background: var(--bg-panel, #fff); color: var(--text-main, #222);
+}
+.attr-table tbody tr:nth-child(even) { background: rgba(127,127,127,0.08); }
+.attr-table tbody tr:hover { background: rgba(255,235,59,0.35); cursor: pointer; }
+.attr-table tbody tr.attr-selected { background: rgba(41,128,185,0.28); }
+.attr-empty { text-align: center; padding: 14px; color: var(--text-muted, #666); }
+.attr-win-pager {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    padding: 6px 10px; border-top: 1px solid var(--border, #ccc); font-size: 11px;
+}
+@media (max-width: 700px) {
+    .attr-win { left: 2vw !important; top: 8vh !important; width: 96vw; height: 70vh; resize: none; }
+}

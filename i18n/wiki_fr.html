@@ -102,13 +102,27 @@
             border: none;
             border-top: 1px solid #eee;
         }
+
+        pre {
+            background: #f4f6f7;
+            border: 1px solid #ddd;
+            border-left: 3px solid #4ecdc4;
+            padding: 8px 10px;
+            font-family: Consolas, 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        code {
+            font-family: Consolas, 'Courier New', monospace;
+            background: #f0f0f0;
+        }
     </style>
 </head>
 
 <body>
 
     <h1>Universal Map2web</h1>
-    <p class="version"><strong>Version :</strong> 1.2.0 | <strong>QGIS :</strong> 3.16+</p>
+    <p class="version"><strong>Version :</strong> 1.4.0 | <strong>QGIS :</strong> 3.0+</p>
 
     <p>Extension QGIS pour exporter des couches vectorielles en <strong>cartes HTML interactives</strong> avec
         préservation de la symbologie QGIS.</p>
@@ -124,6 +138,9 @@
         <li>Regroupement des points (clustering)</li>
         <li>Configuration des popups par couche</li>
         <li>Mode PostgreSQL/PostGIS dynamique (données en direct au lieu d'un export figé)</li>
+        <li>Fenêtre de table attributaire pour chaque couche vectorielle (tri, filtre, recherche, surbrillance sur la carte, export CSV)</li>
+        <li>Bouton « Zoom sur la couche »</li>
+        <li>Couches WFS (vecteur) et WMS (raster) en direct depuis GeoServer / serveurs OGC</li>
     </ul>
 
     <h2>Manuel rapide</h2>
@@ -163,6 +180,14 @@
             <td>Clic sur l'élément</td>
         </tr>
         <tr>
+            <td>Ouvrir la table attributaire</td>
+            <td>Clic sur l'icône de table devant le nom de la couche</td>
+        </tr>
+        <tr>
+            <td>Zoom sur la couche</td>
+            <td>Clic sur l'icône loupe devant le nom de la couche</td>
+        </tr>
+        <tr>
             <td>Réinitialiser vue</td>
             <td>Double-clic sur la carte</td>
         </tr>
@@ -199,6 +224,107 @@
         exporté — un simple hébergement de fichiers statiques ne suffit pas pour ce mode.
     </div>
 
+    <h3>7. Table attributaire</h3>
+    <p>Chaque couche vectorielle (shapefile, WFS ou PostgreSQL) possède une <strong>icône de table</strong> devant son
+        nom dans la légende de la carte. Un clic l'ouvre dans une fenêtre flottante.</p>
+    <ul>
+        <li>Déplacez la fenêtre par sa barre de titre, redimensionnez-la par le coin inférieur droit ; plusieurs tables peuvent être ouvertes en même temps</li>
+        <li>Cliquez sur un <strong>en-tête de colonne</strong> pour trier, saisissez dessous pour <strong>filtrer</strong>, ou utilisez la recherche globale</li>
+        <li><strong>Survolez une ligne</strong> pour mettre l'objet en surbrillance sur la carte ; maintenez <strong>Ctrl</strong> pendant le survol (ou cliquez la ligne) pour zoomer dessus</li>
+        <li><strong>Exporter en CSV</strong> exporte les lignes affichées (après filtrage/tri), séparées par <code>;</code>, UTF-8 avec BOM pour Excel</li>
+        <li>Les lignes sont paginées (100 par page) pour rester fluide sur les grosses couches</li>
+        <li>L'<strong>icône loupe</strong> à côté de l'icône de table zoome sur l'emprise de la couche</li>
+    </ul>
+    <div class="note">
+        La table liste les objets chargés dans la page. En mode PostgreSQL dynamique avec filtrage par emprise, seuls
+        les objets de la zone chargée sont affichés.
+    </div>
+
+    <h3>8. Couches WFS / WMS en direct</h3>
+    <ul>
+        <li><strong>WFS (vecteur)</strong> : une couche connectée à un service WFS dans QGIS est détectée automatiquement.
+            Aucun fichier GeoJSON n'est écrit : la carte web demande les entités (<code>GetFeature</code>, JSON)
+            directement au serveur à chaque chargement. Aucun backend PHP n'est nécessaire. Symbologie, popups,
+            filtrage et table attributaire fonctionnent comme pour toute couche vectorielle.</li>
+        <li><strong>WMS (raster)</strong> : les couches connectées à un service WMS sont listées séparément dans
+            <strong>Couches WMS</strong> dans la boîte de dialogue d'export. Elles sont affichées sous forme de tuiles
+            demandées en direct ; un clic sur la carte interroge le serveur (<code>GetFeatureInfo</code>) et affiche le
+            résultat dans un popup.</li>
+    </ul>
+    <p>Les paramètres de connexion sont lus depuis la couche déjà configurée dans QGIS : rien à ressaisir.</p>
+    <div class="note">
+        Le serveur OGC doit être accessible depuis le <strong>navigateur du visiteur</strong>, utiliser
+        <strong>https</strong> si la carte est servie en https (le contenu mixte est bloqué) et avoir le
+        <strong>CORS activé</strong> (section suivante). Pour le WFS, le format de sortie
+        <code>application/json</code> doit être disponible (par défaut dans GeoServer).
+    </div>
+
+    <h3>9. Activer le CORS sur GeoServer (WFS et WMS)</h3>
+    <p>La carte exportée est ouverte depuis une autre origine que votre GeoServer (votre site web, ou
+        <code>http://localhost:PORT</code> avec le serveur local intégré). Le navigateur n'autorise la page à lire les
+        réponses de GeoServer que si celui-ci envoie l'en-tête <code>Access-Control-Allow-Origin</code>.</p>
+    <table>
+        <tr>
+            <th>Service</th>
+            <th>Sans CORS</th>
+        </tr>
+        <tr>
+            <td>WFS</td>
+            <td>La couche ne peut pas être chargée (message « bloqué par CORS » dans la légende)</td>
+        </tr>
+        <tr>
+            <td>WMS</td>
+            <td>Les tuiles s'affichent, mais l'interrogation au clic (GetFeatureInfo en JSON) est bloquée et bascule sur un cadre HTML</td>
+        </tr>
+    </table>
+    <p><strong>Option A – Administration web (versions récentes de GeoServer) :</strong> activez le réglage CORS dans
+        l'interface d'administration web de GeoServer (voir « Enable CORS » dans la documentation GeoServer), puis
+        redémarrez GeoServer.</p>
+    <p><strong>Option B – web.xml (toutes versions) :</strong> modifiez
+        <code>webapps/geoserver/WEB-INF/web.xml</code>, décommentez (ou ajoutez) le <code>filter</code> CORS et son
+        <code>filter-mapping</code>, puis redémarrez.</p>
+    <p>Version autonome / installeur binaire (Jetty) :</p>
+<pre>&lt;filter&gt;
+  &lt;filter-name&gt;cross-origin&lt;/filter-name&gt;
+  &lt;filter-class&gt;org.eclipse.jetty.servlets.CrossOriginFilter&lt;/filter-class&gt;
+&lt;/filter&gt;
+&lt;filter-mapping&gt;
+  &lt;filter-name&gt;cross-origin&lt;/filter-name&gt;
+  &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+&lt;/filter-mapping&gt;</pre>
+    <p>WAR déployé dans Tomcat :</p>
+<pre>&lt;filter&gt;
+  &lt;filter-name&gt;CorsFilter&lt;/filter-name&gt;
+  &lt;filter-class&gt;org.apache.catalina.filters.CorsFilter&lt;/filter-class&gt;
+  &lt;init-param&gt;
+    &lt;param-name&gt;cors.allowed.origins&lt;/param-name&gt;
+    &lt;param-value&gt;*&lt;/param-value&gt;
+  &lt;/init-param&gt;
+  &lt;init-param&gt;
+    &lt;param-name&gt;cors.allowed.methods&lt;/param-name&gt;
+    &lt;param-value&gt;GET,POST,HEAD,OPTIONS&lt;/param-value&gt;
+  &lt;/init-param&gt;
+  &lt;init-param&gt;
+    &lt;param-name&gt;cors.allowed.headers&lt;/param-name&gt;
+    &lt;param-value&gt;Content-Type,X-Requested-With,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers&lt;/param-value&gt;
+  &lt;/init-param&gt;
+&lt;/filter&gt;
+&lt;filter-mapping&gt;
+  &lt;filter-name&gt;CorsFilter&lt;/filter-name&gt;
+  &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+&lt;/filter-mapping&gt;</pre>
+    <div class="note">
+        <ul>
+            <li>N'utilisez <strong>qu'une seule méthode</strong> : activer le CORS dans l'interface, dans web.xml et/ou
+                dans un proxy inverse en même temps envoie des en-têtes en double et les navigateurs rejettent la
+                réponse</li>
+            <li><code>*</code> autorise n'importe quel site : en production, remplacez-le par votre ou vos sites, par
+                ex. <code>https://cartes.exemple.org</code></li>
+            <li>Test : <code>curl -I -H "Origin: https://cartes.exemple.org" "https://votre-geoserver/geoserver/ows?service=WFS&amp;request=GetCapabilities"</code>
+                doit renvoyer un en-tête <code>Access-Control-Allow-Origin</code></li>
+        </ul>
+    </div>
+
     <h2>Configuration requise</h2>
     <table>
         <tr>
@@ -207,7 +333,7 @@
         </tr>
         <tr>
             <td>QGIS</td>
-            <td>3.16 ou supérieure</td>
+            <td>3.0 ou supérieure</td>
         </tr>
         <tr>
             <td>Navigateur</td>
@@ -242,7 +368,7 @@
 
     <hr>
     <p style="text-align: center; color: #7f8c8d; font-size: 11px;">
-        Universal Map2web v1.2.0 | © kibora B. Jean-Baptiste | Septembre 2026
+        Universal Map2web v1.4.0 | © kibora B. Jean-Baptiste | Novembre 2026
     </p>
 
 </body>

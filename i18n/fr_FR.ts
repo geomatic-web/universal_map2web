@@ -296,6 +296,10 @@
         <translation>Configuration des Popups par couche</translation>
     </message>
     <message>
+        <source>WMS layers (loaded live from the server)</source>
+        <translation>Couches WMS (chargées en direct depuis le serveur)</translation>
+    </message>
+    <message>
         <source>1. Select a layer:</source>
         <translation>1. Sélectionner une couche :</translation>
     </message>

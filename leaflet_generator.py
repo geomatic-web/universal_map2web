@@ -66,8 +66,13 @@ def build_outils_js(options, locale=None):
     outils_js = ""
 
     if options.get("attribution", True):
+        # Lien HTML actif vers ton site web officiel
+        attribution_html = (
+            '<a href="https://leafletjs.com" target="_blank">Leaflet</a> | '
+            '<a href="https://geomatic-web.github.io/universal_map2web/" target="_blank" rel="noopener">Universal Map2web</a>'
+        )
         outils_js += (
-            "\n        map.attributionControl.setPrefix('Leaflet | Universal Map2web');"
+            f"\n        map.attributionControl.setPrefix('{attribution_html}');"
         )
     else:
         outils_js += "\n        map.removeControl(map.attributionControl);"
@@ -141,7 +146,9 @@ def build_outils_js(options, locale=None):
     return outils_js
 
 
-def render_app_js(export_data, url_fond, options, output_path, locale=None):
+def render_app_js(
+    export_data, url_fond, options, output_path, locale=None, wms_layers=None
+):
     """Charge templates/app.js, remplace les marqueurs par les valeurs de cet export,
     et écrit le résultat dans output_path. `locale` ('fr'/'en') détermine la langue
     de l'interface de la carte exportée ; si None, elle est déduite de la langue
@@ -158,10 +165,14 @@ def render_app_js(export_data, url_fond, options, output_path, locale=None):
 
     outils_js = build_outils_js(options, locale)
 
+    wms_layers_json = json.dumps(wms_layers or {}, ensure_ascii=False)
+    wms_layers_escaped = wms_layers_json.replace("\\", "\\\\").replace("'", "\\'")
+
     contenu = contenu.replace("__META_COUCHES_JSON__", meta_couches_escaped)
     contenu = contenu.replace("__I18N_JSON__", i18n_escaped)
     contenu = contenu.replace("__URL_FOND__", url_fond)
     contenu = contenu.replace("__OUTILS_JS__", outils_js)
+    contenu = contenu.replace("__WMS_LAYERS_JSON__", wms_layers_escaped)
 
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(contenu)

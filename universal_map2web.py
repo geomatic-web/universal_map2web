@@ -76,12 +76,14 @@ class UniversalMap2web:
         self.action.setWhatsThis(self.tr("Export the layers in interactive HTML map"))
         self.action.triggered.connect(self.run)
         self.iface.addToolBarIcon(self.action)
-        self.iface.addPluginToMenu(self.tr("&Universal Map2web"), self.action)
+        self.iface.addPluginToWebMenu(self.tr("&Universal Map2web"), self.action)
+        # self.iface.addPluginToMenu(self.tr("&Universal Map2web"), self.action)
 
     def unload(self):
         if self.action:
             self.iface.removeToolBarIcon(self.action)
-            self.iface.removePluginMenu(self.tr("&Universal Map2web"), self.action)
+            self.iface.removePluginWebMenu(self.tr("&Universal Map2web"), self.action)
+            # self.iface.removePluginMenu(self.tr("&Universal Map2web"), self.action)
 
     def run(self):
         self.dialog = UniversalMap2webDialog(self.iface.mainWindow())
@@ -97,11 +99,11 @@ class UniversalMap2web:
             for i in range(self.dialog.comboFondPlan.count()):
                 item = self.dialog.comboFondPlan.itemText(i)
                 if "OpenStreetMap" in item:
-                    self.dialog.comboFondPlan.setItemText(i, f"🌍 {item}")
+                    self.dialog.comboFondPlan.setItemText(i, f"{item}")
                 elif "Google Satellite" in item:
-                    self.dialog.comboFondPlan.setItemText(i, f"🛰️ {item}")
+                    self.dialog.comboFondPlan.setItemText(i, f"{item}")
                 elif "Google Hybrid" in item:
-                    self.dialog.comboFondPlan.setItemText(i, f"🌐 {item}")
+                    self.dialog.comboFondPlan.setItemText(i, f"{item}")
 
         self.dialog.chkFondPlanPersonnalise.toggled.connect(
             self.activer_fond_personnalise

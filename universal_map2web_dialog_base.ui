@@ -352,6 +352,18 @@
         </widget>
        </item>
        <item>
+        <widget class="QGroupBox" name="groupCouchesWMS">
+         <property name="title">
+          <string>Couches WMS (chargées en direct depuis le serveur)</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_wms">
+          <item>
+           <widget class="QListWidget" name="listCouchesWMS"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
         <widget class="QGroupBox" name="groupPopupsConfiguration">
          <property name="title">
           <string>Configuration des Popups par couche</string>

@@ -102,13 +102,27 @@
             border: none;
             border-top: 1px solid #eee;
         }
+
+        pre {
+            background: #f4f6f7;
+            border: 1px solid #ddd;
+            border-left: 3px solid #4ecdc4;
+            padding: 8px 10px;
+            font-family: Consolas, 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        code {
+            font-family: Consolas, 'Courier New', monospace;
+            background: #f0f0f0;
+        }
     </style>
 </head>
 
 <body>
 
     <h1>Universal Map2web</h1>
-    <p class="version"><strong>Version:</strong> 1.2.0 | <strong>QGIS:</strong> 3.16+</p>
+    <p class="version"><strong>Version:</strong> 1.4.0 | <strong>QGIS:</strong> 3.0+</p>
 
     <p>QGIS plugin to export vector layers as <strong>interactive HTML maps</strong> with QGIS symbology preservation.
     </p>
@@ -124,6 +138,9 @@
         <li>Point clustering</li>
         <li>Per-layer popup configuration</li>
         <li>Dynamic PostgreSQL/PostGIS mode (live data instead of a static export)</li>
+        <li>Attribute table window for every vector layer (sort, filter, search, map highlighting, CSV export)</li>
+        <li>Zoom-to-layer button</li>
+        <li>Live WFS (vector) and WMS (raster) layers from GeoServer / OGC servers</li>
     </ul>
 
     <h2>Quick guide</h2>
@@ -162,6 +179,14 @@
             <td>Click on feature</td>
         </tr>
         <tr>
+            <td>Open attribute table</td>
+            <td>Click the table icon before the layer name</td>
+        </tr>
+        <tr>
+            <td>Zoom to layer</td>
+            <td>Click the magnifier icon before the layer name</td>
+        </tr>
+        <tr>
             <td>Reset view</td>
             <td>Double-click on map</td>
         </tr>
@@ -197,6 +222,104 @@
         — a plain static file host is not enough for this mode.
     </div>
 
+    <h3>7. Attribute table</h3>
+    <p>Each vector layer (shapefile, WFS or PostgreSQL) has a <strong>table icon</strong> in front of its name in the
+        map legend. Click it to open the attribute table in a floating window.</p>
+    <ul>
+        <li>Move the window by its title bar; resize it from the bottom-right corner; several tables can be open at once</li>
+        <li>Click a <strong>column header</strong> to sort, type under it to <strong>filter</strong>, or use the global search box</li>
+        <li><strong>Hover a row</strong> to highlight the feature on the map; hold <strong>Ctrl</strong> while hovering (or click the row) to zoom to it</li>
+        <li><strong>Export to CSV</strong> exports the displayed rows (after filtering/sorting), separated by <code>;</code>, UTF-8 with BOM for Excel</li>
+        <li>Rows are paged (100 per page) to keep large layers fast</li>
+        <li>The <strong>magnifier icon</strong> next to the table icon zooms to the extent of the layer</li>
+    </ul>
+    <div class="note">
+        The table lists the features loaded in the page. In dynamic PostgreSQL mode with bounding-box filtering, only
+        the features of the loaded area are shown.
+    </div>
+
+    <h3>8. Live WFS / WMS layers</h3>
+    <ul>
+        <li><strong>WFS (vector)</strong>: a layer connected to a WFS service in QGIS is detected automatically. No GeoJSON
+            file is written: the web map requests the features (<code>GetFeature</code>, JSON) directly from the server at
+            each load. No PHP backend is needed. Symbology, popups, filtering and the attribute table work as for any
+            vector layer.</li>
+        <li><strong>WMS (raster)</strong>: layers connected to a WMS service are listed separately in
+            <strong>WMS layers</strong> in the export dialog. They are displayed as tiles requested live; clicking the map
+            queries the server (<code>GetFeatureInfo</code>) and shows the result in a popup.</li>
+    </ul>
+    <p>The connection settings are read from the layer already configured in QGIS: nothing to re-enter.</p>
+    <div class="note">
+        The OGC server must be reachable from the <strong>visitor's browser</strong>, use <strong>https</strong> if the
+        map is served over https (mixed content is blocked), and have <strong>CORS enabled</strong> (next section).
+        For WFS, the <code>application/json</code> output format must be available (default in GeoServer).
+    </div>
+
+    <h3>9. Enabling CORS on GeoServer (WFS and WMS)</h3>
+    <p>The exported map is opened from another origin than your GeoServer (your website, or
+        <code>http://localhost:PORT</code> with the built-in local server). The browser only lets the page read GeoServer
+        responses if GeoServer sends the <code>Access-Control-Allow-Origin</code> header.</p>
+    <table>
+        <tr>
+            <th>Service</th>
+            <th>Without CORS</th>
+        </tr>
+        <tr>
+            <td>WFS</td>
+            <td>The layer cannot be loaded ("blocked by CORS" message in the legend)</td>
+        </tr>
+        <tr>
+            <td>WMS</td>
+            <td>Tiles still display, but click-to-query (GetFeatureInfo as JSON) is blocked and falls back to an HTML frame</td>
+        </tr>
+    </table>
+    <p><strong>Option A – Web Administration (recent GeoServer versions):</strong> enable the CORS setting in the
+        GeoServer Web Administration interface (see "Enable CORS" in the GeoServer documentation), then restart
+        GeoServer.</p>
+    <p><strong>Option B – web.xml (all versions):</strong> edit
+        <code>webapps/geoserver/WEB-INF/web.xml</code>, uncomment (or add) the CORS <code>filter</code> and its
+        <code>filter-mapping</code>, then restart.</p>
+    <p>Standalone / binary installer (Jetty):</p>
+<pre>&lt;filter&gt;
+  &lt;filter-name&gt;cross-origin&lt;/filter-name&gt;
+  &lt;filter-class&gt;org.eclipse.jetty.servlets.CrossOriginFilter&lt;/filter-class&gt;
+&lt;/filter&gt;
+&lt;filter-mapping&gt;
+  &lt;filter-name&gt;cross-origin&lt;/filter-name&gt;
+  &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+&lt;/filter-mapping&gt;</pre>
+    <p>WAR deployed in Tomcat:</p>
+<pre>&lt;filter&gt;
+  &lt;filter-name&gt;CorsFilter&lt;/filter-name&gt;
+  &lt;filter-class&gt;org.apache.catalina.filters.CorsFilter&lt;/filter-class&gt;
+  &lt;init-param&gt;
+    &lt;param-name&gt;cors.allowed.origins&lt;/param-name&gt;
+    &lt;param-value&gt;*&lt;/param-value&gt;
+  &lt;/init-param&gt;
+  &lt;init-param&gt;
+    &lt;param-name&gt;cors.allowed.methods&lt;/param-name&gt;
+    &lt;param-value&gt;GET,POST,HEAD,OPTIONS&lt;/param-value&gt;
+  &lt;/init-param&gt;
+  &lt;init-param&gt;
+    &lt;param-name&gt;cors.allowed.headers&lt;/param-name&gt;
+    &lt;param-value&gt;Content-Type,X-Requested-With,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers&lt;/param-value&gt;
+  &lt;/init-param&gt;
+&lt;/filter&gt;
+&lt;filter-mapping&gt;
+  &lt;filter-name&gt;CorsFilter&lt;/filter-name&gt;
+  &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+&lt;/filter-mapping&gt;</pre>
+    <div class="note">
+        <ul>
+            <li>Use <strong>one method only</strong>: enabling CORS in the interface, in web.xml and/or in a reverse proxy
+                at the same time sends duplicate headers and browsers reject the response</li>
+            <li><code>*</code> allows any website: in production, replace it with your own site(s), e.g.
+                <code>https://maps.example.org</code></li>
+            <li>Test: <code>curl -I -H "Origin: https://maps.example.org" "https://your-geoserver/geoserver/ows?service=WFS&amp;request=GetCapabilities"</code>
+                must return an <code>Access-Control-Allow-Origin</code> header</li>
+        </ul>
+    </div>
+
     <h2>Requirements</h2>
     <table>
         <tr>
@@ -205,7 +328,7 @@
         </tr>
         <tr>
             <td>QGIS</td>
-            <td>3.16 or higher</td>
+            <td>3.0 or higher</td>
         </tr>
         <tr>
             <td>Browser</td>
@@ -240,7 +363,7 @@
 
     <hr>
     <p style="text-align: center; color: #7f8c8d; font-size: 11px;">
-        Universal Map2web v1.2.0 | © kibora B. Jean-Baptiste | September 2026
+        Universal Map2web v1.4.0 | © kibora B. Jean-Baptiste | November 2026
     </p>
 
 </body>

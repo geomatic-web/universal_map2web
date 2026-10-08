@@ -3,19 +3,19 @@ name=Universal Map2web
 qgisMinimumVersion=3.0.0
 qgisMaximumVersion=4.99
 description=Export QGIS layers to interactive web maps with Leaflet
-version=1.3.0
+version=1.4.0
 author=Jean-baptiste Bazikité KIBORA
 email=jeanbaptiste.kibora@tic.gov.bf
 
-about=Export vector layers from QGIS to interactive HTML maps with Leaflet, preserving QGIS symbology and styles. Multi-language support (English/French). Optional dynamic PostgreSQL/PostGIS mode: layers stay connected live to the database via a secure PHP endpoint instead of a static GeoJSON dump.
+about=Export vector layers from QGIS to interactive HTML maps with Leaflet, preserving QGIS symbology and styles. Multi-language support (English/French). Optional dynamic PostgreSQL/PostGIS mode: layers stay connected live to the database via a secure PHP endpoint instead of a static GeoJSON dump. Live WFS (vector) and WMS (raster) layers are loaded directly from the OGC server (CORS must be enabled on the server, e.g. GeoServer). Each vector layer has a clickable attribute table (sort, filter, search, CSV export, map highlighting) and a zoom-to-layer button.
 
 tracker=https://github.com/geomatic-web/universal_map2web/issues
 repository=https://github.com/geomatic-web/universal_map2web
 license=GNU GPL v2
 
 hasProcessingProvider=no
-changelog=Version 1.3.0 : Base map switcher redesigned as a floating, Google Maps-style control (bottom-left) with map/satellite thumbnails (OpenStreetMap / Google Satellite); new built-in distance and area measurement tool (ruler/area icons), fully localized (English/French).
-tags=web, map, export, leaflet, gis, cartography, interactive, qgis, symbology, multilingual, postgresql, postgis, database
+changelog=Version 1.4.0 : Attribute table window for every vector layer (shapefile, WFS, PostGIS) with sorting, per-column filters, global search, map highlighting (hover; Ctrl+hover to zoom) and CSV export; zoom-to-layer button; documentation of live WFS/WMS loading and GeoServer CORS configuration; Base map switcher redesigned as a floating, Google Maps-style control (bottom-left) with map/satellite thumbnails (OpenStreetMap / Google Satellite); new built-in distance and area measurement tool (ruler/area icons), fully localized (English/French).
+tags=web, map, export, leaflet, gis, cartography, interactive, qgis, symbology, multilingual, postgresql, postgis, database, wfs, wms, geoserver, attribute table, getfeatureinfo
 
 homepage=https://github.com/geomatic-web/universal_map2web
 category=Web

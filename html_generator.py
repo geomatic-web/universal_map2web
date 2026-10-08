@@ -119,7 +119,7 @@ def _lire_logo_base64(dialog):
         return None
 
 
-def generer_export(dialog, export_data, output_dir, locale=None):
+def generer_export(dialog, export_data, output_dir, locale=None, wms_layers=None):
     """Génère index.html, style.css et app.js dans output_dir à partir des templates
     statiques et des réglages du dialogue. `export_data` est le dict couche -> métadonnées
     produit par l'export (fichier geojson, styles de légende, champs popup, étiquettes...).
@@ -235,4 +235,5 @@ def generer_export(dialog, export_data, output_dir, locale=None):
         options,
         os.path.join(output_dir, "app.js"),
         locale=locale,
+        wms_layers=wms_layers or {},
     )
