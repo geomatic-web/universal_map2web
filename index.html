@@ -6,11 +6,10 @@
 
     <!-- ============ MÉTADONNÉES SEO ============ -->
     <title>Universal Map2web - Extension QGIS pour cartes web interactives par Jean-Baptiste KIBORA</title>
-    <meta name="description" content="Extension QGIS Universal Map2web pour exporter des cartes web interactives avec Leaflet, avec mode PostgreSQL/PostGIS dynamique. Développée par Jean-Baptiste KIBORA. Tutoriels sur YouTube.">
-    <meta name="keywords" content="QGIS, carte web, Leaflet, export cartes, Universal Map2web, plugin QGIS, géomatique, PostgreSQL, PostGIS, données dynamiques, Jean-Baptiste KIBORA, CEFOGIA">
+    <meta name="description" content="Extension QGIS Universal Map2web pour exporter des cartes web interactives avec Leaflet, avec table attributaire, couches WFS/WMS en direct et mode PostgreSQL/PostGIS dynamique. Développée par Jean-Baptiste KIBORA. Tutoriels sur YouTube.">
+    <meta name="keywords" content="QGIS, carte web, Leaflet, export cartes, Universal Map2web,Universal Map to web, plugin QGIS, géomatique, PostgreSQL, PostGIS, WFS, WMS, GeoServer, CORS, table attributaire, données dynamiques, Jean-Baptiste KIBORA, CEFOGIA">
     <meta name="author" content="Jean-Baptiste KIBORA">
     <meta name="robots" content="index, follow">
-    <!-- IMPORTANT : remplacez par l'URL réelle où cette page de documentation est hébergée -->
     <link rel="canonical" href="https://geomatic-web.github.io/universal_map2web/">
     <link rel="icon" type="image/png" href="icon.png">
 
@@ -21,7 +20,7 @@
 
     <!-- Open Graph (réseaux sociaux) -->
     <meta property="og:title" content="Universal Map2web - Extension QGIS pour cartes web interactives">
-    <meta property="og:description" content="Extension QGIS pour exporter des cartes web interactives avec Leaflet, avec mode PostgreSQL/PostGIS dynamique. Par Jean-Baptiste KIBORA.">
+    <meta property="og:description" content="Extension QGIS pour exporter des cartes web interactives avec Leaflet : table attributaire, WFS/WMS en direct, mode PostgreSQL/PostGIS dynamique. Par Jean-Baptiste KIBORA.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://geomatic-web.github.io/universal_map2web/">
     <meta property="og:image" content="https://github.com/geomatic-web/universal_map2web/raw/main/icon.png">
@@ -34,7 +33,7 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Universal Map2web - Extension QGIS pour cartes web interactives">
-    <meta name="twitter:description" content="Extension QGIS pour exporter des cartes web interactives avec Leaflet. Par Jean-Baptiste KIBORA.">
+    <meta name="twitter:description" content="Extension QGIS pour exporter des cartes web interactives avec Leaflet (table attributaire, WFS/WMS, PostGIS). Par Jean-Baptiste KIBORA.">
     <meta name="twitter:image" content="https://github.com/geomatic-web/universal_map2web/raw/main/icon.png">
 
     <!-- ============ DONNÉES STRUCTURÉES (JSON-LD) ============ -->
@@ -43,16 +42,16 @@
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
       "name": "Universal Map2web",
-      "description": "Extension QGIS pour exporter des cartes web interactives avec Leaflet, avec mode PostgreSQL/PostGIS dynamique.",
+      "description": "Extension QGIS pour exporter des cartes web interactives avec Leaflet, avec table attributaire, couches WFS/WMS en direct et mode PostgreSQL/PostGIS dynamique.",
       "applicationCategory": "Geospatial",
-      "operatingSystem": "QGIS 3.40+",
-      "softwareVersion": "1.2.1",
+      "operatingSystem": "QGIS 3.0+",
+      "softwareVersion": "1.4.0",
       "datePublished": "2024-01-01",
-      "dateModified": "2026-01-01",
+      "dateModified": "2026-10-07",
       "downloadUrl": "https://plugins.qgis.org/plugins/universal_map2web/",
       "installUrl": "https://plugins.qgis.org/plugins/universal_map2web/",
       "screenshot": "https://github.com/geomatic-web/universal_map2web/raw/main/icon.png",
-      "keywords": "QGIS, Leaflet, PostgreSQL, PostGIS, cartes web interactives",
+      "keywords": "QGIS, Leaflet, PostgreSQL, PostGIS, WFS, WMS, GeoServer, table attributaire, cartes web interactives",
       "author": {
         "@type": "Person",
         "name": "Jean-Baptiste KIBORA",
@@ -67,7 +66,7 @@
         "https://plugins.qgis.org/plugins/universal_map2web/"
       ],
       "url": "https://geomatic-web.github.io/universal_map2web/",
-      "version": "1.2.1",
+      "version": "1.4.0",
       "license": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.html"
     }
     </script>
@@ -352,7 +351,7 @@
             <div class="header-text">
                 <h1>Universal Map2web</h1>
                 <p>QGIS plugin to export interactive Leaflet web maps</p>
-                <div class="badge">Version 1.2.1</div>
+                <div class="badge">Version 1.4.0</div>
             </div>
         </div>
     </header>
@@ -372,7 +371,10 @@
                 <p class="sidebar-title">Advanced</p>
                 <ul>
                     <li><a href="#filtering">Advanced Filtering</a></li>
+                    <li><a href="#attribute-table">Attribute Table</a></li>
                     <li><a href="#postgis">PostGIS Dynamic Mode</a></li>
+                    <li><a href="#ogc">Live WFS / WMS Layers</a></li>
+                    <li><a href="#cors">GeoServer CORS</a></li>
                 </ul>
                 <p class="sidebar-title">Help</p>
                 <ul>
@@ -452,18 +454,21 @@
                     speed this up)</li>
                 <li>For each layer, configure which <strong>attribute fields</strong> appear in the popup when a
                     feature is clicked</li>
+                <li>Layers connected to a <strong>WFS</strong> service are detected automatically and loaded live;
+                    layers connected to a <strong>WMS</strong> service are listed separately (see
+                    <a href="#ogc">Live WFS / WMS Layers</a>)</li>
             </ol>
 
             <h3>Advanced tab</h3>
             <ul>
-                <li><strong>Simplify geometries</strong> — reduces vertex count for faster loading</li>
-                <li><strong>Compress JSON data</strong> — smaller GeoJSON output files</li>
-                <li><strong>Round coordinates</strong> — trims decimal precision</li>
-                <li><strong>Load PostGIS layers dynamically from PostgreSQL</strong> — keeps layers already
+                <li><strong>Simplify geometries</strong> - reduces vertex count for faster loading</li>
+                <li><strong>Compress JSON data</strong> - smaller GeoJSON output files</li>
+                <li><strong>Round coordinates</strong> - trims decimal precision</li>
+                <li><strong>Load PostGIS layers dynamically from PostgreSQL</strong> - keeps layers already
                     connected to PostgreSQL/PostGIS in QGIS live on the exported map instead of freezing them
                     into static GeoJSON (see <a href="#postgis">PostGIS Dynamic Mode</a>)</li>
-                <li><strong>Export as ZIP</strong> — packages the whole export in a single archive</li>
-                <li><strong>Open automatically in browser</strong> — starts a local server and opens the map
+                <li><strong>Export as ZIP</strong> - packages the whole export in a single archive</li>
+                <li><strong>Open automatically in browser</strong> - starts a local server and opens the map
                     once export finishes</li>
             </ul>
 
@@ -495,7 +500,7 @@
                 <tr><td>Scale bar</td><td>Displays a graphic distance scale (enabled by default)</td></tr>
                 <tr><td>Cursor position</td><td>Displays live latitude/longitude under the mouse pointer</td></tr>
                 <tr><td>Attribution</td><td>Displays the map/library credits (enabled by default)</td></tr>
-                <tr><td>Advanced filter</td><td>Adds the attribute filtering panel — see <a href="#filtering">Advanced Filtering</a></td></tr>
+                <tr><td>Advanced filter</td><td>Adds the attribute filtering panel - see <a href="#filtering">Advanced Filtering</a></td></tr>
             </table>
 
             <h3>Layer management on the exported map</h3>
@@ -505,6 +510,10 @@
                 <li><strong>Legend</strong>: colors and categories are generated automatically from your QGIS
                     symbology (Simple, Categorized, Graduated, and Rule-based renderers are all supported)</li>
                 <li><strong>Expand / Collapse all</strong>: quickly fold or unfold every layer group in the legend</li>
+                <li><strong>Attribute table</strong>: click the table icon in front of a vector layer name - see
+                    <a href="#attribute-table">Attribute Table</a></li>
+                <li><strong>Zoom to layer</strong>: click the magnifier icon next to the table icon to fit the map to
+                    the layer's extent</li>
             </ul>
         </div>
 
@@ -514,7 +523,7 @@
             <div class="grid-2">
                 <div class="card">
                     <h3>Light</h3>
-                    <p>Clean, bright interface — best for printed screenshots and daytime presentations.</p>
+                    <p>Clean, bright interface - best for printed screenshots and daytime presentations.</p>
                 </div>
                 <div class="card">
                     <h3>Dark</h3>
@@ -546,7 +555,7 @@
                 <li>Select a <strong>field</strong></li>
                 <li>Select an <strong>operator</strong></li>
                 <li>Type or click a <strong>value</strong></li>
-                <li>Click <strong>"Apply"</strong> — matching features are highlighted on the map</li>
+                <li>Click <strong>"Apply"</strong> - matching features are highlighted on the map</li>
             </ol>
             <h3>Available operators</h3>
             <table>
@@ -566,6 +575,38 @@
             </div>
         </div>
 
+        <!-- ==================== ATTRIBUTE TABLE ==================== -->
+        <div id="attribute-table" class="section">
+            <h2>Attribute Table <span class="badge" style="margin-top:0;">New in 1.4.0</span></h2>
+            <p>Every vector layer of the exported map - static shapefile/GeoJSON, WFS or PostgreSQL/PostGIS - has a
+                small <strong>table icon</strong> in front of its name in the legend. Click it to open the layer's
+                attribute table in a floating window.</p>
+
+            <h3>What you can do</h3>
+            <ul>
+                <li><strong>Move and resize</strong> the window (drag the title bar, resize from the bottom-right
+                    corner); several tables can be open at the same time</li>
+                <li><strong>Sort</strong> by clicking a column header</li>
+                <li><strong>Filter</strong> a column by typing in the field under its header, or search every column
+                    at once with the global search box</li>
+                <li><strong>Locate a feature</strong>: hover a row to highlight the feature on the map; hold
+                    <strong>Ctrl</strong> while hovering (or click the row) to zoom to it</li>
+                <li><strong>Export to CSV</strong>: exports the rows currently displayed (after filtering and
+                    sorting), separated by <code>;</code> and encoded in UTF-8 with BOM so Excel opens accents
+                    correctly</li>
+                <li><strong>Large layers</strong>: rows are paged (100 per page) to keep the browser fast</li>
+            </ul>
+            <p>The <strong>magnifier icon</strong> next to the table icon zooms the map to the extent of the
+                layer.</p>
+
+            <div class="note">
+                <strong>Good to know:</strong> the table lists the features actually loaded in the page. In
+                <a href="#postgis">PostGIS dynamic mode</a> with bounding-box filtering, only the features of the
+                loaded area are shown. Internal styling fields are hidden automatically. WMS layers are rasters and
+                have no attribute table.
+            </div>
+        </div>
+
         <!-- ==================== POSTGIS DYNAMIC MODE ==================== -->
         <div id="postgis" class="section">
             <h2>PostGIS Dynamic Mode <span class="badge" style="margin-top:0;">New in 1.2.1</span></h2>
@@ -577,9 +618,9 @@
             <ol>
                 <li>In the export dialog, check <strong>"Load PostGIS layers dynamically from PostgreSQL (instead
                     of a static export)"</strong></li>
-                <li>The plugin automatically reuses the connection already configured in QGIS — no credentials
+                <li>The plugin automatically reuses the connection already configured in QGIS - no credentials
                     need to be re-entered</li>
-                <li>Export as usual — layers not connected to PostgreSQL, or left unchecked, are still exported
+                <li>Export as usual - layers not connected to PostgreSQL, or left unchecked, are still exported
                     as static GeoJSON</li>
             </ol>
 
@@ -610,13 +651,135 @@
             </div>
         </div>
 
+        <!-- ==================== LIVE WFS / WMS ==================== -->
+        <div id="ogc" class="section">
+            <h2>Live WFS / WMS Layers <span class="badge" style="margin-top:0;">New in 1.4.0</span></h2>
+            <p>Layers connected to an OGC service in QGIS (for example a GeoServer) can stay <strong>live</strong> on
+                the exported map: the browser requests the data from the server instead of reading a file generated
+                at export time.</p>
+
+            <table>
+                <tr><th>Service</th><th>Type</th><th>How it works on the exported map</th></tr>
+                <tr>
+                    <td><strong>WFS</strong></td>
+                    <td>Vector</td>
+                    <td>Detected automatically from the QGIS layer. The web map requests the features
+                        (<code>GetFeature</code>, <code>application/json</code>) directly from the WFS server at each
+                        load. No PHP backend and no GeoJSON file. Symbology, popups, advanced filter and the
+                        <a href="#attribute-table">attribute table</a> work like any other vector layer.</td>
+                </tr>
+                <tr>
+                    <td><strong>WMS</strong></td>
+                    <td>Raster</td>
+                    <td>Listed separately in the export dialog. Displayed as tiles requested live from the server.
+                        Clicking the map queries the server (<code>GetFeatureInfo</code>) and shows the result in a
+                        popup.</td>
+                </tr>
+            </table>
+
+            <h3>How to use it</h3>
+            <ol>
+                <li>Add your WFS or WMS layer to QGIS as usual (<em>Layer &gt; Add Layer</em>)</li>
+                <li>Open Universal Map2web and select the layer in the <strong>Layers</strong> tab - the connection
+                    settings are read from the layer, nothing has to be typed again</li>
+                <li>Export as usual</li>
+                <li>Make sure <strong>CORS is enabled on the server</strong> (see
+                    <a href="#cors">GeoServer CORS</a>)</li>
+            </ol>
+
+            <div class="warning">
+                <strong>Requirements:</strong>
+                <ul>
+                    <li>The OGC server must be reachable from the <strong>visitor's browser</strong>, not only from
+                        your computer (a server on <code>localhost</code> or a private network will not work for
+                        online visitors)</li>
+                    <li>If the exported map is served over <code>https://</code>, the OGC server must use
+                        <code>https://</code> too - browsers block mixed content</li>
+                    <li>CORS must be enabled on the server</li>
+                    <li>For WFS, the <code>application/json</code> output format must be available (enabled by
+                        default in GeoServer)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ==================== GEOSERVER CORS ==================== -->
+        <div id="cors" class="section">
+            <h2>Enabling CORS on GeoServer</h2>
+            <p>The exported map is opened from a different <em>origin</em> than your GeoServer (your website, or
+                <code>http://localhost:PORT</code> when using the built-in local server). The browser only lets the
+                page read GeoServer's responses if GeoServer sends the <code>Access-Control-Allow-Origin</code>
+                header. The built-in local server does not remove this requirement for remote WFS/WMS services.</p>
+
+            <table>
+                <tr><th>Service</th><th>Without CORS</th></tr>
+                <tr><td>WFS</td><td>The layer cannot be loaded; the legend shows a "blocked by CORS" message</td></tr>
+                <tr><td>WMS</td><td>Tiles still display (they are loaded as images), but click-to-query
+                    (<code>GetFeatureInfo</code> as JSON) is blocked and falls back to an HTML frame</td></tr>
+            </table>
+
+            <h3>Option A - GeoServer Web Administration (recent versions)</h3>
+            <p>Recent GeoServer versions include a CORS setting in the Web Administration interface (see
+                <em>Enable CORS</em> in the GeoServer documentation, section <em>Container Considerations</em>).
+                Enable it, then <strong>restart GeoServer</strong>.</p>
+
+            <h3>Option B - web.xml (all versions)</h3>
+            <p>Edit <code>webapps/geoserver/WEB-INF/web.xml</code>, uncomment (or add) the CORS
+                <code>&lt;filter&gt;</code> <strong>and</strong> its <code>&lt;filter-mapping&gt;</code>, then
+                restart.</p>
+            <p><strong>Standalone / binary installer (Jetty):</strong></p>
+<pre>&lt;filter&gt;
+  &lt;filter-name&gt;cross-origin&lt;/filter-name&gt;
+  &lt;filter-class&gt;org.eclipse.jetty.servlets.CrossOriginFilter&lt;/filter-class&gt;
+&lt;/filter&gt;
+&lt;filter-mapping&gt;
+  &lt;filter-name&gt;cross-origin&lt;/filter-name&gt;
+  &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+&lt;/filter-mapping&gt;</pre>
+            <p><strong>WAR deployed in Tomcat:</strong></p>
+<pre>&lt;filter&gt;
+  &lt;filter-name&gt;CorsFilter&lt;/filter-name&gt;
+  &lt;filter-class&gt;org.apache.catalina.filters.CorsFilter&lt;/filter-class&gt;
+  &lt;init-param&gt;
+    &lt;param-name&gt;cors.allowed.origins&lt;/param-name&gt;
+    &lt;param-value&gt;*&lt;/param-value&gt;
+  &lt;/init-param&gt;
+  &lt;init-param&gt;
+    &lt;param-name&gt;cors.allowed.methods&lt;/param-name&gt;
+    &lt;param-value&gt;GET,POST,HEAD,OPTIONS&lt;/param-value&gt;
+  &lt;/init-param&gt;
+  &lt;init-param&gt;
+    &lt;param-name&gt;cors.allowed.headers&lt;/param-name&gt;
+    &lt;param-value&gt;Content-Type,X-Requested-With,accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers&lt;/param-value&gt;
+  &lt;/init-param&gt;
+&lt;/filter&gt;
+&lt;filter-mapping&gt;
+  &lt;filter-name&gt;CorsFilter&lt;/filter-name&gt;
+  &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+&lt;/filter-mapping&gt;</pre>
+
+            <div class="warning">
+                <strong>Use one method only.</strong> Enabling CORS in the interface, in <code>web.xml</code> and/or
+                in a reverse proxy (Apache, Nginx) at the same time sends duplicate
+                <code>Access-Control-Allow-Origin</code> values, and browsers reject the response.
+            </div>
+            <div class="tip">
+                <strong>Production tip:</strong> <code>*</code> allows any website. Replace it with your own
+                site(s), for example <code>https://maps.example.org</code>.
+            </div>
+            <div class="note">
+                <strong>Test it:</strong> run
+                <code>curl -I -H "Origin: https://maps.example.org" "https://your-geoserver/geoserver/ows?service=WFS&amp;request=GetCapabilities"</code>
+                - the response headers must contain <code>Access-Control-Allow-Origin</code>.
+            </div>
+        </div>
+
         <!-- ==================== TIPS ==================== -->
         <div id="tips" class="section">
             <h2>Tips and Best Practices</h2>
             <div class="grid-2">
                 <div class="card">
                     <h3>Keep it light</h3>
-                    <p>Limit exports to around <strong>10 active layers</strong> for the best browser
+                    <p>Limit exports to around <strong>15 active layers</strong> for the best browser
                         performance.</p>
                 </div>
                 <div class="card">
@@ -626,17 +789,17 @@
                 </div>
                 <div class="card">
                     <h3>Coordinate system</h3>
-                    <p>Use <strong>WGS84 (EPSG:4326)</strong> for your project — Leaflet basemaps expect
+                    <p>Use <strong>WGS84 (EPSG:4326)</strong> for your project - Leaflet basemaps expect
                         geographic coordinates.</p>
                 </div>
                 <div class="card">
                     <h3>Preview first</h3>
-                    <p>Check symbology and labels in QGIS before exporting — the web map mirrors your current
+                    <p>Check symbology and labels in QGIS before exporting - the web map mirrors your current
                         project styling.</p>
                 </div>
                 <div class="card">
                     <h3>Popups</h3>
-                    <p>Only select the fields visitors actually need in the popup configuration — fewer fields
+                    <p>Only select the fields visitors actually need in the popup configuration - fewer fields
                         means a lighter, cleaner popup.</p>
                 </div>
                 <div class="card">
@@ -681,7 +844,8 @@
                 <ul>
                     <li>Confirm the layer is checked in the <strong>Layers</strong> tab of the export dialog</li>
                     <li>Make sure the layer's visibility is turned on in the QGIS Layers panel</li>
-                    <li>Vector layers only — raster layers are not exported to Leaflet by this plugin</li>
+                    <li>Local raster files are not exported to Leaflet by this plugin - vector layers are exported,
+                        and WMS services are loaded live (see <a href="#ogc">Live WFS / WMS Layers</a>)</li>
                 </ul>
             </div>
 
@@ -712,6 +876,45 @@
                 </ul>
             </div>
 
+            <h3>A WFS layer won't load ("blocked by CORS" or "server unreachable")</h3>
+            <div class="warning">
+                <strong>Symptom:</strong> the layer works in QGIS but stays empty on the exported map, and the legend
+                shows an error message.
+            </div>
+            <div class="success">
+                <strong>Solutions:</strong>
+                <ul>
+                    <li>Enable <strong>CORS</strong> on the server - see <a href="#cors">GeoServer CORS</a></li>
+                    <li>Open the server's WFS URL from a computer outside your network to confirm it is reachable
+                        by visitors</li>
+                    <li>If the map is served over <code>https://</code>, use an <code>https://</code> WFS URL
+                        (mixed content is blocked)</li>
+                    <li>Check that the <code>application/json</code> output format is enabled on the server</li>
+                    <li>If CORS is already enabled, make sure it is not configured twice (interface +
+                        <code>web.xml</code> or reverse proxy), which duplicates the header</li>
+                </ul>
+            </div>
+
+            <h3>A WMS layer displays, but clicking the map shows no popup</h3>
+            <div class="success">
+                <strong>Solutions:</strong>
+                <ul>
+                    <li>Tiles are loaded as images and do not need CORS, but click-to-query does — enable CORS as
+                        described in <a href="#cors">GeoServer CORS</a></li>
+                    <li>Make sure the layer is <strong>queryable</strong> on the server (<code>GetFeatureInfo</code>
+                        enabled)</li>
+                    <li>Without CORS the plugin falls back to an HTML frame, which can look different from the
+                        regular popup</li>
+                </ul>
+            </div>
+
+            <h3>The attribute table shows fewer features than the layer contains</h3>
+            <div class="success">
+                <strong>Explanation:</strong> the table lists the features loaded in the page. In
+                <a href="#postgis">PostGIS dynamic mode</a> with bounding-box filtering, only the features of the
+                loaded area are listed.
+            </div>
+
             <div class="note">
                 <strong>Good to know:</strong> most issues come down to browser/firewall permissions for the local
                 preview server, or a layer's visibility/selection state in QGIS at export time.
@@ -728,6 +931,7 @@
                 <tr><td>Memory</td><td>4 GB RAM minimum</td></tr>
                 <tr><td>Internet</td><td>Required for basemaps and web libraries (Leaflet, plugins)</td></tr>
                 <tr><td>Hosting (PostGIS dynamic mode only)</td><td>PHP-capable web server with the <code>pdo_pgsql</code> extension enabled</td></tr>
+                <tr><td>OGC server (live WFS/WMS only)</td><td>GeoServer or any WFS/WMS server reachable from visitors' browsers, with <strong>CORS enabled</strong> (and <code>https</code> if the map is served over https)</td></tr>
             </table>
         </div>
 
@@ -763,7 +967,7 @@
 
     <footer>
         <p>© 2026 Jean-Baptiste KIBORA | Universal Map2web - Licensed under GPL v2</p>
-        <p>Version 1.2.1</p>
+        <p>Version 1.4.0</p>
     </footer>
 
     <script>
