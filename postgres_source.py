@@ -1,18 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-postgres_source.py — Support du chargement dynamique des données depuis
-PostgreSQL/PostGIS en complément de l'export GeoJSON statique.
-
-Principe:
-    - Seules les couches déjà connectées à PostGIS dans QGIS sont éligibles
-      (aucune ressaisie d'identifiants dans le plugin : on relit ceux de la
-      couche via QgsDataSourceUri).
-    - La clé API est générée aléatoirement à chaque export (secrets.token_urlsafe).
-    - Le nom de couche utilisé comme clé (identique à clean_filename(layer.name()))
-      est une valeur interne fixée à l'export, jamais une entrée utilisateur au
-      runtime : pas de risque d'injection SQL par ce biais côté get_data.php.
-"""
-
 import os
 import secrets
 
@@ -85,8 +71,6 @@ def _construire_db_config_php(configs_par_couche, api_key):
 
 
 def generer_fichiers_postgres(output_dir, configs_par_couche, api_key):
-    """Écrit db_config.php, .htaccess et get_data.php dans le dossier d'export.
-    `configs_par_couche` est un dict {nom_fichier_couche: config_connexion}."""
 
     with open(os.path.join(output_dir, "db_config.php"), "w", encoding="utf-8") as f:
         f.write(_construire_db_config_php(configs_par_couche, api_key))

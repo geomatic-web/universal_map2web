@@ -1,15 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-web_i18n.py — Chaînes de texte de l'interface de la carte EXPORTÉE (le HTML/JS
-généré dans le dossier de sortie), séparées de la traduction du plugin QGIS
-lui-même (qui passe par i18n/*.qm + QTranslator).
-
-Ce module est indépendant du mécanisme Qt : les fichiers exportés sont de
-simples fichiers statiques (HTML/CSS/JS) ouverts dans un navigateur, sans
-accès à QTranslator. On fournit donc ici notre propre petit dictionnaire de
-traduction FR/EN, choisi une fois au moment de l'export selon la langue
-actuelle de QGIS.
-"""
 
 from qgis.PyQt.QtCore import QSettings
 

@@ -1,0 +1,14 @@
+# Fichiers du dépôt à ne pas mettre dans le zip du plugin (git archive)
+/.gitattributes export-ignore
+/.gitignore export-ignore
+/exemple export-ignore
+/image*.png export-ignore
+/index.html export-ignore
+/style.css export-ignore
+/sitemap.xml export-ignore
+/robots.txt export-ignore
+/google*.html export-ignore
+/CONTRIBUTORS.md export-ignore
+/Makefile export-ignore
+/pb_tool.cfg export-ignore
+/i18n/compileqt.py export-ignore

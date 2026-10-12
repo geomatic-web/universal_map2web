@@ -1,11 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-leaflet_generator.py — Construit le fichier app.js final d'un export à partir du
-template statique templates/app.js, en y injectant les métadonnées des couches,
-le fond de plan choisi et les blocs JS d'initialisation des outils Leaflet
-optionnels (mesure, plein écran, géolocalisation, recherche, mini-carte, etc.).
-"""
-
 import json
 import os
 
@@ -14,8 +7,7 @@ from .web_i18n import get_strings
 TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), "templates")
 
 # (clé d'option du dialogue, lib CSS, lib JS) pour chaque outil optionnel
-# NB : "mesure" n'a plus besoin de lib externe — outil de mesure maison,
-# intégré et localisé (voir MeasureControl dans templates/app.js).
+
 _LIBS_CDN = {
     "pleinecran": {
         "css": '\n    <link rel="stylesheet" href="https://unpkg.com/leaflet.fullscreen@1.6.0/Control.FullScreen.css" />',
@@ -45,9 +37,7 @@ _CLUSTER_JS = '\n    <script src="https://unpkg.com/leaflet.markercluster@1.5.3/
 
 
 def build_extra_libs(options):
-    """Construit les balises <link>/<script> CDN à insérer dans <head>, selon les
-    outils optionnels activés dans le dialogue (options est un dict de booléens).
-    """
+
     extra_css = _CLUSTER_CSS
     extra_js = _CLUSTER_JS
     for cle, libs in _LIBS_CDN.items():
@@ -58,10 +48,7 @@ def build_extra_libs(options):
 
 
 def build_outils_js(options, locale=None):
-    """Construit le bloc JS d'initialisation des contrôles Leaflet optionnels,
-    injecté dans app.js à la place du marqueur __OUTILS_JS__.
-    Les libellés affichés (position, plein écran, recherche, impression...)
-    suivent la langue de QGIS (locale 'fr' ou 'en')."""
+
     s = get_strings(locale)
     outils_js = ""
 
@@ -88,9 +75,7 @@ def build_outils_js(options, locale=None):
         )
 
     if options.get("mesure"):
-        # Outil de mesure maison (voir MeasureControl dans templates/app.js) :
-        # pas de lib externe, entièrement localisé fr/en, coordonnées de clic
-        # lues directement depuis l'évènement Leaflet (pas de décalage).
+
         outils_js += "\n        map.addControl(new MeasureControl());"
 
     if options.get("pleinecran"):
@@ -107,10 +92,6 @@ def build_outils_js(options, locale=None):
         outils_js += (
             "\n        if (typeof L.Control.Geocoder !== 'undefined') { "
             "var geocodeurRecherche = L.Control.geocoder({ defaultMarkGeocode: false, placeholder: %s }).addTo(map); "
-            # defaultMarkGeocode:false désactive le comportement automatique du
-            # plugin (zoom + marqueur) : on le remplace ici par notre propre
-            # gestionnaire pour garantir le zoom/la localisation au clic sur
-            # un résultat, avec un marqueur temporaire et son étiquette.
             "geocodeurRecherche.on('markgeocode', function(e) { "
             "var bbox = e.geocode.bbox; "
             "if (bbox) { map.fitBounds(bbox); } else { map.setView(e.geocode.center, 14); } "
@@ -149,10 +130,7 @@ def build_outils_js(options, locale=None):
 def render_app_js(
     export_data, url_fond, options, output_path, locale=None, wms_layers=None
 ):
-    """Charge templates/app.js, remplace les marqueurs par les valeurs de cet export,
-    et écrit le résultat dans output_path. `locale` ('fr'/'en') détermine la langue
-    de l'interface de la carte exportée ; si None, elle est déduite de la langue
-    actuelle de QGIS."""
+
     with open(os.path.join(TEMPLATES_DIR, "app.js"), "r", encoding="utf-8") as f:
         contenu = f.read()
 

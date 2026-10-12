@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-utils.py — Petits utilitaires génériques sans dépendance à l'interface QGIS.
-"""
-
-from qgis.core import QgsMapLayer, QgsWkbTypes
+from qgis.core import Qgis, QgsMapLayer, QgsMessageLog, QgsWkbTypes
 from .qt_compat import qenum
 
 # Caractères remplacés par "_" lors de la génération d'un nom de fichier sûr
@@ -52,3 +48,10 @@ def get_geometry_type(layer):
     if layer.type() != qenum(QgsMapLayer, "LayerType", "VectorLayer"):
         return "Inconnu"
     return QgsWkbTypes.geometryType(layer.wkbType())
+
+
+def journaliser(message, niveau="Info"):
+    """Écrit dans le panneau Journal des messages de QGIS (onglet Universal Map2web)."""
+    QgsMessageLog.logMessage(
+        str(message), "Universal Map2web", qenum(Qgis, "MessageLevel", niveau)
+    )

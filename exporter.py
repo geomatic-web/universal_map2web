@@ -6,6 +6,8 @@ import socketserver
 import threading
 import webbrowser
 import http.server
+import posixpath
+import urllib.parse
 import json
 from datetime import datetime
 
@@ -32,7 +34,7 @@ from .postgres_source import (
     generer_fichiers_postgres,
 )
 from .styles import construire_carte_styles_renderer
-from .utils import clean_filename, get_geometry_type
+from .utils import clean_filename, get_geometry_type, journaliser
 from .qt_compat import qenum
 
 
@@ -289,23 +291,18 @@ class Exporter:
             return
 
         class SafeHTTPRequestHandler(http.server.SimpleHTTPRequestHandler):
-            def __init__(self, *args, **kwargs):
-                # Utilise 'directory' pour Python 3.7+ (QGIS 3.34 / 3.40)
-                kwargs["directory"] = dossier
-                try:
-                    super().__init__(*args, **kwargs)
-                except TypeError:
-                    # Fallback pour Python 3.6 (QGIS 3.0) si 'directory' n'est pas supporté en kwarg
-                    kwargs.pop("directory", None)
-                    super().__init__(*args, **kwargs)
-
             def translate_path(self, path):
-                # Redirection explicite vers le dossier d'exportation
-                path_clean = path.split("?", 1)[0].split("#", 1)[0]
-                relpath = path_clean.lstrip("/")
-                if not relpath or relpath == "/":
-                    relpath = "index.html"
-                return os.path.join(dossier, relpath)
+                # Même logique que la méthode standard de Python (décodage %xx,
+                # rejet de "..") appliquée au dossier d'export. Fonctionne aussi
+                # avec Python 3.6 (QGIS 3.0), où l'argument "directory" n'existe pas.
+                path = path.split("?", 1)[0].split("#", 1)[0]
+                path = posixpath.normpath(urllib.parse.unquote(path))
+                resultat = dossier
+                for mot in filter(None, path.split("/")):
+                    if os.path.dirname(mot) or mot in (os.curdir, os.pardir):
+                        continue
+                    resultat = os.path.join(resultat, mot)
+                return resultat
 
             def log_message(self, format, *args):
                 pass  # Désactive les logs dans la console QGIS
@@ -318,10 +315,9 @@ class Exporter:
                 ) as httpd:
                     httpd.serve_forever()
             except Exception as e:
-                print(f"Erreur Serveur HTTP: {e}")
+                journaliser(f"Erreur du serveur HTTP local : {e}", "Warning")
 
         thread = threading.Thread(target=lancer, daemon=True)
         thread.start()
 
         webbrowser.open(f"http://localhost:{port_choisi}/index.html")
-        pass

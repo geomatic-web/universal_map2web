@@ -249,63 +249,25 @@
             border: none !important;
             box-shadow: none !important;
             font-size: 11px !important;
-            /* Taille d'étiquette idéale sur le Web */
             font-weight: 600;
             line-height: 1.1;
             padding: 0 !important;
             white-space: nowrap;
             pointer-events: none;
-            /* Empêche l'étiquette d'interférer avec les clics */
+
         }
 
-/* Thème sombre : Si la page ou le body utilise un thème sombre, 
-   on passe les cartes de couches (.group-couche) en fond sombre */
-[data-theme="dark"] .group-couche,
-body.dark-theme .group-couche,
-body.dark-mode .group-couche {
+[data-theme="dark"] .group-couche {
     background: #252a38 !important; /* Fond sombre ajusté */
     border-color: #383e50 !important;
 }
 
-[data-theme="dark"] .item-couche-tit,
-body.dark-theme .item-couche-tit,
-body.dark-mode .item-couche-tit {
+[data-theme="dark"] .item-couche-tit {
     color: #ffffff !important; /* Titre de la couche en blanc */
 }
 
 [data-theme="dark"] .sous-legende-item,
-[data-theme="dark"] .cluster-toggle-row,
-body.dark-theme .sous-legende-item,
-body.dark-mode .sous-legende-item {
-    color: #cbd5e1 !important; /* Sous-catégories et textes secondaires en gris très clair */
-}
-
-
-.group-couche {
-    color: var(--text-main);
-}
-
-.item-couche-tit label {
-    color: inherit;
-}
-
-[data-theme="dark"] .group-couche,
-body.dark-theme .group-couche,
-body.dark-mode .group-couche {
-    background: #252a38 !important; /* Fond sombre ajusté */
-    border-color: #383e50 !important;
-}
-
-[data-theme="dark"] .item-couche-tit,
-body.dark-theme .item-couche-tit,
-body.dark-mode .item-couche-tit {
-    color: #ffffff !important; /* Titre de la couche en blanc */
-}
-
-[data-theme="dark"] .sous-legende-item,
-[data-theme="dark"] .cluster-toggle-row,
-body.dark-theme .sous-legende-item,
-body.dark-mode .sous-legende-item {
+[data-theme="dark"] .cluster-toggle-row {
     color: #cbd5e1 !important; /* Sous-catégories et textes secondaires en gris très clair */
 }
 
@@ -353,7 +315,7 @@ body.dark-mode .sous-legende-item {
     background-color: #f1f5f9 !important;
 }
 
-/* ── Table attributaire (fenêtre flottante) ───────────────── */
+/* Table attributaire (fenêtre flottante) */
 .btn-table {
     background: white; border: none; cursor: pointer; color: var(--text-muted);
     padding: 2px 5px; margin-right: 4px; flex-shrink: 0;

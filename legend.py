@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-legend.py — Génération des miniatures PNG de légende (points et lignes catégorisés)
-à partir du renderer/symbologie QGIS d'une couche.
-"""
 
 import os
 
@@ -13,7 +9,7 @@ from .styles import normaliser_valeur_classification, taille_canevas_icone
 
 
 def extraire_icones_symbologie(layer, nom_fichier_couche, styles_dir):
-    """Génère des miniatures PNG pour la légende des points et lignes."""
+
     icones_exportees = []
     renderer = layer.renderer()
     if not renderer:

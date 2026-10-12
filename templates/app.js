@@ -1,13 +1,12 @@
 var I18N = JSON.parse('__I18N_JSON__');
 var metaCouches = JSON.parse('__META_COUCHES_JSON__');
 var WMS_LAYERS = JSON.parse('__WMS_LAYERS_JSON__');
-// preferCanvas : rendu Canvas par défaut pour toutes les couches vectorielles
+
 var map = L.map('map', {zoomControl: true, preferCanvas: true}).setView([0, 0], 2);
 
-// Renderer SVG partagé pour les motifs de remplissage
+
 var svgRendererPartage = L.svg({padding: 0.5});
 
-// Cache des <pattern> SVG déjà créés
 var motifsSvgEnregistres = {};
 
 function idMotifValide(cheminImg) {
@@ -66,8 +65,7 @@ function changerFond(sel) {
     if (couche) couche.addTo(map);
 }
 
-// Fond initial : "BASE" si disponible, sinon repli sur OSM pour ne jamais
-// planter (ex. si le fond configuré dans QGIS n'a pas pu être résolu).
+
 changerFond('BASE');
 
 // ── Sélecteur de fond de carte façon Google Maps (bas-gauche) ──────────
@@ -123,11 +121,7 @@ var BaseLayerControl = L.Control.extend({
 });
 map.addControl(new BaseLayerControl());
 
-// ── Outil de mesure de distance et de superficie (règle/équerre) ───────
-// 100% intégré et localisé, sans lib externe : icônes explicites, texte
-// traduit fr/en, et coordonnées de clic lues directement depuis
-// l'évènement Leaflet (map.on('click', ...)) donc toujours exactes,
-// quelle que soit la mise en page de la page (en-tête, barre latérale…).
+// -Outil de mesure de distance et de superficie (règle/équerre)
 var MeasureControl = L.Control.extend({
     options: { position: 'topleft' },
     onAdd: function () {
@@ -174,8 +168,7 @@ var MeasureControl = L.Control.extend({
         }
 
         // Formule géodésique standard de calcul d'aire sur sphère
-        // (même principe que Leaflet.GeometryUtil.geodesicArea).
-        function superficieGeodesique(latlngs) {
+            function superficieGeodesique(latlngs) {
             var n = latlngs.length, aire = 0, d2r = Math.PI / 180;
             if (n < 3) return 0;
             for (var i = 0; i < n; i++) {
@@ -356,34 +349,6 @@ function resoudreStylePostgres(feature, info) {
     }
 }
 
-function appliquerStyleFeat(feature, styleInfo) {
-    if (!styleInfo) return {};
-
-    let styleApplicable = styleInfo;
-    if (styleInfo.style_map || styleInfo.__plages__) {
-        styleApplicable = resoudreStylePostgres(feature, styleInfo) || styleInfo.default;
-    }
-
-    if (styleApplicable && styleApplicable.motifs) {
-        assurerMotifSVG(styleApplicable.motifs);
-        return {
-            fillColor: 'url(#' + styleApplicable.motifs + ')',
-            fillOpacity: styleApplicable.fillOpacity || 0.8,
-            color: styleApplicable.color || '#333',
-            weight: styleApplicable.weight || 1,
-            renderer: svgRendererPartage
-        };
-    }
-
-    return {
-        fillColor: styleApplicable.fillColor || styleApplicable.color || '#3388ff',
-        fillOpacity: styleApplicable.fillOpacity !== undefined ? styleApplicable.fillOpacity : 0.5,
-        color: styleApplicable.color || '#3388ff',
-        weight: styleApplicable.weight || 2,
-        dashArray: styleApplicable.dashArray || null
-    };
-}
-
 // ── Utilitaires couleur ──────────────────────────────────────
 function hexToRgba(hex, alpha) {
     if (!hex || hex.length < 7) return 'rgba(51,136,255,0.2)';
@@ -506,7 +471,7 @@ function construireLayer(nom, info, data, activerCluster) {
 
             var marker;
             if (matchImg) {
-                // ───────────── RESOLUTION DYNAMIQUE TAILLE DE L'ICÔNE ─────────────
+
                 var iconW = 32, iconH = 32;
                 var anchorX = 16, anchorY = 32;
 
@@ -1030,7 +995,7 @@ Object.keys(metaCouches).forEach(function(nom) {
 
     var corps = groupDiv.querySelector('#corps_' + safeId);
 
-    // Style d'image sécurisé pour la légende (ne se fait plus rogner)
+    // Style d'image sécurisé pour la légende
     var imgStyleLegende = 'style="max-height:28px; max-width:28px; object-fit:contain; flex-shrink:0; vertical-align:middle; display:inline-block;"';
 
     if (info.is_polygon) {
@@ -1171,9 +1136,6 @@ Object.keys(metaCouches).forEach(function(nom) {
             return couches_leaflet[nom];
         })
         .catch(function (err) {
-            // Une couche en échec (ex. serveur WFS/Postgres injoignable ou
-            // bloqué par CORS) ne doit pas empêcher l'affichage des autres
-            // couches ni le cadrage automatique de la carte.
             console.warn('Échec du chargement de la couche "' + nom + '" :', err);
             var corpsErreur = document.getElementById('corps_' + safeId);
             if (corpsErreur) {
@@ -1192,10 +1154,7 @@ Object.keys(metaCouches).forEach(function(nom) {
     });
 });
 
-// ── Couches WMS (raster, chargées en direct depuis le serveur) ─────────
-// Contrairement aux couches vecteur, une couche WMS n'a ni popup, ni champs,
-// ni style QGIS à reproduire : c'est un calque d'images en tuiles interrogé
-// à chaque déplacement de la carte — donc toujours "live" par nature.
+// ── Couches WMS (raster, chargées en direct depuis le serveur)
 var couchesWMS_leaflet = {};
 Object.keys(WMS_LAYERS).forEach(function (nom) {
     var cfg = WMS_LAYERS[nom];
@@ -1212,14 +1171,7 @@ Object.keys(WMS_LAYERS).forEach(function (nom) {
         version: cfg.version || '1.3.0',
         styles: cfg.styles || '',
         opacity: (typeof cfg.opacite_defaut === 'number') ? cfg.opacite_defaut : 1
-        // Pas de "crs" personnalisée ici volontairement : forcer une CRS
-        // différente de celle de la carte (3857) sur une L.tileLayer.wms est
-        // une limitation connue de Leaflet (la bbox par tuile part en vrille
-        // et demande l'emprise entière au lieu d'une tuile). On laisse donc
-        // Leaflet interroger le serveur en EPSG:3857 (celle de la carte) —
-        // GeoServer, comme la quasi-totalité des serveurs WMS, reprojette à
-        // la volée vers n'importe quelle CRS supportée, quelle que soit la
-        // CRS native de la couche.
+        // Pas de "crs" personnalisée ici volontairement
     };
 
     var coucheWMS = L.tileLayer.wms(cfg.url, optionsWMS);
@@ -1242,10 +1194,7 @@ Object.keys(WMS_LAYERS).forEach(function (nom) {
     });
 });
 
-// ── Interrogation des couches WMS au clic (WMS GetFeatureInfo) ─────────
-// Le serveur renvoie les attributs de l'objet situé sous le clic. On tente
-// d'abord le JSON (tableau propre) puis le HTML ; si le navigateur bloque
-// la requête (CORS), la réponse HTML est affichée dans un cadre (iframe).
+// ── Interrogation des couches WMS au clic (WMS GetFeatureInfo)
 function echapperHtml(v) {
     return String(v === null || v === undefined ? '' : v)
         .replace(/&/g, '&amp;').replace(/</g, '&lt;')

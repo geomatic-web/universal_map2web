@@ -22,7 +22,6 @@ def extraire_etiquettes(layer):
         if not labeling:
             return None
 
-        # On essaie de lire les paramètres du premier "settings" disponible
         settings = None
         try:
             settings = labeling.settings()
@@ -45,7 +44,6 @@ def extraire_etiquettes(layer):
         taille = 10
         police = "sans-serif"
 
-        # Données par défaut pour le tampon (Buffer)
         tampon_actif = False
         tampon_couleur = "#ffffff"
         tampon_taille = 1.0
@@ -71,7 +69,6 @@ def extraire_etiquettes(layer):
                 if bc.isValid():
                     tampon_couleur = bc.name()
 
-                # Taille du tampon ramenée à une valeur propre pour le CSS web
                 sz = buffer_settings.size()
                 tampon_taille = round(sz, 1) if sz > 0 else 1.0
 

@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-ogc_live_source.py — Support du chargement EN DIRECT (live) depuis des
-services OGC WFS (vecteur) et WMS (raster), en complément de l'export
-GeoJSON statique et du mode dynamique PostgreSQL.
-"""
 
 from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
 
@@ -13,7 +8,6 @@ from .qt_compat import qenum
 
 
 def est_couche_wfs(layer):
-    """Retourne True si la couche QGIS est une couche vecteur connectée à un service WFS."""
     try:
         return (
             layer.type() == qenum(QgsMapLayer, "LayerType", "VectorLayer")
@@ -64,16 +58,12 @@ FORMATS_IMAGE_OK = ("image/png", "image/png8", "image/jpeg", "image/gif", "image
 
 
 def _format_image_valide(fmt):
-    """Ne garde qu'un vrai format d'image (ex. rejette application/openlayers,
-    format de la page d'aperçu GeoServer qui renvoie du HTML)."""
     fmt = (fmt or "").strip().lower()
     return fmt if fmt in FORMATS_IMAGE_OK else "image/png"
 
 
 def est_couche_wms(layer):
-    """Retourne True si la couche QGIS est une couche raster connectée à un vrai
-    service WMS (distingué d'un flux de tuiles XYZ, qui partage le même
-    providerType "wms" dans QGIS mais n'a pas de paramètre "layers")."""
+
     try:
         if (
             layer.type() != qenum(QgsMapLayer, "LayerType", "RasterLayer")
@@ -87,7 +77,7 @@ def est_couche_wms(layer):
 
 
 def extraire_config_wms(layer):
-    """Extrait les paramètres d'une couche WMS QGIS (source au format clé=valeur&...)."""
+
     params = parse_qs(layer.source())
 
     def _get(cle, defaut=""):

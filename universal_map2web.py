@@ -6,6 +6,7 @@ from qgis.PyQt.QtWidgets import QAction
 from qgis.PyQt.QtCore import QCoreApplication, QTranslator, QSettings
 
 from .exporter import Exporter
+from .utils import journaliser
 from .universal_map2web_dialog import UniversalMap2webDialog
 
 
@@ -38,8 +39,6 @@ class UniversalMap2web:
         else:
             locale = "en_US"
 
-        print(f"Langue chargée: {locale}")
-
         i18n_path = os.path.join(self.plugin_dir, "i18n")
         translation_file = os.path.join(i18n_path, f"{locale}.qm")
 
@@ -48,16 +47,14 @@ class UniversalMap2web:
         if os.path.exists(translation_file):
             self.translator.load(translation_file)
             QCoreApplication.installTranslator(self.translator)
-            print(f"Traduction chargée: {locale}")
             return True
         else:
-            print(f"Fichier de traduction non trouvé: {translation_file}")
+            journaliser(f"Fichier de traduction non trouvé : {translation_file}", "Warning")
             # Fallback sur l'anglais
             translation_file = os.path.join(i18n_path, "en_US.qm")
             if os.path.exists(translation_file):
                 self.translator.load(translation_file)
                 QCoreApplication.installTranslator(self.translator)
-                print("Fallback: en_US chargé")
                 return True
 
         return False
@@ -77,13 +74,11 @@ class UniversalMap2web:
         self.action.triggered.connect(self.run)
         self.iface.addToolBarIcon(self.action)
         self.iface.addPluginToWebMenu(self.tr("&Universal Map2web"), self.action)
-        # self.iface.addPluginToMenu(self.tr("&Universal Map2web"), self.action)
 
     def unload(self):
         if self.action:
             self.iface.removeToolBarIcon(self.action)
             self.iface.removePluginWebMenu(self.tr("&Universal Map2web"), self.action)
-            # self.iface.removePluginMenu(self.tr("&Universal Map2web"), self.action)
 
     def run(self):
         self.dialog = UniversalMap2webDialog(self.iface.mainWindow())

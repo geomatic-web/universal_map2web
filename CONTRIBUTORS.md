@@ -1,8 +1,9 @@
 # Contributing
 
-Thank you for your interest in contributing! This project welcomes contributions from developers around the world — bug reports, translations, documentation improvements, and code are all appreciated.
+Thank you for your interest in contributing! This project welcomes contributions from developers around the world - bug reports, translations, documentation improvements, and code are all appreciated.
 
 ## Table of Contents
+
 - [Code of Conduct](#code-of-conduct)
 - [Ways to Contribute](#ways-to-contribute)
 - [Getting Started (Development Setup)](#getting-started-development-setup)
@@ -20,18 +21,20 @@ This project follows the [Contributor Covenant](https://www.contributor-covenant
 ## Ways to Contribute
 
 You don't need to write code to contribute:
-- 🐛 **Report bugs** — see [Reporting Bugs](#reporting-bugs)
-- 💡 **Suggest features** — see [Suggesting Features](#suggesting-features)
-- 🌍 **Translate the interface** — see [Translations](#translations)
-- 📖 **Improve documentation** — fix typos, clarify instructions, add examples
-- 🧪 **Test pre-release versions** and report feedback
-- 💻 **Submit code** — bug fixes, new features, performance improvements
+
+- **Report bugs** - see [Reporting Bugs](#reporting-bugs)
+- **Suggest features** - see [Suggesting Features](#suggesting-features)
+- **Translate the interface** - see [Translations](#translations)
+- **Improve documentation** - fix typos, clarify instructions, add examples
+- **Test pre-release versions** and report feedback
+- **Submit code** - bug fixes, new features, performance improvements
 
 Look for issues labeled **`good first issue`** if you're new to the project, or **`help wanted`** for tasks we'd especially like help with.
 
 ## Getting Started (Development Setup)
 
 1. **Fork** the repository and clone it locally:
+
    ```bash
    git clone https://github.com/geomatic-web/universal_map2web.git
    cd <plugin-repo>
@@ -65,6 +68,7 @@ Look for issues labeled **`good first issue`** if you're new to the project, or 
 ## Reporting Bugs
 
 Open an issue on the GitHub tracker and include:
+
 - QGIS version and OS
 - Plugin version
 - Steps to reproduce
@@ -74,6 +78,7 @@ Open an issue on the GitHub tracker and include:
 ## Suggesting Features
 
 Open an issue describing:
+
 - The problem you're trying to solve
 - Your proposed solution
 - Any alternatives you considered

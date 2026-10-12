@@ -1,17 +1,13 @@
 <?php
 /**
- * get_data.php — généré par Universal Map2web
- * Endpoint unique servant les données PostgreSQL/PostGIS en GeoJSON,
- * pour toutes les couches déclarées dans db_config.php ($LAYERS_CONFIG).
- *
- * Appel attendu : get_data.php?layer=<nom_couche>&key=<API_KEY>
+ *Endpoint unique servant les données PostgreSQL/PostGIS en GeoJSON,
  */
 
 header('Content-Type: application/json; charset=utf-8');
 
 require_once __DIR__ . '/db_config.php';
 
-// --- Vérification de la clé API ---
+//Vérification de la clé API
 $provided_key = $_GET['key'] ?? '';
 if (!hash_equals(API_KEY, $provided_key)) {
     http_response_code(403);
@@ -19,7 +15,7 @@ if (!hash_equals(API_KEY, $provided_key)) {
     exit;
 }
 
-// --- Sélection de la couche demandée ---
+//Sélection de la couche demandée
 $layer = $_GET['layer'] ?? '';
 if (!isset($LAYERS_CONFIG[$layer])) {
     http_response_code(404);
@@ -28,7 +24,7 @@ if (!isset($LAYERS_CONFIG[$layer])) {
 }
 $cfg = $LAYERS_CONFIG[$layer];
 
-// --- Filtrage spatial optionnel (bbox envoyée par le client : minx,miny,maxx,maxy) ---
+//Filtrage spatial optionnel (bbox envoyée par le client : minx,miny,maxx,maxy)
 $bbox = $_GET['bbox'] ?? null;
 $bbox_filter = '';
 $params = [];
@@ -81,7 +77,6 @@ try {
     http_response_code(500);
     if (isset($_GET['debug']) && $_GET['debug'] === '1') {
         // Ne s'affiche que si la clé API valide a déjà été fournie (vérifiée plus haut) :
-        // safe à garder en place, pas de fuite pour un visiteur non autorisé.
         echo json_encode(["error" => "Erreur PDO : " . $e->getMessage()]);
     } else {
         echo json_encode(["error" => "Erreur de connexion a la base de donnees."]);
