@@ -107,816 +107,505 @@
       }
     </script>
     <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-      :root {
-        --accent: #1b7f6b;
-        --text: #2a2e33;
-        --muted: #6b737b;
-        --line: #dde1e5;
-        --bg: #ffffff;
-        --bg-soft: #f4f6f7;
-      }
-
-      body {
-        font-family:
-          system-ui,
-          -apple-system,
-          "Segoe UI",
-          Roboto,
-          Arial,
-          sans-serif;
-        line-height: 1.65;
-        color: var(--text);
-        background: var(--bg);
-      }
-
-      a {
-        color: var(--accent);
-      }
-
-      header {
-        border-bottom: 1px solid var(--line);
-        padding: 22px 28px;
-        display: flex;
-        align-items: center;
-        gap: 16px;
-      }
-      header img {
-        width: 48px;
-        height: 48px;
-      }
-      header h1 {
-        font-size: 1.5rem;
-        font-weight: 600;
-        line-height: 1.2;
-      }
-      header p {
-        color: var(--muted);
-        font-size: 0.95rem;
-      }
-      header .version {
-        margin-left: auto;
-        font-size: 0.85rem;
-        color: var(--muted);
-        border: 1px solid var(--line);
-        padding: 3px 10px;
-        border-radius: 4px;
-      }
-
-      .layout {
-        display: flex;
-        align-items: flex-start;
-        max-width: 1250px;
-        margin: 0 auto;
-      }
-
-      .sidebar {
-        width: 230px;
-        flex-shrink: 0;
-        position: sticky;
-        top: 0;
-        height: 100vh;
-        overflow-y: auto;
-        padding: 28px 20px 28px 28px;
-        font-size: 0.93rem;
-      }
-      .sidebar .group {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--muted);
-        margin: 20px 0 6px;
-      }
-      .sidebar .group:first-child {
-        margin-top: 0;
-      }
-      .sidebar ul {
-        list-style: none;
-      }
-      .sidebar a {
-        display: block;
-        padding: 4px 0 4px 10px;
-        color: var(--text);
-        text-decoration: none;
-        border-left: 2px solid transparent;
-      }
-      .sidebar a:hover {
-        color: var(--accent);
-      }
-      .sidebar a.active {
-        color: var(--accent);
-        border-left-color: var(--accent);
-        font-weight: 600;
-      }
-
-      .mobile-toggle {
-        display: none;
-        width: 100%;
-        background: var(--bg-soft);
-        border: none;
-        border-bottom: 1px solid var(--line);
-        padding: 12px 20px;
-        text-align: left;
-        font-size: 0.95rem;
-        cursor: pointer;
-      }
-
-      main {
-        flex: 1;
-        min-width: 0;
-        max-width: 820px;
-        padding: 28px 28px 40px 36px;
-      }
-
-      section {
-        margin-bottom: 52px;
-      }
-      h2 {
-        font-size: 1.45rem;
-        font-weight: 600;
-        margin-bottom: 14px;
-        padding-bottom: 6px;
-        border-bottom: 1px solid var(--line);
-      }
-      h3 {
-        font-size: 1.1rem;
-        margin: 24px 0 8px;
-      }
-      p {
-        margin-bottom: 12px;
-      }
-      ul,
-      ol {
-        margin: 0 0 14px 22px;
-      }
-      li {
-        margin-bottom: 4px;
-      }
-
-      .since {
-        font-size: 0.8rem;
-        font-weight: normal;
-        color: var(--muted);
-        margin-left: 8px;
-      }
-
-      code {
-        background: var(--bg-soft);
-        padding: 1px 5px;
-        border-radius: 3px;
-        font-family: Consolas, "Courier New", monospace;
-        font-size: 0.88em;
-      }
-      pre {
-        background: #23272b;
-        color: #e6e6e6;
-        padding: 14px 16px;
-        border-radius: 4px;
-        overflow-x: auto;
-        font-size: 0.85rem;
-        margin: 12px 0 18px;
-        line-height: 1.5;
-      }
-      pre code {
-        background: none;
-        padding: 0;
-        color: inherit;
-      }
-
-      .note {
-        border-left: 3px solid var(--accent);
-        background: var(--bg-soft);
-        padding: 10px 14px;
-        margin: 16px 0;
-      }
-      .note.warn {
-        border-left-color: #c0392b;
-      }
-      .note p:last-child,
-      .note ul:last-child {
-        margin-bottom: 0;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 14px 0 18px;
-        font-size: 0.95rem;
-      }
-      th,
-      td {
-        border-bottom: 1px solid var(--line);
-        padding: 8px 10px;
-        text-align: left;
-        vertical-align: top;
-      }
-      th {
-        font-weight: 600;
-        background: var(--bg-soft);
-      }
-
-      footer {
-        border-top: 1px solid var(--line);
-        text-align: center;
-        padding: 22px;
-        color: var(--muted);
-        font-size: 0.88rem;
-      }
-
-      @media (max-width: 900px) {
-        .mobile-toggle {
-          display: block;
+        :root {
+            --accent: #1b7f6b;
+            --text: #2a2e33;
+            --muted: #6b737b;
+            --line: #dde1e5;
+            --bg: #ffffff;
+            --bg-soft: #f4f6f7;
         }
-        .layout {
-          flex-direction: column;
+
+        body {
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+            line-height: 1.65;
+            color: var(--text);
+            background: var(--bg);
         }
-        .sidebar {
-          display: none;
-          width: 100%;
-          height: auto;
-          position: static;
-          padding: 12px 20px;
-          border-bottom: 1px solid var(--line);
-        }
-        .sidebar.open {
-          display: block;
-        }
-        main {
-          padding: 20px 18px 30px;
-        }
+
+        a { color: var(--accent); }
+
         header {
-          flex-wrap: wrap;
-          padding: 18px;
+            border-bottom: 1px solid var(--line);
+            padding: 22px 28px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
+        header img { width: 48px; height: 48px; }
+        header h1 { font-size: 1.5rem; font-weight: 600; line-height: 1.2; }
+        header p { color: var(--muted); font-size: 0.95rem; }
         header .version {
-          margin-left: 0;
+            margin-left: auto;
+            font-size: 0.85rem;
+            color: var(--muted);
+            border: 1px solid var(--line);
+            padding: 3px 10px;
+            border-radius: 4px;
+        }
+
+        .layout {
+            display: flex;
+            align-items: flex-start;
+            max-width: 1250px;
+            margin: 0 auto;
+        }
+
+        .sidebar {
+            width: 230px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 28px 20px 28px 28px;
+            font-size: 0.93rem;
+        }
+        .sidebar .group {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            margin: 20px 0 6px;
+        }
+        .sidebar .group:first-child { margin-top: 0; }
+        .sidebar ul { list-style: none; }
+        .sidebar a {
+            display: block;
+            padding: 4px 0 4px 10px;
+            color: var(--text);
+            text-decoration: none;
+            border-left: 2px solid transparent;
+        }
+        .sidebar a:hover { color: var(--accent); }
+        .sidebar a.active {
+            color: var(--accent);
+            border-left-color: var(--accent);
+            font-weight: 600;
+        }
+
+        .mobile-toggle {
+            display: none;
+            width: 100%;
+            background: var(--bg-soft);
+            border: none;
+            border-bottom: 1px solid var(--line);
+            padding: 12px 20px;
+            text-align: left;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        main {
+            flex: 1;
+            min-width: 0;
+            max-width: 820px;
+            padding: 28px 28px 40px 36px;
+        }
+
+        section { margin-bottom: 52px; }
+        h2 {
+            font-size: 1.45rem;
+            font-weight: 600;
+            margin-bottom: 14px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--line);
+        }
+        h3 { font-size: 1.1rem; margin: 24px 0 8px; }
+        p { margin-bottom: 12px; }
+        ul, ol { margin: 0 0 14px 22px; }
+        li { margin-bottom: 4px; }
+
+        .since {
+            font-size: 0.8rem;
+            font-weight: normal;
+            color: var(--muted);
+            margin-left: 8px;
+        }
+
+        code {
+            background: var(--bg-soft);
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 0.88em;
+        }
+        pre {
+            background: #23272b;
+            color: #e6e6e6;
+            padding: 14px 16px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            margin: 12px 0 18px;
+            line-height: 1.5;
+        }
+        pre code { background: none; padding: 0; color: inherit; }
+
+        .note {
+            border-left: 3px solid var(--accent);
+            background: var(--bg-soft);
+            padding: 10px 14px;
+            margin: 16px 0;
+        }
+        .note.warn { border-left-color: #c0392b; }
+        .note p:last-child, .note ul:last-child { margin-bottom: 0; }
+
+        table { width: 100%; border-collapse: collapse; margin: 14px 0 18px; font-size: 0.95rem; }
+        th, td { border-bottom: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+        th { font-weight: 600; background: var(--bg-soft); }
+
+        footer {
+            border-top: 1px solid var(--line);
+            text-align: center;
+            padding: 22px;
+            color: var(--muted);
+            font-size: 0.88rem;
+        }
+
+        @media (max-width: 900px) {
+            .mobile-toggle { display: block; }
+            .layout { flex-direction: column; }
+            .sidebar {
+                display: none;
+                width: 100%;
+                height: auto;
+                position: static;
+                padding: 12px 20px;
+                border-bottom: 1px solid var(--line);
+            }
+            .sidebar.open { display: block; }
+            main { padding: 20px 18px 30px; }
+            header { flex-wrap: wrap; padding: 18px; }
+            header .version { margin-left: 0; }
         }
       }
     </style>
   </head>
   <body>
     <header>
-      <img src="icon.png" alt="Universal Map2web" />
-      <div>
-        <h1>Universal Map2web</h1>
-        <p>
-          A QGIS plugin that exports your project as an interactive Leaflet web
-          map
-        </p>
-      </div>
-      <span class="version">v1.4.0</span>
+        <img src="icon.png" alt="Universal Map2web">
+        <div>
+            <h1>Universal Map2web</h1>
+            <p>A QGIS plugin that exports your project as an interactive Leaflet web map</p>
+        </div>
+        <span class="version">v1.4.0</span>
     </header>
 
     <button class="mobile-toggle" id="mobileToggle">Menu</button>
 
     <div class="layout">
-      <aside class="sidebar" id="sidebar">
-        <nav aria-label="Documentation navigation">
-          <p class="group">Basics</p>
-          <ul>
-            <li><a href="#installation">Installation</a></li>
-            <li><a href="#usage">Usage</a></li>
-            <li><a href="#tools">Tools &amp; options</a></li>
-            <li><a href="#themes">Themes</a></li>
-          </ul>
-          <p class="group">Going further</p>
-          <ul>
-            <li><a href="#filtering">Filtering</a></li>
-            <li><a href="#attribute-table">Attribute table</a></li>
-            <li><a href="#postgis">PostGIS dynamic mode</a></li>
-            <li><a href="#ogc">Live WFS / WMS</a></li>
-            <li><a href="#cors">CORS on GeoServer</a></li>
-          </ul>
-          <p class="group">Help</p>
-          <ul>
-            <li><a href="#tips">Tips</a></li>
-            <li><a href="#troubleshooting">Troubleshooting</a></li>
-            <li><a href="#requirements">Requirements</a></li>
-            <li><a href="#support">Contact</a></li>
-          </ul>
-        </nav>
-      </aside>
+        <aside class="sidebar" id="sidebar">
+            <nav aria-label="Documentation navigation">
+                <p class="group">Basics</p>
+                <ul>
+                    <li><a href="#installation">Installation</a></li>
+                    <li><a href="#usage">Usage</a></li>
+                    <li><a href="#tools">Tools &amp; options</a></li>
+                    <li><a href="#themes">Themes</a></li>
+                </ul>
+                <p class="group">Going further</p>
+                <ul>
+                    <li><a href="#filtering">Filtering</a></li>
+                    <li><a href="#attribute-table">Attribute table</a></li>
+                    <li><a href="#postgis">PostGIS dynamic mode</a></li>
+                    <li><a href="#ogc">Live WFS / WMS</a></li>
+                    <li><a href="#cors">CORS on GeoServer</a></li>
+                </ul>
+                <p class="group">Help</p>
+                <ul>
+                    <li><a href="#tips">Tips</a></li>
+                    <li><a href="#troubleshooting">Troubleshooting</a></li>
+                    <li><a href="#requirements">Requirements</a></li>
+                    <li><a href="#support">Contact</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+    <main>
 
       <main>
         <!-- ==================== INSTALLATION ==================== -->
         <section id="installation">
-          <h2>Installation</h2>
+            <h2>Installation</h2>
 
-          <h3>From the QGIS plugin repository</h3>
-          <p>
-            In QGIS, go to <code>Plugins</code> →
-            <code>Manage and Install Plugins</code>, search for "Universal
-            Map2web" and click Install. The plugin page is also available at
-            <a href="https://plugins.qgis.org/plugins/universal_map2web/"
-              >plugins.qgis.org/plugins/universal_map2web</a
-            >.
-          </p>
+            <h3>From the QGIS plugin repository</h3>
+            <p>In QGIS, go to <code>Plugins</code> → <code>Manage and Install Plugins</code>, search for
+                "Universal Map2web" and click Install. The plugin page is also available at
+                <a href="https://plugins.qgis.org/plugins/universal_map2web/">plugins.qgis.org/plugins/universal_map2web</a>.</p>
 
-          <h3>From GitHub</h3>
-          <p>
-            Download the ZIP from the
-            <a href="https://github.com/geomatic-web/universal_map2web"
-              >GitHub repository</a
-            >, then use <code>Plugins</code> → <code>Install from ZIP</code> in
-            QGIS and pick the file. Restart QGIS if it asks you to.
-          </p>
+            <h3>From GitHub</h3>
+            <p>Download the ZIP from the
+                <a href="https://github.com/geomatic-web/universal_map2web">GitHub repository</a>, then use
+                <code>Plugins</code> → <code>Install from ZIP</code> in QGIS and pick the file. Restart QGIS if it
+                asks you to.</p>
 
-          <div class="note">
-            <p>
-              QGIS 3.0 or higher is required (it also runs on QGIS 4.x). The
-              plugin follows the language of your QGIS installation, French or
-              English.
-            </p>
-          </div>
+            <div class="note">
+                <p>QGIS 3.0 or higher is required (it also runs on QGIS 4.x). The plugin follows the language of your
+                QGIS installation, French or English.</p>
+            </div>
         </section>
 
         <!-- ==================== USAGE ==================== -->
         <section id="usage">
-          <h2>Usage</h2>
-          <p>
-            Start the plugin from its toolbar icon or from the
-            <code>Web</code> menu. The dialog is split into tabs.
-          </p>
+            <h2>Usage</h2>
+            <p>Start the plugin from its toolbar icon or from the <code>Web</code> menu. The dialog is split into
+                tabs.</p>
 
-          <h3>General</h3>
-          <ul>
-            <li>Choose the web library used to render the map (Leaflet).</li>
-            <li>
-              Choose a basemap: OpenStreetMap, Google Satellite, or your own
-              tile URL, for example
-              <code>https://{s}.tile.example.com/{z}/{x}/{y}.png</code>.
-            </li>
-            <li>
-              Tick the tools you want in the exported map (see
-              <a href="#tools">Tools &amp; options</a>).
-            </li>
-          </ul>
+            <h3>General</h3>
+            <ul>
+                <li>Choose the web library used to render the map (Leaflet).</li>
+                <li>Choose a basemap: OpenStreetMap, Google Satellite, or your own tile URL, for example
+                    <code>https://{s}.tile.example.com/{z}/{x}/{y}.png</code>.</li>
+                <li>Tick the tools you want in the exported map (see <a href="#tools">Tools &amp; options</a>).</li>
+            </ul>
 
-          <h3>Customization</h3>
-          <ul>
-            <li>The map title, shown in the browser tab and in the header.</li>
-            <li>An optional logo for the header.</li>
-            <li>The header color.</li>
-            <li>
-              One of the four UI themes (see <a href="#themes">Themes</a>).
-            </li>
-          </ul>
+            <h3>Customization</h3>
+            <ul>
+                <li>The map title, shown in the browser tab and in the header.</li>
+                <li>An optional logo for the header.</li>
+                <li>The header color.</li>
+                <li>One of the four UI themes (see <a href="#themes">Themes</a>).</li>
+            </ul>
 
-          <h3>Layers</h3>
-          <ol>
-            <li>
-              Tick the layers to export. "Select all", "Deselect all" and
-              "Invert" save some clicks.
-            </li>
-            <li>
-              For each layer, pick the attribute fields that should appear in
-              the popup.
-            </li>
-            <li>
-              Layers connected to a WFS service are detected and loaded live.
-              WMS layers are listed separately (see
-              <a href="#ogc">Live WFS / WMS</a>).
-            </li>
-          </ol>
+            <h3>Layers</h3>
+            <ol>
+                <li>Tick the layers to export. "Select all", "Deselect all" and "Invert" save some clicks.</li>
+                <li>For each layer, pick the attribute fields that should appear in the popup.</li>
+                <li>Layers connected to a WFS service are detected and loaded live. WMS layers are listed
+                    separately (see <a href="#ogc">Live WFS / WMS</a>).</li>
+            </ol>
 
-          <h3>Advanced</h3>
-          <ul>
-            <li>
-              <strong>Simplify geometries</strong>: fewer vertices, faster
-              loading.
-            </li>
-            <li><strong>Compress JSON data</strong>: smaller GeoJSON files.</li>
-            <li><strong>Round coordinates</strong>: fewer decimals.</li>
-            <li>
-              <strong>Load PostGIS layers dynamically from PostgreSQL</strong>:
-              layers already connected to PostgreSQL/PostGIS in QGIS stay live
-              instead of being frozen into static GeoJSON (see
-              <a href="#postgis">PostGIS dynamic mode</a>).
-            </li>
-            <li>
-              <strong>Export as ZIP</strong>: puts the whole export in one
-              archive.
-            </li>
-            <li>
-              <strong>Open automatically in browser</strong>: starts a local
-              server and opens the map when the export is done.
-            </li>
-          </ul>
+            <h3>Advanced</h3>
+            <ul>
+                <li><strong>Simplify geometries</strong>: fewer vertices, faster loading.</li>
+                <li><strong>Compress JSON data</strong>: smaller GeoJSON files.</li>
+                <li><strong>Round coordinates</strong>: fewer decimals.</li>
+                <li><strong>Load PostGIS layers dynamically from PostgreSQL</strong>: layers already connected to
+                    PostgreSQL/PostGIS in QGIS stay live instead of being frozen into static GeoJSON (see
+                    <a href="#postgis">PostGIS dynamic mode</a>).</li>
+                <li><strong>Export as ZIP</strong>: puts the whole export in one archive.</li>
+                <li><strong>Open automatically in browser</strong>: starts a local server and opens the map when
+                    the export is done.</li>
+            </ul>
 
-          <h3>Wiki</h3>
-          <p>
-            A short built-in reference, in French or English depending on your
-            QGIS language.
-          </p>
+            <h3>Wiki</h3>
+            <p>A short built-in reference, in French or English depending on your QGIS language.</p>
 
-          <h3>Exporting</h3>
-          <p>
-            When everything is set, click OK and choose the destination folder.
-            If the option is enabled, the map then opens in your default
-            browser.
-          </p>
+            <h3>Exporting</h3>
+            <p>When everything is set, click OK and choose the destination folder. If the option is enabled, the map
+                then opens in your default browser.</p>
         </section>
 
         <!-- ==================== TOOLS & OPTIONS ==================== -->
         <section id="tools">
-          <h2>Tools &amp; options</h2>
-          <p>
-            Each tool can be switched on or off in the General tab before
-            exporting.
-          </p>
-          <table>
-            <tr>
-              <th>Option</th>
-              <th>What it adds to the exported map</th>
-            </tr>
-            <tr>
-              <td>Address search</td>
-              <td>A search bar to find an address</td>
-            </tr>
-            <tr>
-              <td>GPS geolocation</td>
-              <td>A button that centers the map on the visitor's position</td>
-            </tr>
-            <tr>
-              <td>Measure</td>
-              <td>Distance and area measurement</td>
-            </tr>
-            <tr>
-              <td>Print button</td>
-              <td>Opens the browser's print dialog</td>
-            </tr>
-            <tr>
-              <td>Fullscreen mode</td>
-              <td>A control to expand the map to fullscreen</td>
-            </tr>
-            <tr>
-              <td>Overview (MiniMap)</td>
-              <td>A small overview map in a corner</td>
-            </tr>
-            <tr>
-              <td>Scale bar</td>
-              <td>A graphic scale (on by default)</td>
-            </tr>
-            <tr>
-              <td>Cursor position</td>
-              <td>Latitude and longitude under the mouse pointer</td>
-            </tr>
-            <tr>
-              <td>Attribution</td>
-              <td>Map and library credits (on by default)</td>
-            </tr>
-            <tr>
-              <td>Advanced filter</td>
-              <td>
-                The attribute filter panel, see
-                <a href="#filtering">Filtering</a>
-              </td>
-            </tr>
-          </table>
+            <h2>Tools &amp; options</h2>
+            <p>Each tool can be switched on or off in the General tab before exporting.</p>
+            <table>
+                <tr><th>Option</th><th>What it adds to the exported map</th></tr>
+                <tr><td>Address search</td><td>A search bar to find an address</td></tr>
+                <tr><td>GPS geolocation</td><td>A button that centers the map on the visitor's position</td></tr>
+                <tr><td>Measure</td><td>Distance and area measurement</td></tr>
+                <tr><td>Print button</td><td>Opens the browser's print dialog</td></tr>
+                <tr><td>Fullscreen mode</td><td>A control to expand the map to fullscreen</td></tr>
+                <tr><td>Overview (MiniMap)</td><td>A small overview map in a corner</td></tr>
+                <tr><td>Scale bar</td><td>A graphic scale (on by default)</td></tr>
+                <tr><td>Cursor position</td><td>Latitude and longitude under the mouse pointer</td></tr>
+                <tr><td>Attribution</td><td>Map and library credits (on by default)</td></tr>
+                <tr><td>Advanced filter</td><td>The attribute filter panel, see <a href="#filtering">Filtering</a></td></tr>
+            </table>
 
-          <h3>Managing layers on the exported map</h3>
-          <ul>
-            <li>Show or hide a layer with its checkbox in the legend.</li>
-            <li>
-              Point layers can be clustered; enable "Cluster points" for the
-              layer.
-            </li>
-            <li>
-              The legend is built from your QGIS symbology. Simple, Categorized,
-              Graduated and Rule-based renderers are supported.
-            </li>
-            <li>
-              "Expand / Collapse all" folds or unfolds every group in the
-              legend.
-            </li>
-            <li>
-              The table icon in front of a vector layer opens its attribute
-              table (see <a href="#attribute-table">Attribute table</a>).
-            </li>
-            <li>The magnifier icon next to it zooms to the layer's extent.</li>
-          </ul>
+            <h3>Managing layers on the exported map</h3>
+            <ul>
+                <li>Show or hide a layer with its checkbox in the legend.</li>
+                <li>Point layers can be clustered; enable "Cluster points" for the layer.</li>
+                <li>The legend is built from your QGIS symbology. Simple, Categorized, Graduated and Rule-based
+                    renderers are supported.</li>
+                <li>"Expand / Collapse all" folds or unfolds every group in the legend.</li>
+                <li>The table icon in front of a vector layer opens its attribute table (see
+                    <a href="#attribute-table">Attribute table</a>).</li>
+                <li>The magnifier icon next to it zooms to the layer's extent.</li>
+            </ul>
         </section>
 
         <!-- ==================== THEMES ==================== -->
         <section id="themes">
-          <h2>Themes</h2>
-          <p>
-            Four themes are available: <strong>Light</strong>,
-            <strong>Dark</strong> (easier on the eyes with satellite basemaps),
-            <strong>Professional</strong> (neutral, for institutional maps) and
-            <strong>Colorful</strong> (stronger accent colors, for public-facing
-            maps).
-          </p>
-          <p>
-            The header color, title and logo are set separately from the theme,
-            so you can put your organization's branding on any of them.
-          </p>
+            <h2>Themes</h2>
+            <p>Four themes are available: <strong>Light</strong>, <strong>Dark</strong> (easier on the eyes with
+                satellite basemaps), <strong>Professional</strong> (neutral, for institutional maps) and
+                <strong>Colorful</strong> (stronger accent colors, for public-facing maps).</p>
+            <p>The header color, title and logo are set separately from the theme, so you can put your organization's
+                branding on any of them.</p>
         </section>
 
         <!-- ==================== ADVANCED FILTERING ==================== -->
         <section id="filtering">
-          <h2>Filtering</h2>
-          <p>
-            With the advanced filter enabled, the exported map gets a filter
-            panel in its sidebar. Visitors can query the data without QGIS.
-          </p>
-          <ol>
-            <li>Pick a layer.</li>
-            <li>Pick a field.</li>
-            <li>Pick an operator.</li>
-            <li>Type or select a value.</li>
-            <li>Click Apply. Matching features are highlighted on the map.</li>
-          </ol>
-          <p>Click Reset to clear the filter and show everything again.</p>
+            <h2>Filtering</h2>
+            <p>With the advanced filter enabled, the exported map gets a filter panel in its sidebar. Visitors can
+                query the data without QGIS.</p>
+            <ol>
+                <li>Pick a layer.</li>
+                <li>Pick a field.</li>
+                <li>Pick an operator.</li>
+                <li>Type or select a value.</li>
+                <li>Click Apply. Matching features are highlighted on the map.</li>
+            </ol>
+            <p>Click Reset to clear the filter and show everything again.</p>
 
-          <table>
-            <tr>
-              <th>Operator</th>
-              <th>Meaning</th>
-            </tr>
-            <tr>
-              <td><code>=</code></td>
-              <td>equal to</td>
-            </tr>
-            <tr>
-              <td><code>≠</code></td>
-              <td>different from</td>
-            </tr>
-            <tr>
-              <td><code>⊃</code></td>
-              <td>contains</td>
-            </tr>
-            <tr>
-              <td>starts with</td>
-              <td>text starts with the value</td>
-            </tr>
-            <tr>
-              <td><code>&gt;</code></td>
-              <td>greater than</td>
-            </tr>
-            <tr>
-              <td><code>&lt;</code></td>
-              <td>less than</td>
-            </tr>
-            <tr>
-              <td><code>≥</code></td>
-              <td>greater than or equal to</td>
-            </tr>
-            <tr>
-              <td><code>≤</code></td>
-              <td>less than or equal to</td>
-            </tr>
-          </table>
+            <table>
+                <tr><th>Operator</th><th>Meaning</th></tr>
+                <tr><td><code>=</code></td><td>equal to</td></tr>
+                <tr><td><code>≠</code></td><td>different from</td></tr>
+                <tr><td><code>⊃</code></td><td>contains</td></tr>
+                <tr><td>starts with</td><td>text starts with the value</td></tr>
+                <tr><td><code>&gt;</code></td><td>greater than</td></tr>
+                <tr><td><code>&lt;</code></td><td>less than</td></tr>
+                <tr><td><code>≥</code></td><td>greater than or equal to</td></tr>
+                <tr><td><code>≤</code></td><td>less than or equal to</td></tr>
+            </table>
         </section>
 
         <!-- ==================== ATTRIBUTE TABLE ==================== -->
         <section id="attribute-table">
-          <h2>Attribute table <span class="since">since 1.4.0</span></h2>
-          <p>
-            Every vector layer in the exported map (static shapefile/GeoJSON,
-            WFS or PostgreSQL/PostGIS) has a small table icon before its name in
-            the legend. Clicking it opens the attribute table in a floating
-            window.
-          </p>
-          <ul>
-            <li>
-              The window can be moved (drag the title bar) and resized
-              (bottom-right corner). You can have several tables open at once.
-            </li>
-            <li>Click a column header to sort.</li>
-            <li>
-              Filter a column by typing in the field under its header, or search
-              all columns with the global search box.
-            </li>
-            <li>
-              Hovering a row highlights the feature on the map. Hold
-              <strong>Ctrl</strong> while hovering, or click the row, to zoom to
-              it.
-            </li>
-            <li>
-              Export to CSV gives you the rows currently displayed, after
-              filtering and sorting. The file uses <code>;</code> as separator
-              and UTF-8 with BOM, so Excel shows accents correctly.
-            </li>
-            <li>Large layers are paged, 100 rows per page.</li>
-          </ul>
+            <h2>Attribute table <span class="since">since 1.4.0</span></h2>
+            <p>Every vector layer in the exported map (static shapefile/GeoJSON, WFS or PostgreSQL/PostGIS) has a
+                small table icon before its name in the legend. Clicking it opens the attribute table in a
+                floating window.</p>
+            <ul>
+                <li>The window can be moved (drag the title bar) and resized (bottom-right corner). You can have
+                    several tables open at once.</li>
+                <li>Click a column header to sort.</li>
+                <li>Filter a column by typing in the field under its header, or search all columns with the global
+                    search box.</li>
+                <li>Hovering a row highlights the feature on the map. Hold <strong>Ctrl</strong> while hovering, or
+                    click the row, to zoom to it.</li>
+                <li>Export to CSV gives you the rows currently displayed, after filtering and sorting. The file uses
+                    <code>;</code> as separator and UTF-8 with BOM, so Excel shows accents correctly.</li>
+                <li>Large layers are paged, 100 rows per page.</li>
+            </ul>
 
-          <div class="note">
-            <p>
-              The table only lists features that are loaded in the page. In
-              <a href="#postgis">PostGIS dynamic mode</a> with bounding-box
-              filtering, that means the features of the area currently loaded.
-              Internal styling fields are hidden automatically. WMS layers are
-              rasters, so they have no attribute table.
-            </p>
-          </div>
+            <div class="note">
+                <p>The table only lists features that are loaded in the page. In
+                <a href="#postgis">PostGIS dynamic mode</a> with bounding-box filtering, that means the features of
+                the area currently loaded. Internal styling fields are hidden automatically. WMS layers are rasters,
+                so they have no attribute table.</p>
+            </div>
         </section>
 
         <!-- ==================== POSTGIS DYNAMIC MODE ==================== -->
         <section id="postgis">
-          <h2>PostGIS dynamic mode <span class="since">since 1.2.1</span></h2>
-          <p>
-            By default, a layer is exported as a GeoJSON snapshot taken at
-            export time. For layers connected to PostgreSQL/PostGIS in QGIS, you
-            can instead keep them live: the web map queries the database every
-            time it needs data.
-          </p>
+            <h2>PostGIS dynamic mode <span class="since">since 1.2.1</span></h2>
+            <p>By default, a layer is exported as a GeoJSON snapshot taken at export time. For layers connected to
+                PostgreSQL/PostGIS in QGIS, you can instead keep them live: the web map queries the database every
+                time it needs data.</p>
 
-          <h3>Enabling it</h3>
-          <ol>
-            <li>
-              In the export dialog, check "Load PostGIS layers dynamically from
-              PostgreSQL (instead of a static export)".
-            </li>
-            <li>
-              The plugin reuses the connection already set up in QGIS. You don't
-              enter any credentials again.
-            </li>
-            <li>
-              Export as usual. Layers that are not from PostgreSQL, or that you
-              leave unchecked, are still exported as static GeoJSON.
-            </li>
-          </ol>
+            <h3>Enabling it</h3>
+            <ol>
+                <li>In the export dialog, check "Load PostGIS layers dynamically from PostgreSQL (instead of a static
+                    export)".</li>
+                <li>The plugin reuses the connection already set up in QGIS. You don't enter any credentials
+                    again.</li>
+                <li>Export as usual. Layers that are not from PostgreSQL, or that you leave unchecked, are still
+                    exported as static GeoJSON.</li>
+            </ol>
 
-          <h3>What is generated</h3>
-          <ul>
-            <li>
-              <code>get_data.php</code>, the endpoint that serves feature data
-              to the map.
-            </li>
-            <li>
-              <code>db_config.php</code>, which holds the database connection
-              details.
-            </li>
-            <li>
-              A random API key, new for each export, that restricts access to
-              <code>get_data.php</code>.
-            </li>
-            <li>
-              An <code>.htaccess</code> file that blocks direct access to
-              <code>db_config.php</code>.
-            </li>
-          </ul>
-          <p>
-            The map can filter by bounding box, so only the visible area is
-            requested. Layers left in static mode behave exactly as before.
-          </p>
+            <h3>What is generated</h3>
+            <ul>
+                <li><code>get_data.php</code>, the endpoint that serves feature data to the map.</li>
+                <li><code>db_config.php</code>, which holds the database connection details.</li>
+                <li>A random API key, new for each export, that restricts access to <code>get_data.php</code>.</li>
+                <li>An <code>.htaccess</code> file that blocks direct access to <code>db_config.php</code>.</li>
+            </ul>
+            <p>The map can filter by bounding box, so only the visible area is requested. Layers left in static mode
+                behave exactly as before.</p>
 
-          <div class="note warn">
-            <p>
-              This mode needs a PHP web server with the
-              <code>pdo_pgsql</code> extension enabled. A plain static host
-              (GitHub Pages, a simple file share) won't work for dynamic layers.
-              In that case, use the static GeoJSON export.
-            </p>
-          </div>
-          <div class="note">
-            <p>
-              Leave <code>db_config.php</code> and <code>.htaccess</code> as
-              generated. They are what keeps your database credentials from
-              being read directly.
-            </p>
-          </div>
+            <div class="note warn">
+                <p>This mode needs a PHP web server with the <code>pdo_pgsql</code> extension enabled. A plain static
+                host (GitHub Pages, a simple file share) won't work for dynamic layers. In that case, use the static
+                GeoJSON export.</p>
+            </div>
+            <div class="note">
+                <p>Leave <code>db_config.php</code> and <code>.htaccess</code> as generated. They are what keeps your
+                database credentials from being read directly.</p>
+            </div>
         </section>
 
         <!-- ==================== LIVE WFS / WMS ==================== -->
         <section id="ogc">
-          <h2>Live WFS / WMS <span class="since">since 1.4.0</span></h2>
-          <p>
-            A layer connected to an OGC service in QGIS (a GeoServer, for
-            example) can stay live on the exported map. The browser asks the
-            server for the data instead of reading a file produced at export
-            time.
-          </p>
+            <h2>Live WFS / WMS <span class="since">since 1.4.0</span></h2>
+            <p>A layer connected to an OGC service in QGIS (a GeoServer, for example) can stay live on the exported
+                map. The browser asks the server for the data instead of reading a file produced at export time.</p>
 
-          <table>
-            <tr>
-              <th>Service</th>
-              <th>Type</th>
-              <th>Behavior on the exported map</th>
-            </tr>
-            <tr>
-              <td>WFS</td>
-              <td>Vector</td>
-              <td>
-                Detected automatically from the QGIS layer. The map sends a
-                <code>GetFeature</code> request (<code>application/json</code>)
-                to the WFS server at each load. No PHP backend and no GeoJSON
-                file. Symbology, popups, the advanced filter and the
-                <a href="#attribute-table">attribute table</a> work as for any
-                other vector layer.
-              </td>
-            </tr>
-            <tr>
-              <td>WMS</td>
-              <td>Raster</td>
-              <td>
-                Listed separately in the export dialog and displayed as tiles
-                requested from the server. Clicking the map sends a
-                <code>GetFeatureInfo</code> request and shows the answer in a
-                popup.
-              </td>
-            </tr>
-          </table>
+            <table>
+                <tr><th>Service</th><th>Type</th><th>Behavior on the exported map</th></tr>
+                <tr>
+                    <td>WFS</td>
+                    <td>Vector</td>
+                    <td>Detected automatically from the QGIS layer. The map sends a <code>GetFeature</code> request
+                        (<code>application/json</code>) to the WFS server at each load. No PHP backend and no GeoJSON
+                        file. Symbology, popups, the advanced filter and the
+                        <a href="#attribute-table">attribute table</a> work as for any other vector layer.</td>
+                </tr>
+                <tr>
+                    <td>WMS</td>
+                    <td>Raster</td>
+                    <td>Listed separately in the export dialog and displayed as tiles requested from the server.
+                        Clicking the map sends a <code>GetFeatureInfo</code> request and shows the answer in a
+                        popup.</td>
+                </tr>
+            </table>
 
-          <h3>Setting it up</h3>
-          <ol>
-            <li>
-              Add the WFS or WMS layer to QGIS as usual (<em
-                >Layer &gt; Add Layer</em
-              >).
-            </li>
-            <li>
-              Open Universal Map2web and select the layer in the Layers tab. The
-              connection settings are read from the layer.
-            </li>
-            <li>Export.</li>
-            <li>
-              Check that CORS is enabled on the server (see
-              <a href="#cors">CORS on GeoServer</a>).
-            </li>
-          </ol>
+            <h3>Setting it up</h3>
+            <ol>
+                <li>Add the WFS or WMS layer to QGIS as usual (<em>Layer &gt; Add Layer</em>).</li>
+                <li>Open Universal Map2web and select the layer in the Layers tab. The connection settings are read
+                    from the layer.</li>
+                <li>Export.</li>
+                <li>Check that CORS is enabled on the server (see <a href="#cors">CORS on GeoServer</a>).</li>
+            </ol>
 
-          <div class="note warn">
-            <p>Things the server must satisfy:</p>
-            <ul>
-              <li>
-                It has to be reachable from the visitor's browser, not just from
-                your computer. A server on <code>localhost</code> or on a
-                private network won't work for people online.
-              </li>
-              <li>
-                If the map is served over <code>https://</code>, the OGC server
-                must use <code>https://</code> too, otherwise the browser blocks
-                the requests (mixed content).
-              </li>
-              <li>CORS must be enabled.</li>
-              <li>
-                For WFS, the <code>application/json</code> output format must be
-                available. GeoServer enables it by default.
-              </li>
-            </ul>
-          </div>
+            <div class="note warn">
+                <p>Things the server must satisfy:</p>
+                <ul>
+                    <li>It has to be reachable from the visitor's browser, not just from your computer. A server on
+                        <code>localhost</code> or on a private network won't work for people online.</li>
+                    <li>If the map is served over <code>https://</code>, the OGC server must use
+                        <code>https://</code> too, otherwise the browser blocks the requests (mixed content).</li>
+                    <li>CORS must be enabled.</li>
+                    <li>For WFS, the <code>application/json</code> output format must be available. GeoServer enables
+                        it by default.</li>
+                </ul>
+            </div>
         </section>
 
         <!-- ==================== GEOSERVER CORS ==================== -->
         <section id="cors">
-          <h2>CORS on GeoServer</h2>
-          <p>
-            The exported map is opened from a different origin than your
-            GeoServer: your own website, or
-            <code>http://localhost:PORT</code> when you use the built-in local
-            server. The browser only lets the page read GeoServer's answers if
-            GeoServer sends the <code>Access-Control-Allow-Origin</code> header.
-            The built-in local server doesn't change that for remote WFS/WMS
-            services.
-          </p>
+            <h2>CORS on GeoServer</h2>
+            <p>The exported map is opened from a different origin than your GeoServer: your own website, or
+                <code>http://localhost:PORT</code> when you use the built-in local server. The browser only lets the
+                page read GeoServer's answers if GeoServer sends the <code>Access-Control-Allow-Origin</code> header.
+                The built-in local server doesn't change that for remote WFS/WMS services.</p>
 
-          <table>
-            <tr>
-              <th>Service</th>
-              <th>Without CORS</th>
-            </tr>
-            <tr>
-              <td>WFS</td>
-              <td>
-                The layer can't be loaded and the legend shows a "blocked by
-                CORS" message.
-              </td>
-            </tr>
-            <tr>
-              <td>WMS</td>
-              <td>
-                Tiles still display, since they are loaded as images.
-                Click-to-query (<code>GetFeatureInfo</code> as JSON) is blocked
-                and falls back to an HTML frame.
-              </td>
-            </tr>
-          </table>
+            <table>
+                <tr><th>Service</th><th>Without CORS</th></tr>
+                <tr><td>WFS</td><td>The layer can't be loaded and the legend shows a "blocked by CORS" message.</td></tr>
+                <tr><td>WMS</td><td>Tiles still display, since they are loaded as images. Click-to-query
+                    (<code>GetFeatureInfo</code> as JSON) is blocked and falls back to an HTML frame.</td></tr>
+            </table>
 
-          <h3>Option A: GeoServer web administration</h3>
-          <p>
-            Recent GeoServer versions have a CORS setting in the web
-            administration interface (look for "Enable CORS" in the GeoServer
-            documentation, under Container Considerations). Turn it on and
-            restart GeoServer.
-          </p>
+            <h3>Option A: GeoServer web administration</h3>
+            <p>Recent GeoServer versions have a CORS setting in the web administration interface (look for "Enable
+                CORS" in the GeoServer documentation, under Container Considerations). Turn it on and restart
+                GeoServer.</p>
 
-          <h3>Option B: web.xml</h3>
-          <p>
-            This works on all versions. Edit
-            <code>webapps/geoserver/WEB-INF/web.xml</code>, uncomment or add the
-            CORS <code>&lt;filter&gt;</code> and its
-            <code>&lt;filter-mapping&gt;</code>, then restart.
-          </p>
+            <h3>Option B: web.xml</h3>
+            <p>This works on all versions. Edit <code>webapps/geoserver/WEB-INF/web.xml</code>, uncomment or add the
+                CORS <code>&lt;filter&gt;</code> and its <code>&lt;filter-mapping&gt;</code>, then restart.</p>
 
-          <p>Standalone or binary installer (Jetty):</p>
-          <pre><code>&lt;filter&gt;
+            <p>Standalone or binary installer (Jetty):</p>
+<pre><code>&lt;filter&gt;
   &lt;filter-name&gt;cross-origin&lt;/filter-name&gt;
   &lt;filter-class&gt;org.eclipse.jetty.servlets.CrossOriginFilter&lt;/filter-class&gt;
 &lt;/filter&gt;
@@ -925,8 +614,8 @@
   &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
 &lt;/filter-mapping&gt;</code></pre>
 
-          <p>WAR deployed in Tomcat:</p>
-          <pre><code>&lt;filter&gt;
+            <p>WAR deployed in Tomcat:</p>
+<pre><code>&lt;filter&gt;
   &lt;filter-name&gt;CorsFilter&lt;/filter-name&gt;
   &lt;filter-class&gt;org.apache.catalina.filters.CorsFilter&lt;/filter-class&gt;
   &lt;init-param&gt;
@@ -947,267 +636,135 @@
   &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
 &lt;/filter-mapping&gt;</code></pre>
 
-          <div class="note warn">
-            <p>
-              Use one method only. If CORS is enabled in the interface, in
-              <code>web.xml</code> and/or in a reverse proxy (Apache, Nginx) at
-              the same time, the server sends duplicate
-              <code>Access-Control-Allow-Origin</code> values and browsers
-              reject the response.
-            </p>
-          </div>
-          <div class="note">
-            <p>
-              <code>*</code> allows any website. In production, replace it with
-              your own site, for example <code>https://maps.example.org</code>.
-            </p>
-          </div>
+            <div class="note warn">
+                <p>Use one method only. If CORS is enabled in the interface, in <code>web.xml</code> and/or in a
+                reverse proxy (Apache, Nginx) at the same time, the server sends duplicate
+                <code>Access-Control-Allow-Origin</code> values and browsers reject the response.</p>
+            </div>
+            <div class="note">
+                <p><code>*</code> allows any website. In production, replace it with your own site, for example
+                <code>https://maps.example.org</code>.</p>
+            </div>
 
-          <h3>Checking that it works</h3>
-          <pre><code>curl -I -H "Origin: https://maps.example.org" "https://your-geoserver/geoserver/ows?service=WFS&amp;request=GetCapabilities"</code></pre>
-          <p>
-            The response headers must contain
-            <code>Access-Control-Allow-Origin</code>.
-          </p>
+            <h3>Checking that it works</h3>
+            <pre><code>curl -I -H "Origin: https://maps.example.org" "https://your-geoserver/geoserver/ows?service=WFS&amp;request=GetCapabilities"</code></pre>
+            <p>The response headers must contain <code>Access-Control-Allow-Origin</code>.</p>
         </section>
 
         <!-- ==================== TIPS ==================== -->
         <section id="tips">
-          <h2>Tips</h2>
-          <ul>
-            <li>
-              <strong>Number of layers.</strong> Around 15 active layers is a
-              good ceiling for the browser.
-            </li>
-            <li>
-              <strong>File size.</strong> Try to keep each layer under about 50
-              MB. For big datasets, turn on "Simplify geometries" and "Compress
-              JSON data".
-            </li>
-            <li>
-              <strong>Coordinate system.</strong> Work in WGS84 (EPSG:4326).
-              Leaflet basemaps expect geographic coordinates.
-            </li>
-            <li>
-              <strong>Check in QGIS first.</strong> The web map mirrors your
-              current project styling, so fix symbology and labels before
-              exporting.
-            </li>
-            <li>
-              <strong>Popups.</strong> Select only the fields visitors need. The
-              popup stays shorter and easier to read.
-            </li>
-            <li>
-              <strong>Sharing.</strong> "Export as ZIP" gives you one archive to
-              upload to a server or send to a colleague.
-            </li>
-          </ul>
+            <h2>Tips</h2>
+            <ul>
+                <li><strong>Number of layers.</strong> Around 15 active layers is a good ceiling for the browser.</li>
+                <li><strong>File size.</strong> Try to keep each layer under about 50 MB. For big datasets, turn on
+                    "Simplify geometries" and "Compress JSON data".</li>
+                <li><strong>Coordinate system.</strong> Work in WGS84 (EPSG:4326). Leaflet basemaps expect
+                    geographic coordinates.</li>
+                <li><strong>Check in QGIS first.</strong> The web map mirrors your current project styling, so fix
+                    symbology and labels before exporting.</li>
+                <li><strong>Popups.</strong> Select only the fields visitors need. The popup stays shorter and easier
+                    to read.</li>
+                <li><strong>Sharing.</strong> "Export as ZIP" gives you one archive to upload to a server or send to a
+                    colleague.</li>
+            </ul>
         </section>
 
         <!-- ==================== TROUBLESHOOTING ==================== -->
         <section id="troubleshooting">
-          <h2>Troubleshooting</h2>
+            <h2>Troubleshooting</h2>
 
-          <h3>The map doesn't open after export</h3>
-          <p>
-            Check that "Open automatically in browser" is ticked in the Advanced
-            tab, and that a firewall or antivirus isn't blocking the local port
-            used for the preview. You can always open
-            <code>index.html</code> from the export folder yourself.
-          </p>
+            <h3>The map doesn't open after export</h3>
+            <p>Check that "Open automatically in browser" is ticked in the Advanced tab, and that a firewall or
+                antivirus isn't blocking the local port used for the preview. You can always open
+                <code>index.html</code> from the export folder yourself.</p>
 
-          <h3>The legend or some labels are in the wrong language</h3>
-          <p>
-            The language comes from QGIS, under <code>Settings</code> →
-            <code>Options</code> → <code>General</code>. Restart QGIS after
-            changing it so the plugin reloads its translations.
-          </p>
+            <h3>The legend or some labels are in the wrong language</h3>
+            <p>The language comes from QGIS, under <code>Settings</code> → <code>Options</code> →
+                <code>General</code>. Restart QGIS after changing it so the plugin reloads its translations.</p>
 
-          <h3>A layer is missing from the exported map</h3>
-          <ul>
-            <li>
-              Make sure it is ticked in the Layers tab of the export dialog.
-            </li>
-            <li>Make sure it is visible in the QGIS Layers panel.</li>
-            <li>
-              Local raster files are not exported to Leaflet. Vector layers are,
-              and WMS services are loaded live (see
-              <a href="#ogc">Live WFS / WMS</a>).
-            </li>
-          </ul>
+            <h3>A layer is missing from the exported map</h3>
+            <ul>
+                <li>Make sure it is ticked in the Layers tab of the export dialog.</li>
+                <li>Make sure it is visible in the QGIS Layers panel.</li>
+                <li>Local raster files are not exported to Leaflet. Vector layers are, and WMS services are loaded
+                    live (see <a href="#ogc">Live WFS / WMS</a>).</li>
+            </ul>
 
-          <h3>Colors or categories don't match QGIS</h3>
-          <p>
-            Check that the renderer (Simple, Categorized, Graduated, Rule-based)
-            is fully applied in QGIS, refresh the layer's symbology panel, and
-            export again.
-          </p>
+            <h3>Colors or categories don't match QGIS</h3>
+            <p>Check that the renderer (Simple, Categorized, Graduated, Rule-based) is fully applied in QGIS, refresh
+                the layer's symbology panel, and export again.</p>
 
-          <h3>PostGIS layers are empty once online</h3>
-          <p>
-            It works locally but the dynamic layers stay empty on the server.
-            Check the following:
-          </p>
-          <ul>
-            <li>
-              The host must be a PHP server with the
-              <code>pdo_pgsql</code> extension. A static-only host can't run
-              <code>get_data.php</code>.
-            </li>
-            <li>
-              <code>db_config.php</code> and <code>.htaccess</code> must be
-              uploaded with the rest of the export, unmodified.
-            </li>
-            <li>
-              The PostgreSQL server must accept remote connections from your web
-              host, and its firewall must allow them.
-            </li>
-          </ul>
+            <h3>PostGIS layers are empty once online</h3>
+            <p>It works locally but the dynamic layers stay empty on the server. Check the following:</p>
+            <ul>
+                <li>The host must be a PHP server with the <code>pdo_pgsql</code> extension. A static-only host can't
+                    run <code>get_data.php</code>.</li>
+                <li><code>db_config.php</code> and <code>.htaccess</code> must be uploaded with the rest of the
+                    export, unmodified.</li>
+                <li>The PostgreSQL server must accept remote connections from your web host, and its firewall must
+                    allow them.</li>
+            </ul>
 
-          <h3>
-            A WFS layer won't load ("blocked by CORS" or "server unreachable")
-          </h3>
-          <p>
-            The layer works in QGIS but stays empty on the exported map and the
-            legend shows an error.
-          </p>
-          <ul>
-            <li>
-              Enable CORS on the server (see
-              <a href="#cors">CORS on GeoServer</a>).
-            </li>
-            <li>
-              Open the WFS URL from a computer outside your network to confirm
-              visitors can reach it.
-            </li>
-            <li>
-              If the map is served over <code>https://</code>, the WFS URL must
-              be <code>https://</code> too.
-            </li>
-            <li>
-              Check that the <code>application/json</code> output format is
-              enabled.
-            </li>
-            <li>
-              If CORS is already on, make sure it isn't configured twice
-              (interface plus <code>web.xml</code> or reverse proxy), which
-              duplicates the header.
-            </li>
-          </ul>
+            <h3>A WFS layer won't load ("blocked by CORS" or "server unreachable")</h3>
+            <p>The layer works in QGIS but stays empty on the exported map and the legend shows an error.</p>
+            <ul>
+                <li>Enable CORS on the server (see <a href="#cors">CORS on GeoServer</a>).</li>
+                <li>Open the WFS URL from a computer outside your network to confirm visitors can reach it.</li>
+                <li>If the map is served over <code>https://</code>, the WFS URL must be <code>https://</code> too.</li>
+                <li>Check that the <code>application/json</code> output format is enabled.</li>
+                <li>If CORS is already on, make sure it isn't configured twice (interface plus
+                    <code>web.xml</code> or reverse proxy), which duplicates the header.</li>
+            </ul>
 
-          <h3>A WMS layer displays but clicking gives no popup</h3>
-          <ul>
-            <li>
-              Tiles are images and don't need CORS, but click-to-query does.
-              Enable it as described in <a href="#cors">CORS on GeoServer</a>.
-            </li>
-            <li>
-              The layer must be queryable on the server (<code
-                >GetFeatureInfo</code
-              >
-              enabled).
-            </li>
-            <li>
-              Without CORS the plugin falls back to an HTML frame, which looks
-              different from the normal popup.
-            </li>
-          </ul>
+            <h3>A WMS layer displays but clicking gives no popup</h3>
+            <ul>
+                <li>Tiles are images and don't need CORS, but click-to-query does. Enable it as described in
+                    <a href="#cors">CORS on GeoServer</a>.</li>
+                <li>The layer must be queryable on the server (<code>GetFeatureInfo</code> enabled).</li>
+                <li>Without CORS the plugin falls back to an HTML frame, which looks different from the normal
+                    popup.</li>
+            </ul>
 
-          <h3>The attribute table has fewer rows than the layer</h3>
-          <p>
-            The table lists the features loaded in the page. In
-            <a href="#postgis">PostGIS dynamic mode</a> with bounding-box
-            filtering, only the features of the loaded area are there.
-          </p>
+            <h3>The attribute table has fewer rows than the layer</h3>
+            <p>The table lists the features loaded in the page. In <a href="#postgis">PostGIS dynamic mode</a> with
+                bounding-box filtering, only the features of the loaded area are there.</p>
 
-          <p>
-            In most other cases, the cause is a permission issue with the local
-            preview server, or a layer that was hidden or unselected in QGIS at
-            export time.
-          </p>
+            <p>In most other cases, the cause is a permission issue with the local preview server, or a layer that
+                was hidden or unselected in QGIS at export time.</p>
         </section>
 
         <!-- ==================== REQUIREMENTS ==================== -->
         <section id="requirements">
-          <h2>Requirements</h2>
-          <table>
-            <tr>
-              <th>Component</th>
-              <th>Requirement</th>
-            </tr>
-            <tr>
-              <td>QGIS</td>
-              <td>3.0 or higher (up to 4.x)</td>
-            </tr>
-            <tr>
-              <td>Browser</td>
-              <td>Chrome 90+, Firefox 88+, Edge 90+</td>
-            </tr>
-            <tr>
-              <td>Memory</td>
-              <td>4 GB RAM minimum</td>
-            </tr>
-            <tr>
-              <td>Internet</td>
-              <td>Needed for basemaps and web libraries (Leaflet, plugins)</td>
-            </tr>
-            <tr>
-              <td>Hosting (PostGIS dynamic mode only)</td>
-              <td>
-                PHP web server with the <code>pdo_pgsql</code> extension enabled
-              </td>
-            </tr>
-            <tr>
-              <td>OGC server (live WFS/WMS only)</td>
-              <td>
-                GeoServer or any WFS/WMS server reachable from visitors'
-                browsers, with CORS enabled (and <code>https</code> if the map
-                is served over https)
-              </td>
-            </tr>
-          </table>
+            <h2>Requirements</h2>
+            <table>
+                <tr><th>Component</th><th>Requirement</th></tr>
+                <tr><td>QGIS</td><td>3.0 or higher (up to 4.x)</td></tr>
+                <tr><td>Browser</td><td>Chrome 90+, Firefox 88+, Edge 90+</td></tr>
+                <tr><td>Memory</td><td>4 GB RAM minimum</td></tr>
+                <tr><td>Internet</td><td>Needed for basemaps and web libraries (Leaflet, plugins)</td></tr>
+                <tr><td>Hosting (PostGIS dynamic mode only)</td><td>PHP web server with the <code>pdo_pgsql</code> extension enabled</td></tr>
+                <tr><td>OGC server (live WFS/WMS only)</td><td>GeoServer or any WFS/WMS server reachable from visitors' browsers, with CORS enabled (and <code>https</code> if the map is served over https)</td></tr>
+            </table>
         </section>
 
         <!-- ==================== SUPPORT ==================== -->
         <section id="support">
-          <h2>Contact</h2>
-          <p>Questions, bug reports and suggestions are welcome.</p>
-          <ul>
-            <li>
-              Email:
-              <a href="mailto:jeanbaptiste.kibora@tic.gov.bf"
-                >jeanbaptiste.kibora@tic.gov.bf</a
-              >
-            </li>
-            <li>Phone: +226 64 41 25 14</li>
-            <li>
-              Source code:
-              <a href="https://github.com/geomatic-web/universal_map2web"
-                >github.com/geomatic-web/universal_map2web</a
-              >
-            </li>
-            <li>
-              Bugs:
-              <a href="https://github.com/geomatic-web/universal_map2web/issues"
-                >open an issue on GitHub</a
-              >
-            </li>
-            <li>
-              Plugin page:
-              <a href="https://plugins.qgis.org/plugins/universal_map2web/"
-                >plugins.qgis.org/plugins/universal_map2web</a
-              >
-            </li>
-          </ul>
+            <h2>Contact</h2>
+            <p>Questions, bug reports and suggestions are welcome.</p>
+            <ul>
+                <li>Email: <a href="mailto:jeanbaptiste.kibora@tic.gov.bf">jeanbaptiste.kibora@tic.gov.bf</a></li>
+                <li>Phone: +226 64 41 25 14</li>
+                <li>Source code: <a href="https://github.com/geomatic-web/universal_map2web">github.com/geomatic-web/universal_map2web</a></li>
+                <li>Bugs: <a href="https://github.com/geomatic-web/universal_map2web/issues">open an issue on GitHub</a></li>
+                <li>Plugin page: <a href="https://plugins.qgis.org/plugins/universal_map2web/">plugins.qgis.org/plugins/universal_map2web</a></li>
+            </ul>
         </section>
-      </main>
+
+    </main>
     </div>
 
     <footer>
-      <p>
-        © 2026 Jean-Baptiste KIBORA · Universal Map2web, licensed under GPL v2 ·
-        Version 1.4.0
-      </p>
+        <p>© 2026 Jean-Baptiste KIBORA · Universal Map2web, licensed under GPL v2 · Version 1.4.0</p>
     </footer>
 
     <script>
