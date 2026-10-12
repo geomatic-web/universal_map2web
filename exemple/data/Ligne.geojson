@@ -1,0 +1,751 @@
+{
+  "type": "FeatureCollection",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "EPSG:4326"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.4413773243557915,
+            12.329813823838752
+          ],
+          [
+            -1.4388271856593764,
+            12.328113731374474
+          ],
+          [
+            -1.4382528300971202,
+            12.32757766618304
+          ],
+          [
+            -1.4380001136497271,
+            12.327033942917437
+          ],
+          [
+            -1.4378362308626298,
+            12.320648640679977
+          ],
+          [
+            -1.438402928350722,
+            12.317003397378201
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "HTA",
+        "id": "1",
+        "_qgis_class_val": "HTA",
+        "_qgis_style": {
+          "color": "#1c9d2d",
+          "fillColor": "#3388ff",
+          "weight": 7.56,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": null
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.4378823940739769,
+            12.322447280194954
+          ],
+          [
+            -1.4314287202101033,
+            12.32256239341341
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "HTA",
+        "id": "2",
+        "_qgis_class_val": "HTA",
+        "_qgis_style": {
+          "color": "#1c9d2d",
+          "fillColor": "#3388ff",
+          "weight": 7.56,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": null
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.4379392828761208,
+            12.324663816794379
+          ],
+          [
+            -1.4401539470081848,
+            12.324628541822698
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "HTA",
+        "id": "3",
+        "_qgis_class_val": "HTA",
+        "_qgis_style": {
+          "color": "#1c9d2d",
+          "fillColor": "#3388ff",
+          "weight": 7.56,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": null
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.4378362308626298,
+            12.320648640679977
+          ],
+          [
+            -1.4413186872711434,
+            12.32056813534887
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "Cable 70",
+        "id": "14",
+        "_qgis_class_val": "Cable 70",
+        "_qgis_style": {
+          "color": "#000000",
+          "fillColor": "#3388ff",
+          "weight": 3.78,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": "2, 8"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.438402928350722,
+            12.317003397378201
+          ],
+          [
+            -1.4378362308626298,
+            12.320648640679977
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "Cable 70",
+        "id": "15",
+        "_qgis_class_val": "Cable 70",
+        "_qgis_style": {
+          "color": "#000000",
+          "fillColor": "#3388ff",
+          "weight": 3.78,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": "2, 8"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.4314287202101033,
+            12.322562393413406
+          ],
+          [
+            -1.4312580408821791,
+            12.317012299889353
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "Cable 70",
+        "id": "7",
+        "_qgis_class_val": "Cable 70",
+        "_qgis_style": {
+          "color": "#000000",
+          "fillColor": "#3388ff",
+          "weight": 3.78,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": "2, 8"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.4382528300971202,
+            12.32757766618304
+          ],
+          [
+            -1.4380047084942227,
+            12.327879777208775
+          ],
+          [
+            -1.436296500672423,
+            12.329499634064438
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "HTA",
+        "id": "4",
+        "_qgis_class_val": "HTA",
+        "_qgis_style": {
+          "color": "#1c9d2d",
+          "fillColor": "#3388ff",
+          "weight": 7.56,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": null
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.4433080999502514,
+            12.326982345431658
+          ],
+          [
+            -1.440958042969403,
+            12.324997055986714
+          ],
+          [
+            -1.4408484973788125,
+            12.32486421794532
+          ],
+          [
+            -1.440719005317676,
+            12.324605835525459
+          ],
+          [
+            -1.4406906480876007,
+            12.324348030281163
+          ],
+          [
+            -1.4403642047411613,
+            12.32445351647784
+          ],
+          [
+            -1.4401360271716244,
+            12.324638803854231
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "Cable 70",
+        "id": "5",
+        "_qgis_class_val": "Cable 70",
+        "_qgis_style": {
+          "color": "#000000",
+          "fillColor": "#3388ff",
+          "weight": 3.78,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": "2, 8"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.4406906480876007,
+            12.324348030281163
+          ],
+          [
+            -1.4406468398065215,
+            12.322085199667058
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "Cable 70",
+        "id": "6",
+        "_qgis_class_val": "Cable 70",
+        "_qgis_style": {
+          "color": "#000000",
+          "fillColor": "#3388ff",
+          "weight": 3.78,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": "2, 8"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.431324327446447,
+            12.319167784303012
+          ],
+          [
+            -1.4343562834959747,
+            12.319086400949798
+          ],
+          [
+            -1.4345054794649155,
+            12.31893411463115
+          ],
+          [
+            -1.434459881689902,
+            12.316962522407291
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "Cable 70",
+        "id": "8",
+        "_qgis_class_val": "Cable 70",
+        "_qgis_style": {
+          "color": "#000000",
+          "fillColor": "#3388ff",
+          "weight": 3.78,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": "2, 8"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.4314287202101033,
+            12.322562393413406
+          ],
+          [
+            -1.4314361729716076,
+            12.324781179706722
+          ],
+          [
+            -1.428119891414003,
+            12.324838473786873
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "Cable 70",
+        "id": "9",
+        "_qgis_class_val": "Cable 70",
+        "_qgis_style": {
+          "color": "#000000",
+          "fillColor": "#3388ff",
+          "weight": 3.78,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": "2, 8"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.4314361729716076,
+            12.324781179706722
+          ],
+          [
+            -1.4360345971212325,
+            12.324701437116053
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "Cable 70",
+        "id": "10",
+        "_qgis_class_val": "Cable 70",
+        "_qgis_style": {
+          "color": "#000000",
+          "fillColor": "#3388ff",
+          "weight": 3.78,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": "2, 8"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.4345683165693992,
+            12.328551019204586
+          ],
+          [
+            -1.4345048968070908,
+            12.325547462859259
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "Cable 70",
+        "id": "12",
+        "_qgis_class_val": "Cable 70",
+        "_qgis_style": {
+          "color": "#000000",
+          "fillColor": "#3388ff",
+          "weight": 3.78,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": "2, 8"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.436296500672423,
+            12.329499634064438
+          ],
+          [
+            -1.432639965458562,
+            12.327514828052598
+          ],
+          [
+            -1.4323886546544884,
+            12.327701320632125
+          ],
+          [
+            -1.4311977574796209,
+            12.329857618450268
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "Cable 70",
+        "id": "11",
+        "_qgis_class_val": "Cable 70",
+        "_qgis_style": {
+          "color": "#000000",
+          "fillColor": "#3388ff",
+          "weight": 3.78,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": "2, 8"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.436296500672423,
+            12.329499634064438
+          ],
+          [
+            -1.4351445508757017,
+            12.330504034821027
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "Cable 70",
+        "id": "13",
+        "_qgis_class_val": "Cable 70",
+        "_qgis_style": {
+          "color": "#000000",
+          "fillColor": "#3388ff",
+          "weight": 3.78,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": "2, 8"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.441537628144272,
+            12.325486684339939
+          ],
+          [
+            -1.4396654576024805,
+            12.327665063954374
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "Cable 70",
+        "id": "16",
+        "_qgis_class_val": "Cable 70",
+        "_qgis_style": {
+          "color": "#000000",
+          "fillColor": "#3388ff",
+          "weight": 3.78,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": "2, 8"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.4446250178825593,
+            12.324385302242053
+          ],
+          [
+            -1.4429634950391692,
+            12.326691231799641
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "Cable 70",
+        "id": "17",
+        "_qgis_class_val": "Cable 70",
+        "_qgis_style": {
+          "color": "#000000",
+          "fillColor": "#3388ff",
+          "weight": 3.78,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": "2, 8"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.434413957176402,
+            12.321450967537409
+          ],
+          [
+            -1.4343562834959747,
+            12.319086400949798
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "Cable 70",
+        "id": "18",
+        "_qgis_class_val": "Cable 70",
+        "_qgis_style": {
+          "color": "#000000",
+          "fillColor": "#3388ff",
+          "weight": 3.78,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": "2, 8"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.4383385117271974,
+            12.317417752956542
+          ],
+          [
+            -1.4355098036577039,
+            12.317460105776052
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "Cable 70",
+        "id": "19",
+        "_qgis_class_val": "Cable 70",
+        "_qgis_style": {
+          "color": "#000000",
+          "fillColor": "#3388ff",
+          "weight": 3.78,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": "2, 8"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.4323886546544884,
+            12.327701320632125
+          ],
+          [
+            -1.4322848929015688,
+            12.327521762241629
+          ],
+          [
+            -1.4314425047435928,
+            12.327337968461702
+          ],
+          [
+            -1.4309217557004812,
+            12.327468155722483
+          ],
+          [
+            -1.4305782192798016,
+            12.327691340721293
+          ],
+          [
+            -1.430381598225656,
+            12.327892556619938
+          ],
+          [
+            -1.4287180730655091,
+            12.329436998726843
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "Cable 70",
+        "id": "20",
+        "_qgis_class_val": "Cable 70",
+        "_qgis_style": {
+          "color": "#000000",
+          "fillColor": "#3388ff",
+          "weight": 3.78,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": "2, 8"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.431319912281414,
+            12.31902421343736
+          ],
+          [
+            -1.4284206286787111,
+            12.319100943891543
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "Cable 70",
+        "id": "21",
+        "_qgis_class_val": "Cable 70",
+        "_qgis_style": {
+          "color": "#000000",
+          "fillColor": "#3388ff",
+          "weight": 3.78,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": "2, 8"
+        }
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "coordinates": [
+          [
+            -1.429659441832048,
+            12.322697893463074
+          ],
+          [
+            -1.429558976038637,
+            12.31907082085995
+          ]
+        ],
+        "type": "LineString"
+      },
+      "properties": {
+        "Type": "Cable 70",
+        "id": "22",
+        "_qgis_class_val": "Cable 70",
+        "_qgis_style": {
+          "color": "#000000",
+          "fillColor": "#3388ff",
+          "weight": 3.78,
+          "opacity": 1.0,
+          "fillOpacity": 0.0,
+          "radius": 6,
+          "dashArray": "2, 8"
+        }
+      }
+    }
+  ]
+}
