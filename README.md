@@ -16,6 +16,11 @@ Universal Map2web is a QGIS plugin that exports your vector layers to interactiv
 
 https://www.youtube.com/watch?v=6DIGVI7V55E
 
+## Live Example
+
+See a map exported with Universal Map2web, running in your browser:
+**[Open the exported example](https://geomatic-web.github.io/universal_map2web/exemple/)**
+
 ## Documentation
 
 The complete user manual is available here:
@@ -83,20 +88,20 @@ The connection settings are read from the layer already configured in QGIS: noth
 
 ## Enabling CORS on GeoServer (WFS and WMS)
 
-The exported map is opened from another *origin* than your GeoServer (your website, or `http://localhost:PORT` when using the built-in local server). The browser only allows the page to read GeoServer responses if GeoServer sends the `Access-Control-Allow-Origin` header. The built-in local server does not remove this requirement for remote WFS/WMS services.
+The exported map is opened from another _origin_ than your GeoServer (your website, or `http://localhost:PORT` when using the built-in local server). The browser only allows the page to read GeoServer responses if GeoServer sends the `Access-Control-Allow-Origin` header. The built-in local server does not remove this requirement for remote WFS/WMS services.
 
-| Service | Without CORS |
-|---|---|
-| **WFS** | The layer cannot be loaded: the legend shows *"Could not load this layer (server unreachable or blocked by CORS)"* |
+| Service | Without CORS                                                                                                                                               |
+| ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **WFS** | The layer cannot be loaded: the legend shows _"Could not load this layer (server unreachable or blocked by CORS)"_                                         |
 | **WMS** | Tiles are still displayed (they are loaded as images), but click-to-query (`GetFeatureInfo` as JSON) is blocked and the plugin falls back to an HTML frame |
 
 **Option A – GeoServer Web Administration (recent versions)**
-Recent GeoServer versions include a CORS setting in the Web Administration interface (see *Enable CORS* in the GeoServer documentation, section *Container Considerations*). Enable it, then **restart GeoServer**.
+Recent GeoServer versions include a CORS setting in the Web Administration interface (see _Enable CORS_ in the GeoServer documentation, section _Container Considerations_). Enable it, then **restart GeoServer**.
 
 **Option B – `web.xml` (all versions)**
 Edit `webapps/geoserver/WEB-INF/web.xml` and uncomment (or add) the CORS `<filter>` **and** its `<filter-mapping>`, then restart.
 
-*Standalone / binary installer (Jetty):*
+_Standalone / binary installer (Jetty):_
 
 ```xml
 <filter>
@@ -109,7 +114,7 @@ Edit `webapps/geoserver/WEB-INF/web.xml` and uncomment (or add) the CORS `<filte
 </filter-mapping>
 ```
 
-*WAR deployed in Tomcat:*
+_WAR deployed in Tomcat:_
 
 ```xml
 <filter>
@@ -136,7 +141,7 @@ Edit `webapps/geoserver/WEB-INF/web.xml` and uncomment (or add) the CORS `<filte
 
 **Important**
 
-- Use **one** method only. Enabling CORS in the interface *and* in `web.xml` (or also in a reverse proxy such as Apache/Nginx) sends duplicate `Access-Control-Allow-Origin` values, which makes browsers reject the response
+- Use **one** method only. Enabling CORS in the interface _and_ in `web.xml` (or also in a reverse proxy such as Apache/Nginx) sends duplicate `Access-Control-Allow-Origin` values, which makes browsers reject the response
 - `*` allows any website. In production, replace it with your own site(s), e.g. `https://maps.example.org`
 - Check it with: `curl -I -H "Origin: https://maps.example.org" "https://your-geoserver/geoserver/ows?service=WFS&request=GetCapabilities"` and look for `Access-Control-Allow-Origin` in the response headers
 
@@ -210,6 +215,11 @@ Universal Map2web est une extension QGIS qui exporte vos couches vectorielles en
 
 [https://youtu.be/V67q3jCYKow](https://www.youtube.com/watch?v=6DIGVI7V55E)
 
+## Exemple en direct
+
+Découvrez une carte exportée avec Universal Map2web, directement dans votre navigateur :
+**[Ouvrir l'exemple exporté](https://geomatic-web.github.io/universal_map2web/exemple/)**
+
 La documentation complète disponible ici:
 [Télécharger la version pdf (PDF)](docs/Universal%20map2web%20User%20Manuel.pdf)
 
@@ -275,20 +285,20 @@ Les paramètres de connexion sont lus depuis la couche déjà configurée dans Q
 
 ## Activer le CORS sur GeoServer (WFS et WMS)
 
-La carte exportée est ouverte depuis une autre *origine* que votre GeoServer (votre site web, ou `http://localhost:PORT` avec le serveur local intégré). Le navigateur n'autorise la page à lire les réponses de GeoServer que si celui-ci envoie l'en-tête `Access-Control-Allow-Origin`. Le serveur local intégré ne supprime pas cette exigence pour des services WFS/WMS distants.
+La carte exportée est ouverte depuis une autre _origine_ que votre GeoServer (votre site web, ou `http://localhost:PORT` avec le serveur local intégré). Le navigateur n'autorise la page à lire les réponses de GeoServer que si celui-ci envoie l'en-tête `Access-Control-Allow-Origin`. Le serveur local intégré ne supprime pas cette exigence pour des services WFS/WMS distants.
 
-| Service | Sans CORS |
-|---|---|
-| **WFS** | La couche ne peut pas être chargée : la légende affiche *« Impossible de charger cette couche (serveur injoignable ou bloqué par CORS) »* |
+| Service | Sans CORS                                                                                                                                                                              |
+| ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **WFS** | La couche ne peut pas être chargée : la légende affiche _« Impossible de charger cette couche (serveur injoignable ou bloqué par CORS) »_                                              |
 | **WMS** | Les tuiles s'affichent quand même (elles sont chargées comme des images), mais l'interrogation au clic (`GetFeatureInfo` en JSON) est bloquée et l'extension bascule sur un cadre HTML |
 
 **Option A – Interface d'administration de GeoServer (versions récentes)**
-Les versions récentes de GeoServer proposent un réglage CORS dans l'interface d'administration web (voir *Enable CORS* dans la documentation GeoServer, section *Container Considerations*). Activez-le puis **redémarrez GeoServer**.
+Les versions récentes de GeoServer proposent un réglage CORS dans l'interface d'administration web (voir _Enable CORS_ dans la documentation GeoServer, section _Container Considerations_). Activez-le puis **redémarrez GeoServer**.
 
 **Option B – `web.xml` (toutes versions)**
 Modifiez `webapps/geoserver/WEB-INF/web.xml` et décommentez (ou ajoutez) le `<filter>` CORS **et** son `<filter-mapping>`, puis redémarrez.
 
-*Version autonome / installeur binaire (Jetty) :*
+_Version autonome / installeur binaire (Jetty) :_
 
 ```xml
 <filter>
@@ -301,7 +311,7 @@ Modifiez `webapps/geoserver/WEB-INF/web.xml` et décommentez (ou ajoutez) le `<f
 </filter-mapping>
 ```
 
-*WAR déployé dans Tomcat :*
+_WAR déployé dans Tomcat :_
 
 ```xml
 <filter>
@@ -328,7 +338,7 @@ Modifiez `webapps/geoserver/WEB-INF/web.xml` et décommentez (ou ajoutez) le `<f
 
 **Important**
 
-- N'utilisez **qu'une seule** méthode. Activer le CORS dans l'interface *et* dans `web.xml` (ou aussi dans un proxy inverse Apache/Nginx) envoie des valeurs `Access-Control-Allow-Origin` en double, ce qui fait rejeter la réponse par les navigateurs
+- N'utilisez **qu'une seule** méthode. Activer le CORS dans l'interface _et_ dans `web.xml` (ou aussi dans un proxy inverse Apache/Nginx) envoie des valeurs `Access-Control-Allow-Origin` en double, ce qui fait rejeter la réponse par les navigateurs
 - `*` autorise n'importe quel site. En production, remplacez-le par votre ou vos sites, par ex. `https://cartes.exemple.org`
 - Vérification : `curl -I -H "Origin: https://cartes.exemple.org" "https://votre-geoserver/geoserver/ows?service=WFS&request=GetCapabilities"` puis cherchez `Access-Control-Allow-Origin` dans les en-têtes de réponse
 
